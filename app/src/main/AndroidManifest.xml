@@ -14,5 +14,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".CaseActivity" />
+        <activity android:name=".MutableStateActivity" />
+        <activity android:name=".ModifierActivity" />
+        <activity android:name=".AnimationActivity" />
+        <activity android:name=".DrawActivity" />
+        <activity android:name=".LayoutActivity" />
+        <activity android:name=".TouchActivity" />
+        <activity android:name=".AndroidViewAddComposeActivity" />
+        <activity android:name=".ComposeAddAndroidViewActivity" />
     </application>
 </manifest>
