@@ -1,57 +1,113 @@
 package com.gxd.demo.compose.ui.theme
 
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
-)
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 
 @Composable
-fun ComposeDemoTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
-) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+fun MyTheme(theme: MyTheme.Theme = MyTheme.Theme.Light, content: @Composable () -> Unit) {
+    val colorScheme = when (theme) {
+        MyTheme.Theme.Light -> LightColorScheme
+        MyTheme.Theme.Dark -> DarkColorScheme
+        MyTheme.Theme.NewYear -> NewYearColorScheme
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalCustomColorScheme provides colorScheme) {
+        MaterialTheme(content = content)
+    }
 }
+
+object MyTheme {
+    val colorScheme: CustomColorScheme
+        @Composable
+        get() = LocalCustomColorScheme.current
+
+    enum class Theme {
+        Light, Dark, NewYear
+    }
+}
+
+private val LocalCustomColorScheme = staticCompositionLocalOf { LightColorScheme }
+
+private val LightColorScheme = CustomColorScheme(
+    bottomBar = white1,
+    background = white2,
+    listItem = white,
+    divider = white3,
+    chatPage = white2,
+    textPrimary = black3,
+    textPrimaryMe = black3,
+    textSecondary = grey1,
+    onBackground = grey3,
+    icon = black,
+    iconCurrent = green3,
+    badge = red1,
+    onBadge = white,
+    bubbleMe = green1,
+    bubbleOthers = white,
+    textFieldBackground = white,
+    more = grey4,
+    chatPageBgAlpha = 0f,
+)
+private val DarkColorScheme = CustomColorScheme(
+    bottomBar = black1,
+    background = black2,
+    listItem = black3,
+    divider = black4,
+    chatPage = black2,
+    textPrimary = white4,
+    textPrimaryMe = black6,
+    textSecondary = grey1,
+    onBackground = grey1,
+    icon = white5,
+    iconCurrent = green3,
+    badge = red1,
+    onBadge = white,
+    bubbleMe = green2,
+    bubbleOthers = black5,
+    textFieldBackground = black7,
+    more = grey5,
+    chatPageBgAlpha = 0f,
+)
+private val NewYearColorScheme = CustomColorScheme(
+    bottomBar = red4,
+    background = red5,
+    listItem = red2,
+    divider = red3,
+    chatPage = red5,
+    textPrimary = white,
+    textPrimaryMe = black6,
+    textSecondary = grey2,
+    onBackground = grey2,
+    icon = white5,
+    iconCurrent = green3,
+    badge = yellow1,
+    onBadge = black3,
+    bubbleMe = green2,
+    bubbleOthers = red6,
+    textFieldBackground = red7,
+    more = red8,
+    chatPageBgAlpha = 1f,
+)
+
+data class CustomColorScheme(
+    val bottomBar: Color,
+    val background: Color,
+    val listItem: Color,
+    val divider: Color,
+    val chatPage: Color,
+    val textPrimary: Color,
+    val textPrimaryMe: Color,
+    val textSecondary: Color,
+    val onBackground: Color,
+    val icon: Color,
+    val iconCurrent: Color,
+    val badge: Color,
+    val onBadge: Color,
+    val bubbleMe: Color,
+    val bubbleOthers: Color,
+    val textFieldBackground: Color,
+    val more: Color,
+    val chatPageBgAlpha: Float
+)
