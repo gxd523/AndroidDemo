@@ -1,4 +1,4 @@
-package com.gxd.demo.compose.wechat
+package com.gxd.demo.compose.wechat.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
