@@ -1,5 +1,8 @@
 package com.gxd.demo.compose.ui.theme
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -13,10 +16,34 @@ fun MyTheme(theme: MyTheme.Theme = MyTheme.Theme.Light, content: @Composable () 
         MyTheme.Theme.Dark -> DarkColorScheme
         MyTheme.Theme.NewYear -> NewYearColorScheme
     }
-    CompositionLocalProvider(LocalCustomColorScheme provides colorScheme) {
+    val animatedColorScheme = CustomColorScheme(
+        bottomBar = animateColorAsStateValue(colorScheme.bottomBar),
+        background = animateColorAsStateValue(colorScheme.background),
+        listItem = animateColorAsStateValue(colorScheme.listItem),
+        divider = animateColorAsStateValue(colorScheme.divider),
+        chatPage = animateColorAsStateValue(colorScheme.chatPage),
+        textPrimary = animateColorAsStateValue(colorScheme.textPrimary),
+        textPrimaryMe = animateColorAsStateValue(colorScheme.textPrimaryMe),
+        textSecondary = animateColorAsStateValue(colorScheme.textSecondary),
+        onBackground = animateColorAsStateValue(colorScheme.onBackground),
+        icon = animateColorAsStateValue(colorScheme.icon),
+        iconCurrent = animateColorAsStateValue(colorScheme.iconCurrent),
+        badge = animateColorAsStateValue(colorScheme.badge),
+        onBadge = animateColorAsStateValue(colorScheme.onBadge),
+        bubbleMe = animateColorAsStateValue(colorScheme.bubbleMe),
+        bubbleOthers = animateColorAsStateValue(colorScheme.bubbleOthers),
+        textFieldBackground = animateColorAsStateValue(colorScheme.textFieldBackground),
+        more = animateColorAsStateValue(colorScheme.more),
+        chatPageBgAlpha = animateFloatAsState(colorScheme.chatPageBgAlpha, TweenSpec(600), label = "").value,
+    )
+
+    CompositionLocalProvider(LocalCustomColorScheme provides animatedColorScheme) {
         MaterialTheme(content = content)
     }
 }
+
+@Composable
+private fun animateColorAsStateValue(color: Color) = animateColorAsState(color, TweenSpec(600), label = "").value
 
 object MyTheme {
     val colorScheme: CustomColorScheme
