@@ -13,7 +13,7 @@ class HomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MyTheme {
+            MyTheme(viewModel.theme) {
                 HomeScreen(viewModel)
             }
         }
