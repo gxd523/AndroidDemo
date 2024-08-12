@@ -1,13 +1,81 @@
 package com.gxd.demo.compose.wechat.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.wechat.data.Chat
+import com.gxd.demo.compose.wechat.data.mock.Mock
 
 @Composable
-fun ChatList() {
-    Box(Modifier.fillMaxSize().background(Color.Red))
+fun ChatList(chatList: List<Chat>) {
+    Column(Modifier.background(MyTheme.colorScheme.background).fillMaxSize()) {
+        Text("假微信", Modifier.align(Alignment.CenterHorizontally))
+        LazyColumn(Modifier.background(MyTheme.colorScheme.listItem)) {
+            itemsIndexed(chatList) { index, chat ->
+                ChatItem(chat)
+                if (index < chatList.lastIndex) HorizontalDivider(
+                    Modifier.padding(start = 68.dp), 0.8f.dp, MyTheme.colorScheme.divider
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChatItem(chat: Chat) {
+    Row {
+        Image(
+            painterResource(chat.friend.avatar), chat.friend.name,
+            Modifier
+                .padding(8.dp)
+                .size(48.dp)
+                .unread(!chat.messageList.last().read, MyTheme.colorScheme.badge)
+                .clip(RoundedCornerShape(4.dp))
+        )
+        val newestMessage = chat.messageList.lastOrNull()
+        Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
+            Text(chat.friend.name, fontSize = 17.sp, color = MyTheme.colorScheme.textPrimary)
+            Text(newestMessage?.text ?: "", fontSize = 14.sp, color = MyTheme.colorScheme.textSecondary)
+        }
+        Text(
+            newestMessage?.time ?: "",
+            Modifier.padding(8.dp, 8.dp, 12.dp, 8.dp),
+            fontSize = 11.sp, color = MyTheme.colorScheme.textSecondary
+        )
+    }
+}
+
+fun Modifier.unread(show: Boolean, color: Color): Modifier = this.drawWithContent {
+    drawContent()
+    if (show) {
+        val offset = Offset(size.width - 1.dp.toPx(), 1.dp.toPx())
+        drawCircle(color, 5.dp.toPx(), offset)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ChatListPreview() {
+    ChatList(Mock.chatList)
 }

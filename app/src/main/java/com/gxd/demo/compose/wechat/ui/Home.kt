@@ -28,7 +28,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
         }
         HorizontalPager(pagerState, Modifier.weight(1f)) { pageIndex ->
             when (pageIndex) {
-                0 -> ChatList()
+                0 -> ChatList(viewModel.chatList)
                 1 -> Box(Modifier.fillMaxSize())
                 2 -> Box(Modifier.fillMaxSize().background(Color.Gray))
                 3 -> Box(Modifier.fillMaxSize().background(Color.Blue))
