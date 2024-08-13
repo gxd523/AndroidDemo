@@ -31,7 +31,7 @@ fun TopBar(title: String? = null, onBackClick: (() -> Unit)? = null) {
         } else {
             Icon(
                 painterResource(R.drawable.ic_back), "返回",
-                Modifier.size(36.dp).padding(8.dp).align(Alignment.CenterVertically).clickable(onClick = onBackClick),
+                Modifier.size(36.dp).align(Alignment.CenterVertically).clickable(onClick = onBackClick).padding(8.dp),
                 tint = MyTheme.colorScheme.icon
             )
         }
@@ -49,13 +49,17 @@ fun TopBar(title: String? = null, onBackClick: (() -> Unit)? = null) {
         val viewModel: HomeViewModel = viewModel()
         Icon(
             painterResource(R.drawable.ic_palette), "切换主题",
-            Modifier.size(36.dp).padding(8.dp).align(Alignment.CenterVertically).clickable {
-                viewModel.theme = when (viewModel.theme) {
-                    MyTheme.Theme.Light -> MyTheme.Theme.Dark
-                    MyTheme.Theme.Dark -> MyTheme.Theme.NewYear
-                    MyTheme.Theme.NewYear -> MyTheme.Theme.Light
+            Modifier
+                .size(36.dp)
+                .align(Alignment.CenterVertically)
+                .clickable {
+                    viewModel.theme = when (viewModel.theme) {
+                        MyTheme.Theme.Light -> MyTheme.Theme.Dark
+                        MyTheme.Theme.Dark -> MyTheme.Theme.NewYear
+                        MyTheme.Theme.NewYear -> MyTheme.Theme.Light
+                    }
                 }
-            },
+                .padding(8.dp),
             tint = MyTheme.colorScheme.icon
         )
     }

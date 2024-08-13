@@ -13,14 +13,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gxd.demo.compose.wechat.HomeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-fun HomeScreen(viewModel: HomeViewModel) {
+fun HomePage() {
+    val viewModel: HomeViewModel = viewModel()
     Column {
-        val pagerState = rememberPagerState(pageCount = { 10 })
+        val pagerState = rememberPagerState(pageCount = { 4 })
         LaunchedEffect(pagerState) {
             snapshotFlow { pagerState.currentPage }.collect { pagerState ->
                 viewModel.selectedTab = pagerState
@@ -41,4 +44,10 @@ fun HomeScreen(viewModel: HomeViewModel) {
             scope.launch { pagerState.animateScrollToPage(page) }
         }
     }
+}
+
+@Preview
+@Composable
+private fun HomePagePreview() {
+    HomePage()
 }

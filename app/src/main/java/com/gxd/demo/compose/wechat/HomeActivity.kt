@@ -2,10 +2,13 @@ package com.gxd.demo.compose.wechat
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import com.gxd.demo.compose.ui.theme.MyTheme
-import com.gxd.demo.compose.wechat.ui.HomeScreen
+import com.gxd.demo.compose.wechat.ui.ChatPage
+import com.gxd.demo.compose.wechat.ui.HomePage
 
 class HomeActivity : ComponentActivity() {
     private val viewModel by viewModels<HomeViewModel>()
@@ -14,8 +17,13 @@ class HomeActivity : ComponentActivity() {
 
         setContent {
             MyTheme(viewModel.theme) {
-                HomeScreen(viewModel)
+                Box {
+                    HomePage()
+                    ChatPage()
+                }
             }
         }
+
+        onBackPressedDispatcher.addCallback { viewModel.endChat() }
     }
 }

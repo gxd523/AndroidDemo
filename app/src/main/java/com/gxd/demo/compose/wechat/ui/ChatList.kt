@@ -2,6 +2,7 @@ package com.gxd.demo.compose.wechat.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +24,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.wechat.HomeViewModel
 import com.gxd.demo.compose.wechat.data.Chat
 import com.gxd.demo.compose.wechat.data.mock.Mock
 
@@ -44,22 +47,23 @@ fun ChatList(chatList: List<Chat>) {
 
 @Composable
 private fun ChatItem(chat: Chat) {
-    Row {
+    val viewModel: HomeViewModel = viewModel()
+    Row(Modifier.clickable { viewModel.startChat(chat) }) {
         Image(
             painterResource(chat.friend.avatar), chat.friend.name,
             Modifier
                 .padding(8.dp)
                 .size(48.dp)
-                .unread(!chat.messageList.last().read, MyTheme.colorScheme.badge)
+                .unread(!(chat.messageList.lastOrNull()?.read ?: true), MyTheme.colorScheme.badge)
                 .clip(RoundedCornerShape(4.dp))
         )
-        val newestMessage = chat.messageList.lastOrNull()
+        val newestMessage = chat.messageList.lastOrNull() ?: return
         Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
             Text(chat.friend.name, fontSize = 17.sp, color = MyTheme.colorScheme.textPrimary)
-            Text(newestMessage?.text ?: "", fontSize = 14.sp, color = MyTheme.colorScheme.textSecondary)
+            Text(newestMessage.text, fontSize = 14.sp, color = MyTheme.colorScheme.textSecondary)
         }
         Text(
-            newestMessage?.time ?: "",
+            newestMessage.time,
             Modifier.padding(8.dp, 8.dp, 12.dp, 8.dp),
             fontSize = 11.sp, color = MyTheme.colorScheme.textSecondary
         )
