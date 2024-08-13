@@ -37,9 +37,8 @@ fun ChatList(chatList: List<Chat>) {
         LazyColumn(Modifier.background(MyTheme.colorScheme.listItem)) {
             itemsIndexed(chatList) { index, chat ->
                 ChatItem(chat)
-                if (index < chatList.lastIndex) HorizontalDivider(
-                    Modifier.padding(start = 68.dp), 0.8f.dp, MyTheme.colorScheme.divider
-                )
+                if (index >= chatList.lastIndex) return@itemsIndexed
+                HorizontalDivider(Modifier.padding(start = 68.dp), 0.8f.dp, MyTheme.colorScheme.divider)
             }
         }
     }

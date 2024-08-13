@@ -34,7 +34,7 @@ fun HomePage() {
                 0 -> ChatList(viewModel.chatList)
                 1 -> Box(Modifier.fillMaxSize())
                 2 -> Box(Modifier.fillMaxSize().background(Color.Gray))
-                3 -> Box(Modifier.fillMaxSize().background(Color.Blue))
+                3 -> MePage()
                 else -> Box(Modifier.fillMaxSize().background(Color.Green))
             }
         }
