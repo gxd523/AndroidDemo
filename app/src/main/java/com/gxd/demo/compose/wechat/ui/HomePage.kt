@@ -32,7 +32,7 @@ fun HomePage() {
         HorizontalPager(pagerState, Modifier.weight(1f)) { pageIndex ->
             when (pageIndex) {
                 0 -> ChatList(viewModel.chatList)
-                1 -> Box(Modifier.fillMaxSize())
+                1 -> ContactsPage()
                 2 -> DiscoveryPage()
                 3 -> MePage()
                 else -> Box(Modifier.fillMaxSize().background(Color.Green))
