@@ -69,28 +69,29 @@ fun MessageItem(message: ChatMessage) {
         if (!isMe) Avatar(message)
 
         val bubbleColor = if (isMe) MyTheme.colorScheme.bubbleMe else MyTheme.colorScheme.bubbleOthers
-        Text(message.text,
-            Modifier
-                .drawBehind {
-                    val bubble = Path().apply {
-                        val rect = RoundRect(
-                            10.dp.toPx(),
-                            0f,
-                            size.width - 10.dp.toPx(),
-                            size.height,
-                            4.dp.toPx(),
-                            4.dp.toPx()
-                        )
-                        addRoundRect(rect)
-                        moveTo(if (isMe) size.width - 10.dp.toPx() else 10.dp.toPx(), 15.dp.toPx())
-                        lineTo(if (isMe) size.width - 5.dp.toPx() else 5.dp.toPx(), 20.dp.toPx())
-                        lineTo(if (isMe) size.width - 10.dp.toPx() else 10.dp.toPx(), 25.dp.toPx())
-                        close()
-                    }
-                    drawPath(bubble, bubbleColor)
+        Text(
+            message.text, color = if (isMe) MyTheme.colorScheme.textPrimaryMe else MyTheme.colorScheme.textPrimary,
+            modifier = Modifier.drawBehind {
+                val bubble = Path().apply {
+                    val rect = RoundRect(
+                        10.dp.toPx(),
+                        0f,
+                        size.width - 10.dp.toPx(),
+                        size.height,
+                        4.dp.toPx(),
+                        4.dp.toPx()
+                    )
+                    addRoundRect(rect)
+                    val x = if (isMe) size.width - 10.dp.toPx() else 10.dp.toPx()
+                    val x1 = if (isMe) size.width - 5.dp.toPx() else 5.dp.toPx()
+                    moveTo(x, 15.dp.toPx())
+                    lineTo(x1, 20.dp.toPx())
+                    lineTo(x, 25.dp.toPx())
+                    close()
                 }
-                .padding(20.dp, 10.dp),
-            color = if (isMe) MyTheme.colorScheme.textPrimaryMe else MyTheme.colorScheme.textPrimary)
+                drawPath(bubble, bubbleColor)
+            }.padding(20.dp, 10.dp)
+        )
 
         if (isMe) Avatar(message)
     }

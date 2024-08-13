@@ -72,10 +72,9 @@ private fun ChatItem(chat: Chat) {
 
 fun Modifier.unread(show: Boolean, color: Color): Modifier = this.drawWithContent {
     drawContent()
-    if (show) {
-        val offset = Offset(size.width - 1.dp.toPx(), 1.dp.toPx())
-        drawCircle(color, 5.dp.toPx(), offset)
-    }
+    if (!show) return@drawWithContent
+    val offset = Offset(size.width - 1.dp.toPx(), 1.dp.toPx())
+    drawCircle(color, 5.dp.toPx(), offset)
 }
 
 @Preview(showBackground = true)
