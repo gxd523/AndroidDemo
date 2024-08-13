@@ -83,7 +83,7 @@ fun MeItem(
             painterResource(icon), "title",
             Modifier.padding(12.dp, 8.dp, 8.dp, 8.dp).size(36.dp).padding(8.dp)
         )
-        Text(title, fontSize = 17.sp, color = MyTheme.colorScheme.textPrimary)
+        Text(title, fontSize = 17.sp, lineHeight = 17.sp, color = MyTheme.colorScheme.textPrimary)
         badge?.invoke()
         Spacer(Modifier.weight(1f))
         endBadge?.invoke()

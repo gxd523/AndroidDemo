@@ -33,7 +33,7 @@ fun HomePage() {
             when (pageIndex) {
                 0 -> ChatList(viewModel.chatList)
                 1 -> Box(Modifier.fillMaxSize())
-                2 -> Box(Modifier.fillMaxSize().background(Color.Gray))
+                2 -> DiscoveryPage()
                 3 -> MePage()
                 else -> Box(Modifier.fillMaxSize().background(Color.Green))
             }
