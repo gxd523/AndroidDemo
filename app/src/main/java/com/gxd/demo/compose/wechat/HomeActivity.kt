@@ -2,7 +2,7 @@ package com.gxd.demo.compose.wechat
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.addCallback
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
@@ -21,9 +21,8 @@ class HomeActivity : ComponentActivity() {
                     HomePage()
                     ChatPage()
                 }
+                BackHandler { if (!viewModel.endChat()) finish() }
             }
         }
-
-        onBackPressedDispatcher.addCallback { viewModel.endChat() }
     }
 }

@@ -22,7 +22,12 @@ class HomeViewModel : ViewModel() {
         inChatPage = true
     }
 
-    fun endChat() {
-        if (inChatPage) inChatPage = false
+    fun endChat(): Boolean {
+        if (inChatPage) {
+            inChatPage = false
+            return true
+        } else {
+            return false
+        }
     }
 }
