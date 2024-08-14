@@ -7,6 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.gxd.demo.compose.ui.theme.MyTheme
 import com.gxd.demo.compose.wechat.data.Chat
+import com.gxd.demo.compose.wechat.data.ChatMessage
+import com.gxd.demo.compose.wechat.data.User
 import com.gxd.demo.compose.wechat.data.mock.Mock
 
 class HomeViewModel : ViewModel() {
@@ -29,5 +31,9 @@ class HomeViewModel : ViewModel() {
         } else {
             return false
         }
+    }
+
+    fun boom(chat: Chat) {
+        chat.messageList += ChatMessage(User.Me, "\uD83D\uDCA3", "15:10").apply { read = true }
     }
 }
