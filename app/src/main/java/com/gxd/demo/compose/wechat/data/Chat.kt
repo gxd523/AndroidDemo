@@ -1,3 +1,3 @@
 package com.gxd.demo.compose.wechat.data
 
-class Chat(var friend: User, var messageList: MutableList<ChatMessage>)
+class Chat(val friend: User, val messageList: MutableList<ChatMessage>)
