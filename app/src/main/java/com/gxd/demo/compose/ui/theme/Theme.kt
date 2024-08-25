@@ -55,6 +55,9 @@ object MyTheme {
     }
 }
 
+/**
+ * top-level变量首字母大写
+ */
 private val LocalCustomColorScheme = staticCompositionLocalOf { LightColorScheme }
 
 private val LightColorScheme = CustomColorScheme(

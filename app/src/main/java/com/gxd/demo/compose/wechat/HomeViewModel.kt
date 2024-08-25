@@ -12,7 +12,7 @@ import com.gxd.demo.compose.wechat.data.User
 import com.gxd.demo.compose.wechat.data.mock.Mock
 
 class HomeViewModel : ViewModel() {
-    var chatList by mutableStateOf(Mock.chatList)
+    val chatList by mutableStateOf(Mock.chatList)
     val contactList by mutableStateOf(Mock.contactList)
     var selectedTab by mutableIntStateOf(0)
     var theme by mutableStateOf(MyTheme.Theme.Light)
