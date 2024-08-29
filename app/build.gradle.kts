@@ -26,9 +26,6 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"// compose的compiler库的版本
-    }
 }
 
 dependencies {
@@ -39,5 +36,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.coil.compose)
+    implementation(libs.landscapist.coil)
+    implementation(libs.coil.svg)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
