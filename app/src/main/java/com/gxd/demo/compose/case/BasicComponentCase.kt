@@ -18,13 +18,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -40,6 +45,8 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -53,6 +60,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -195,7 +204,7 @@ fun ImageCase() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun SliderCase() {
     var progress by remember { mutableFloatStateOf(0f) }
@@ -208,4 +217,51 @@ fun SliderCase() {
             onValueChange = { progress = it }
         )
     }
+}
+
+/**
+ * 深度自定义使用：BasicTextField
+ */
+@Preview(showBackground = true)
+@Composable
+private fun TextFieldCase() {
+    var text by remember { mutableStateOf("") }
+    var hidePwd by remember { mutableStateOf(false) }
+    val textFieldColors = TextFieldDefaults.colors(
+        cursorColor = Color.Red
+    )
+
+    TextField(
+        text,
+        colors = textFieldColors,
+        onValueChange = { text = it },
+        singleLine = true,
+        label = { Text("邮箱") },
+        leadingIcon = { Icon(Icons.Filled.Search, null) },
+        trailingIcon = {
+            IconButton({ hidePwd = !hidePwd }) {
+                val imageVector = if (hidePwd) Icons.Filled.Lock else Icons.Outlined.Lock
+                Icon(imageVector, null)
+            }
+        },
+        visualTransformation = if (hidePwd) PasswordVisualTransformation() else VisualTransformation.None
+    )
+}
+
+@Preview
+@Composable
+private fun BasicTextFieldCase() {
+    var text by remember { mutableStateOf("") }
+    BasicTextField(
+        text,
+        onValueChange = { text = it },
+        Modifier.background(Color.White, CircleShape).fillMaxWidth(),
+        decorationBox = { innerTextField ->// 自定义输入栏样式
+            Row(Modifier.padding(10.dp, 5.dp), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = {}) { Icon(Icons.Filled.Face, null) }
+                Box(Modifier.weight(1f), Alignment.CenterStart) { innerTextField() }
+                IconButton(onClick = {}) { Icon(Icons.AutoMirrored.Filled.Send, null) }
+            }
+        }
+    )
 }
