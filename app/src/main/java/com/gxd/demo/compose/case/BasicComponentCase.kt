@@ -224,7 +224,7 @@ fun SliderCase() {
  */
 @Preview(showBackground = true)
 @Composable
-private fun TextFieldCase() {
+fun TextFieldCase() {
     var text by remember { mutableStateOf("") }
     var hidePwd by remember { mutableStateOf(false) }
     val textFieldColors = TextFieldDefaults.colors(
@@ -250,7 +250,7 @@ private fun TextFieldCase() {
 
 @Preview
 @Composable
-private fun BasicTextFieldCase() {
+fun BasicTextFieldCase() {
     var text by remember { mutableStateOf("") }
     BasicTextField(
         text,
@@ -258,9 +258,9 @@ private fun BasicTextFieldCase() {
         Modifier.background(Color.White, CircleShape).fillMaxWidth(),
         decorationBox = { innerTextField ->// 自定义输入栏样式
             Row(Modifier.padding(10.dp, 5.dp), verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = {}) { Icon(Icons.Filled.Face, null) }
+                IconButton(onClick = {/*TODO*/ }) { Icon(Icons.Filled.Face, null) }
                 Box(Modifier.weight(1f), Alignment.CenterStart) { innerTextField() }
-                IconButton(onClick = {}) { Icon(Icons.AutoMirrored.Filled.Send, null) }
+                IconButton(onClick = {/*TODO*/ }) { Icon(Icons.AutoMirrored.Filled.Send, null) }
             }
         }
     )
