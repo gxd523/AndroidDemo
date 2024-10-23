@@ -41,7 +41,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     implementation(libs.coil.compose)
-    implementation(libs.landscapist.coil)
+    implementation(libs.coil.landscapist)
     implementation(libs.coil.svg)
 
     implementation(libs.coroutines.android)
