@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -10,25 +10,23 @@ android {
 
     defaultConfig {
         applicationId = "com.gxd.demo.compose"
-        minSdk = 30
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
     buildFeatures {
         compose = true
     }
-    composeCompiler {
-        // 配置Compose编译器
-    }
+    composeCompiler { /* 配置Compose编译器 */ }
 }
 
 dependencies {
@@ -45,6 +43,11 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.landscapist.coil)
     implementation(libs.coil.svg)
+
+    implementation(libs.coroutines.android)
+
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
