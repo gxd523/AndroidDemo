@@ -32,7 +32,7 @@ import com.gxd.demo.compose.wechat.data.mock.Mock
 
 @Composable
 fun ChatList(chatList: List<Chat>) {
-    Column(Modifier.background(MyTheme.colorScheme.background).fillMaxSize()) {
+    Column(Modifier.fillMaxSize().background(MyTheme.colorScheme.background)) {
         TopBar("微信")
         LazyColumn(Modifier.background(MyTheme.colorScheme.listItem)) {
             itemsIndexed(chatList) { index, chat ->

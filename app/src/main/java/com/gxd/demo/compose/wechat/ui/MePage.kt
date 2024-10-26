@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,7 +44,7 @@ fun MePage() {
             R.drawable.ic_stickers to "表情"
         )
     }
-    Box(Modifier.background(MyTheme.colorScheme.background).fillMaxSize()) {
+    Box(Modifier.fillMaxSize().background(MyTheme.colorScheme.background)) {
         LazyColumn(Modifier.background(MyTheme.colorScheme.listItem).fillMaxWidth()) {
             item {
                 MeHeader()
@@ -97,7 +98,7 @@ fun MeItem(
 
 @Composable
 fun MeHeader() {
-    Row(Modifier.background(MyTheme.colorScheme.listItem).fillMaxWidth().height(224.dp)) {
+    Row(Modifier.background(MyTheme.colorScheme.listItem).fillMaxWidth().statusBarsPadding().height(224.dp)) {
         Image(
             painterResource(id = R.drawable.avatar_rengwuxian), contentDescription = "Me",
             Modifier.align(Alignment.CenterVertically).padding(start = 24.dp).clip(RoundedCornerShape(6.dp)).size(64.dp)

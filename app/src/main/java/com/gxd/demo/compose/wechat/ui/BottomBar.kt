@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -26,7 +27,7 @@ import com.gxd.demo.compose.ui.theme.MyTheme
 
 @Composable
 fun BottomBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    Row(Modifier.background(MyTheme.colorScheme.bottomBar)) {
+    Row(Modifier.background(MyTheme.colorScheme.bottomBar).navigationBarsPadding()) {
         listOf(
             R.drawable.ic_chat_outlined to R.drawable.ic_chat_filled to "聊天",
             R.drawable.ic_contacts_outlined to R.drawable.ic_contacts_filled to "通讯录",

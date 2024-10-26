@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +26,7 @@ import com.gxd.demo.compose.wechat.HomeViewModel
 
 @Composable
 fun TopBar(title: String? = null, onBackClick: (() -> Unit)? = null) {
-    Row(Modifier.fillMaxWidth().height(48.dp).background(MyTheme.colorScheme.background)) {
+    Row(Modifier.fillMaxWidth().background(MyTheme.colorScheme.background).statusBarsPadding().height(48.dp)) {
         if (onBackClick == null) {
             Spacer(Modifier.size(36.dp))
         } else {
