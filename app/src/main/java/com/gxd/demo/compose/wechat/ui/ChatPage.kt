@@ -9,10 +9,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,6 +23,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +46,8 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +55,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gxd.demo.compose.R
 import com.gxd.demo.compose.ui.theme.MyTheme
 import com.gxd.demo.compose.wechat.HomeViewModel
+import com.gxd.demo.compose.wechat.data.Chat
 import com.gxd.demo.compose.wechat.data.ChatMessage
 import com.gxd.demo.compose.wechat.data.User
 import com.gxd.demo.compose.wechat.data.mock.Mock
@@ -55,17 +63,24 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChatPage() {
     val viewModel: HomeViewModel = viewModel()
     val targetValue = if (viewModel.inChatPage) 0f else 1f
     val offsetPercentX by animateFloatAsState(targetValue, label = "")
     val chat = viewModel.currentChat ?: return
-    Column(Modifier.offsetPercent(offsetPercentX).background(MyTheme.colorScheme.background).fillMaxSize()) {
+    Column(
+        Modifier
+            .offsetPercent(offsetPercentX)
+            .background(MyTheme.colorScheme.background)
+            .fillMaxSize()
+            .imePadding()
+    ) {
         TopBar(chat.friend.name) { viewModel.endChat() }
 
         val listState = rememberLazyListState()
-        LaunchedEffect(viewModel.inChatPage) { listState.scrollToItem(chat.messageList.size - 1) }
+        LaunchedEffect(viewModel.inChatPage) { listState.scrollToItem(0) }
 
         var shakingTime by remember { mutableIntStateOf(0) }
         val shakingOffset = remember { Animatable(0f) }
@@ -78,16 +93,17 @@ fun ChatPage() {
             )
         }
 
-        LazyColumn(Modifier.weight(1f).offset(shakingOffset.value.dp, shakingOffset.value.dp), listState) {
+        val offsetDp = shakingOffset.value.dp
+        LazyColumn(Modifier.weight(1f).offset(offsetDp, offsetDp), listState, reverseLayout = true) {
             items(chat.messageList.size) { index ->
                 val msg = chat.messageList[index]
                 MessageItem(msg, shakingTime, chat.messageList.size - index - 1)
             }
         }
         val coroutineScope = rememberCoroutineScope()
-        ChatBottomBar {
+        ChatBottomBar(viewModel, chat) {
             viewModel.boom(chat)
-            coroutineScope.launch { listState.scrollToItem(chat.messageList.size - 1) }
+            coroutineScope.launch { listState.scrollToItem(0) }
             shakingTime++
         }
     }
@@ -159,16 +175,23 @@ fun Avatar(message: ChatMessage, shakingAngleBubble: Animatable<Float, Animation
 }
 
 @Composable
-fun ChatBottomBar(onBombClick: () -> Unit) {
-    var editText by remember { mutableStateOf("") }
-    Row(Modifier.background(MyTheme.colorScheme.bottomBar).fillMaxWidth().padding(4.dp, 0.dp)) {
+fun ChatBottomBar(viewModel: HomeViewModel, chat: Chat, onBombClick: () -> Unit) {
+    var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
+//    val keyboardController = LocalSoftwareKeyboardController.current
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .background(MyTheme.colorScheme.bottomBar)
+            .padding(4.dp, 0.dp)
+            .navigationBarsPadding()
+    ) {
         Icon(
             painterResource(R.drawable.ic_voice), null,
             Modifier.size(32.dp).padding(4.dp).align(Alignment.CenterVertically),
             tint = MyTheme.colorScheme.icon
         )
         BasicTextField(
-            editText, { inputText -> editText = inputText },
+            textFieldValue, { inputText -> textFieldValue = inputText },
             Modifier
                 .weight(1f)
                 .padding(4.dp, 8.dp)
@@ -177,7 +200,12 @@ fun ChatBottomBar(onBombClick: () -> Unit) {
                 .clip(RoundedCornerShape(4.dp))
                 .background(MyTheme.colorScheme.textFieldBackground)
                 .padding(start = 8.dp, top = 10.dp, end = 8.dp),
-            cursorBrush = SolidColor(MyTheme.colorScheme.textPrimary)
+            cursorBrush = SolidColor(MyTheme.colorScheme.textPrimary),
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
+            keyboardActions = KeyboardActions(onSend = {
+                viewModel.sendMsg(textFieldValue.text, chat)
+                textFieldValue = TextFieldValue("")
+            })
         )
         Text(
             "\uD83D\uDCA3",
@@ -212,7 +240,9 @@ private fun MessageItemPreview() {
 @Preview
 @Composable
 private fun ChatBottomBarPreview() {
-    ChatBottomBar {}
+    val viewModel: HomeViewModel = viewModel()
+    val chat = Mock.chatList.firstOrNull() ?: return
+    ChatBottomBar(viewModel, chat) {}
 }
 
 @Preview

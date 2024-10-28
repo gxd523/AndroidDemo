@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.util.format
 import com.gxd.demo.compose.wechat.data.Chat
 import com.gxd.demo.compose.wechat.data.ChatMessage
 import com.gxd.demo.compose.wechat.data.User
@@ -34,6 +35,12 @@ class HomeViewModel : ViewModel() {
     }
 
     fun boom(chat: Chat) {
-        chat.messageList += ChatMessage(User.Me, "\uD83D\uDCA3", "15:10").apply { read = true }
+        sendMsg("\uD83D\uDCA3", chat)
+    }
+
+    fun sendMsg(newMsg: String, chat: Chat) {
+        val time = System.currentTimeMillis().format("hh:mm")
+        val newMessage = ChatMessage(User.Me, newMsg, time).apply { read = true }
+        chat.messageList.add(0, newMessage)
     }
 }

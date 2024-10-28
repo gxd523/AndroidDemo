@@ -53,10 +53,10 @@ private fun ChatItem(chat: Chat) {
             Modifier
                 .padding(8.dp)
                 .size(48.dp)
-                .unread(!(chat.messageList.lastOrNull()?.read ?: true), MyTheme.colorScheme.badge)
+                .unread(!(chat.messageList.firstOrNull()?.read ?: true), MyTheme.colorScheme.badge)
                 .clip(RoundedCornerShape(4.dp))
         )
-        val newestMessage = chat.messageList.lastOrNull() ?: return
+        val newestMessage = chat.messageList.firstOrNull() ?: return
         Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
             Text(chat.friend.name, fontSize = 17.sp, color = MyTheme.colorScheme.textPrimary)
             Text(newestMessage.text, fontSize = 14.sp, color = MyTheme.colorScheme.textSecondary)

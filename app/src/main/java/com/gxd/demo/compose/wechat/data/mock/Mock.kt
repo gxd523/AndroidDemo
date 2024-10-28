@@ -46,7 +46,7 @@ object Mock {
             ChatMessage(User.Me, "双兔傍地走，安能辨我是雄雌？", "14:20"),
             ChatMessage(User("gaolaoshi", "高老师", R.drawable.avatar_gaolaoshi), "床前明月光，疑是地上霜。", "14:20"),
             ChatMessage(User.Me, "吃饭吧？", "14:20")
-        )
+        ).reversed()
     }
 }
 
