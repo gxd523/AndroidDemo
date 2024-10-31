@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gxd.demo.compose.R
-import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.ui.theme.WechatTheme
 import com.gxd.demo.compose.wechat.data.User
 
 @Composable
@@ -44,27 +44,27 @@ fun MePage() {
             R.drawable.ic_stickers to "表情"
         )
     }
-    Box(Modifier.fillMaxSize().background(MyTheme.colorScheme.background)) {
-        LazyColumn(Modifier.background(MyTheme.colorScheme.listItem).fillMaxWidth()) {
+    Box(Modifier.fillMaxSize().background(WechatTheme.colorScheme.background)) {
+        LazyColumn(Modifier.background(WechatTheme.colorScheme.listItem).fillMaxWidth()) {
             item {
                 MeHeader()
                 MeItem(
                     R.drawable.ic_pay, "支付",
                     Modifier
-                        .background(MyTheme.colorScheme.background)
+                        .background(WechatTheme.colorScheme.background)
                         .padding(vertical = 8.dp)
-                        .background(MyTheme.colorScheme.listItem)
+                        .background(WechatTheme.colorScheme.listItem)
                 )
             }
             itemsIndexed(itemList) { index, item ->
                 MeItem(item.first, item.second)
                 if (index >= itemList.lastIndex) return@itemsIndexed
-                HorizontalDivider(Modifier.padding(start = 56.dp), color = MyTheme.colorScheme.divider, thickness = 0.8f.dp)
+                HorizontalDivider(Modifier.padding(start = 56.dp), color = WechatTheme.colorScheme.divider, thickness = 0.8f.dp)
             }
             item {
                 MeItem(
                     R.drawable.ic_settings, "设置",
-                    Modifier.background(MyTheme.colorScheme.background).padding(top = 8.dp).background(MyTheme.colorScheme.listItem)
+                    Modifier.background(WechatTheme.colorScheme.background).padding(top = 8.dp).background(WechatTheme.colorScheme.listItem)
                 )
             }
         }
@@ -84,21 +84,21 @@ fun MeItem(
             painterResource(icon), "title",
             Modifier.padding(12.dp, 8.dp, 8.dp, 8.dp).size(36.dp).padding(8.dp)
         )
-        Text(title, fontSize = 17.sp, lineHeight = 17.sp, color = MyTheme.colorScheme.textPrimary)
+        Text(title, fontSize = 17.sp, lineHeight = 17.sp, color = WechatTheme.colorScheme.textPrimary)
         badge?.invoke()
         Spacer(Modifier.weight(1f))
         endBadge?.invoke()
         Icon(
             painterResource(R.drawable.ic_arrow_more), contentDescription = "更多",
             Modifier.padding(0.dp, 0.dp, 12.dp, 0.dp).size(16.dp),
-            tint = MyTheme.colorScheme.more
+            tint = WechatTheme.colorScheme.more
         )
     }
 }
 
 @Composable
 fun MeHeader() {
-    Row(Modifier.background(MyTheme.colorScheme.listItem).fillMaxWidth().statusBarsPadding().height(224.dp)) {
+    Row(Modifier.background(WechatTheme.colorScheme.listItem).fillMaxWidth().statusBarsPadding().height(224.dp)) {
         Image(
             painterResource(id = R.drawable.avatar_rengwuxian), contentDescription = "Me",
             Modifier.align(Alignment.CenterVertically).padding(start = 24.dp).clip(RoundedCornerShape(6.dp)).size(64.dp)
@@ -109,33 +109,33 @@ fun MeHeader() {
                 Modifier.padding(top = 64.dp),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = MyTheme.colorScheme.textPrimary
+                color = WechatTheme.colorScheme.textPrimary
             )
             Text(
                 "微信号：${User.Me.id}",
                 Modifier.padding(top = 16.dp),
                 fontSize = 14.sp,
-                color = MyTheme.colorScheme.textSecondary
+                color = WechatTheme.colorScheme.textSecondary
             )
             Text(
                 "+ 状态",
                 Modifier
                     .padding(top = 16.dp)
-                    .border(1.dp, MyTheme.colorScheme.onBackground, RoundedCornerShape(50))
+                    .border(1.dp, WechatTheme.colorScheme.onBackground, RoundedCornerShape(50))
                     .padding(8.dp, 2.dp),
                 fontSize = 16.sp,
-                color = MyTheme.colorScheme.onBackground
+                color = WechatTheme.colorScheme.onBackground
             )
         }
         Icon(
             painterResource(id = R.drawable.ic_qrcode), contentDescription = "qrcode",
             Modifier.align(Alignment.CenterVertically).padding(end = 20.dp).size(14.dp),
-            tint = MyTheme.colorScheme.onBackground
+            tint = WechatTheme.colorScheme.onBackground
         )
         Icon(
             painterResource(R.drawable.ic_arrow_more), contentDescription = "更多",
             Modifier.align(Alignment.CenterVertically).padding(end = 16.dp).size(16.dp),
-            tint = MyTheme.colorScheme.more
+            tint = WechatTheme.colorScheme.more
         )
     }
 }

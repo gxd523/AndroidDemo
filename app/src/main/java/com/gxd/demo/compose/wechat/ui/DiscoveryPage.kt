@@ -20,28 +20,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gxd.demo.compose.R
-import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.ui.theme.WechatTheme
 
 @Composable
 fun DiscoveryPage() {
     Column(Modifier.fillMaxSize()) {
         TopBar("发现")
-        Box(Modifier.background(MyTheme.colorScheme.background).fillMaxSize()) {
-            Column(Modifier.background(MyTheme.colorScheme.listItem).fillMaxWidth()) {
+        Box(Modifier.background(WechatTheme.colorScheme.background).fillMaxSize()) {
+            Column(Modifier.background(WechatTheme.colorScheme.listItem).fillMaxWidth()) {
                 MeItem(R.drawable.ic_moments, "朋友圈", badge = {
                     Box(
                         Modifier
                             .padding(8.dp)
                             .clip(RoundedCornerShape(50))
                             .size(18.dp)
-                            .background(MyTheme.colorScheme.badge)
+                            .background(WechatTheme.colorScheme.badge)
                     ) {
                         Text(
                             "3",
                             Modifier.align(Alignment.Center),
                             fontSize = 12.sp,
                             lineHeight = 12.sp,
-                            color = MyTheme.colorScheme.onBadge
+                            color = WechatTheme.colorScheme.onBadge
                         )
                     }
                 }, endBadge = {
@@ -50,7 +50,7 @@ fun DiscoveryPage() {
                         Modifier
                             .padding(8.dp, 0.dp)
                             .size(32.dp)
-                            .unread(false, MyTheme.colorScheme.badge)
+                            .unread(false, WechatTheme.colorScheme.badge)
                             .clip(RoundedCornerShape(4.dp))
                     )
                 })
@@ -62,28 +62,28 @@ fun DiscoveryPage() {
                             painterResource(R.drawable.avatar_diuwuxian), "avatar", Modifier
                                 .padding(8.dp, 0.dp)
                                 .size(32.dp)
-                                .unread(false, MyTheme.colorScheme.badge)
+                                .unread(false, WechatTheme.colorScheme.badge)
                                 .clip(RoundedCornerShape(4.dp))
                         )
                         Text(
                             "赞过", Modifier.padding(0.dp, 0.dp, 4.dp, 0.dp),
-                            fontSize = 14.sp, color = MyTheme.colorScheme.textSecondary
+                            fontSize = 14.sp, color = WechatTheme.colorScheme.textSecondary
                         )
                     },
                     modifier = Modifier
-                        .background(MyTheme.colorScheme.background)
+                        .background(WechatTheme.colorScheme.background)
                         .padding(top = 8.dp)
-                        .background(MyTheme.colorScheme.listItem)
+                        .background(WechatTheme.colorScheme.listItem)
                 )
                 MeItem(
                     R.drawable.ic_ilook, "看一看",
-                    Modifier.background(MyTheme.colorScheme.background).padding(top = 8.dp).background(MyTheme.colorScheme.listItem)
+                    Modifier.background(WechatTheme.colorScheme.background).padding(top = 8.dp).background(WechatTheme.colorScheme.listItem)
                 )
-                HorizontalDivider(Modifier.padding(start = 56.dp), color = MyTheme.colorScheme.divider, thickness = 0.8f.dp)
+                HorizontalDivider(Modifier.padding(start = 56.dp), color = WechatTheme.colorScheme.divider, thickness = 0.8f.dp)
                 MeItem(R.drawable.ic_isearch, "搜一搜")
                 MeItem(
                     R.drawable.ic_nearby, "直播和附近",
-                    Modifier.background(MyTheme.colorScheme.background).padding(top = 8.dp).background(MyTheme.colorScheme.listItem)
+                    Modifier.background(WechatTheme.colorScheme.background).padding(top = 8.dp).background(WechatTheme.colorScheme.listItem)
                 )
             }
         }

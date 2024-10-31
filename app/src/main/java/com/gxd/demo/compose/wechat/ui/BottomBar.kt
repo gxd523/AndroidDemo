@@ -23,11 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gxd.demo.compose.R
-import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.ui.theme.WechatTheme
 
 @Composable
 fun BottomBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    Row(Modifier.background(MyTheme.colorScheme.bottomBar).navigationBarsPadding()) {
+    Row(Modifier.background(WechatTheme.colorScheme.bottomBar).navigationBarsPadding()) {
         listOf(
             R.drawable.ic_chat_outlined to R.drawable.ic_chat_filled to "聊天",
             R.drawable.ic_contacts_outlined to R.drawable.ic_contacts_filled to "通讯录",
@@ -36,7 +36,7 @@ fun BottomBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
         ).mapIndexed { index, (iconIdPair, title) ->
             val isSelected = selectedItem == index
             val iconId = if (isSelected) iconIdPair.second else iconIdPair.first
-            val tintColor = if (isSelected) MyTheme.colorScheme.iconCurrent else MyTheme.colorScheme.icon
+            val tintColor = if (isSelected) WechatTheme.colorScheme.iconCurrent else WechatTheme.colorScheme.icon
             TabItem(iconId, title, tintColor, Modifier.weight(1f).clickable { onItemSelected(index) })
         }
     }
@@ -53,13 +53,13 @@ fun TabItem(@DrawableRes iconId: Int, title: String, tint: Color, modifier: Modi
 @Preview(showBackground = true)
 @Composable
 private fun TabItemPreview() {
-    TabItem(iconId = R.drawable.ic_chat_outlined, title = "聊天", tint = MyTheme.colorScheme.icon)
+    TabItem(iconId = R.drawable.ic_chat_outlined, title = "聊天", tint = WechatTheme.colorScheme.icon)
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun BottomBarPreview() {
-    MyTheme(MyTheme.Theme.Dark) {
+    WechatTheme(WechatTheme.Theme.Dark) {
         var selectedTab by remember { mutableIntStateOf(0) }
         BottomBar(selectedTab) { selectedTab = it }
     }

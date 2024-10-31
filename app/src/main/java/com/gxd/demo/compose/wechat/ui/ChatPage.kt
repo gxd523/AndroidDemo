@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gxd.demo.compose.R
-import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.ui.theme.WechatTheme
 import com.gxd.demo.compose.wechat.HomeViewModel
 import com.gxd.demo.compose.wechat.data.Chat
 import com.gxd.demo.compose.wechat.data.ChatMessage
@@ -73,7 +73,7 @@ fun ChatPage() {
     Column(
         Modifier
             .offsetPercent(offsetPercentX)
-            .background(MyTheme.colorScheme.background)
+            .background(WechatTheme.colorScheme.background)
             .fillMaxSize()
             .imePadding()
     ) {
@@ -125,9 +125,9 @@ fun MessageItem(message: ChatMessage, shakingTime: Int, shakingLevel: Int) {
     Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start) {
         if (!isMe) Avatar(message, shakingAngleBubble)
 
-        val bubbleColor = if (isMe) MyTheme.colorScheme.bubbleMe else MyTheme.colorScheme.bubbleOthers
+        val bubbleColor = if (isMe) WechatTheme.colorScheme.bubbleMe else WechatTheme.colorScheme.bubbleOthers
         Text(
-            message.text, color = if (isMe) MyTheme.colorScheme.textPrimaryMe else MyTheme.colorScheme.textPrimary,
+            message.text, color = if (isMe) WechatTheme.colorScheme.textPrimaryMe else WechatTheme.colorScheme.textPrimary,
             modifier = Modifier
                 .graphicsLayer(
                     rotationZ = shakingAngleBubble.value,
@@ -181,14 +181,14 @@ fun ChatBottomBar(viewModel: HomeViewModel, chat: Chat, onBombClick: () -> Unit)
     Row(
         Modifier
             .fillMaxWidth()
-            .background(MyTheme.colorScheme.bottomBar)
+            .background(WechatTheme.colorScheme.bottomBar)
             .padding(4.dp, 0.dp)
             .navigationBarsPadding()
     ) {
         Icon(
             painterResource(R.drawable.ic_voice), null,
             Modifier.size(32.dp).padding(4.dp).align(Alignment.CenterVertically),
-            tint = MyTheme.colorScheme.icon
+            tint = WechatTheme.colorScheme.icon
         )
         BasicTextField(
             textFieldValue, { inputText -> textFieldValue = inputText },
@@ -198,9 +198,9 @@ fun ChatBottomBar(viewModel: HomeViewModel, chat: Chat, onBombClick: () -> Unit)
                 .height(40.dp)
                 .align(Alignment.CenterVertically)
                 .clip(RoundedCornerShape(4.dp))
-                .background(MyTheme.colorScheme.textFieldBackground)
+                .background(WechatTheme.colorScheme.textFieldBackground)
                 .padding(start = 8.dp, top = 10.dp, end = 8.dp),
-            cursorBrush = SolidColor(MyTheme.colorScheme.textPrimary),
+            cursorBrush = SolidColor(WechatTheme.colorScheme.textPrimary),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = {
                 viewModel.sendMsg(textFieldValue.text, chat)
@@ -215,7 +215,7 @@ fun ChatBottomBar(viewModel: HomeViewModel, chat: Chat, onBombClick: () -> Unit)
         Icon(
             painterResource(R.drawable.ic_add), null,
             Modifier.size(32.dp).padding(4.dp).align(Alignment.CenterVertically),
-            tint = MyTheme.colorScheme.icon
+            tint = WechatTheme.colorScheme.icon
         )
     }
 }

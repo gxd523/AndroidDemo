@@ -10,13 +10,13 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun MyTheme(theme: MyTheme.Theme = MyTheme.Theme.Light, content: @Composable () -> Unit) {
+fun WechatTheme(theme: WechatTheme.Theme = WechatTheme.Theme.Light, content: @Composable () -> Unit) {
     val colorScheme = when (theme) {
-        MyTheme.Theme.Light -> LightColorScheme
-        MyTheme.Theme.Dark -> DarkColorScheme
-        MyTheme.Theme.NewYear -> NewYearColorScheme
+        WechatTheme.Theme.Light -> LightColorScheme
+        WechatTheme.Theme.Dark -> DarkColorScheme
+        WechatTheme.Theme.Red -> RedColorScheme
     }
-    val animatedColorScheme = CustomColorScheme(
+    val animatedColorScheme = ColorScheme(
         bottomBar = animateColorAsStateValue(colorScheme.bottomBar),
         background = animateColorAsStateValue(colorScheme.background),
         listItem = animateColorAsStateValue(colorScheme.listItem),
@@ -37,30 +37,28 @@ fun MyTheme(theme: MyTheme.Theme = MyTheme.Theme.Light, content: @Composable () 
         chatPageBgAlpha = animateFloatAsState(colorScheme.chatPageBgAlpha, TweenSpec(600), label = "").value,
     )
 
-    CompositionLocalProvider(LocalCustomColorScheme provides animatedColorScheme) {
-        MaterialTheme(content = content)
-    }
+    CompositionLocalProvider(LocalColorScheme provides animatedColorScheme) { MaterialTheme(content = content) }
 }
+
+object WechatTheme {
+    val colorScheme: ColorScheme
+        @Composable
+        get() = LocalColorScheme.current
+
+    enum class Theme { Light, Dark, Red }
+}
+
+/**
+ * 顶级变量首字母大写
+ * 「CompositionLocal」变量以「local」开头
+ *
+ */
+private val LocalColorScheme = staticCompositionLocalOf { LightColorScheme }
 
 @Composable
 private fun animateColorAsStateValue(color: Color) = animateColorAsState(color, TweenSpec(600), label = "").value
 
-object MyTheme {
-    val colorScheme: CustomColorScheme
-        @Composable
-        get() = LocalCustomColorScheme.current
-
-    enum class Theme {
-        Light, Dark, NewYear
-    }
-}
-
-/**
- * top-level变量首字母大写
- */
-private val LocalCustomColorScheme = staticCompositionLocalOf { LightColorScheme }
-
-private val LightColorScheme = CustomColorScheme(
+private val LightColorScheme = ColorScheme(
     bottomBar = white1,
     background = white2,
     listItem = white,
@@ -80,7 +78,7 @@ private val LightColorScheme = CustomColorScheme(
     more = grey4,
     chatPageBgAlpha = 0f,
 )
-private val DarkColorScheme = CustomColorScheme(
+private val DarkColorScheme = ColorScheme(
     bottomBar = black1,
     background = black2,
     listItem = black3,
@@ -100,7 +98,7 @@ private val DarkColorScheme = CustomColorScheme(
     more = grey5,
     chatPageBgAlpha = 0f,
 )
-private val NewYearColorScheme = CustomColorScheme(
+private val RedColorScheme = ColorScheme(
     bottomBar = red4,
     background = red5,
     listItem = red2,
@@ -121,7 +119,7 @@ private val NewYearColorScheme = CustomColorScheme(
     chatPageBgAlpha = 1f,
 )
 
-data class CustomColorScheme(
+data class ColorScheme(
     val bottomBar: Color,
     val background: Color,
     val listItem: Color,

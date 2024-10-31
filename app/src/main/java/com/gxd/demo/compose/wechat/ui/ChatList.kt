@@ -25,20 +25,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.ui.theme.WechatTheme
 import com.gxd.demo.compose.wechat.HomeViewModel
 import com.gxd.demo.compose.wechat.data.Chat
 import com.gxd.demo.compose.wechat.data.mock.Mock
 
 @Composable
 fun ChatList(chatList: List<Chat>) {
-    Column(Modifier.fillMaxSize().background(MyTheme.colorScheme.background)) {
+    Column(Modifier.fillMaxSize().background(WechatTheme.colorScheme.background)) {
         TopBar("微信")
-        LazyColumn(Modifier.background(MyTheme.colorScheme.listItem)) {
+        LazyColumn(Modifier.background(WechatTheme.colorScheme.listItem)) {
             itemsIndexed(chatList) { index, chat ->
                 ChatItem(chat)
                 if (index >= chatList.lastIndex) return@itemsIndexed
-                HorizontalDivider(Modifier.padding(start = 68.dp), 0.8f.dp, MyTheme.colorScheme.divider)
+                HorizontalDivider(Modifier.padding(start = 68.dp), 0.8f.dp, WechatTheme.colorScheme.divider)
             }
         }
     }
@@ -53,18 +53,18 @@ private fun ChatItem(chat: Chat) {
             Modifier
                 .padding(8.dp)
                 .size(48.dp)
-                .unread(!(chat.messageList.firstOrNull()?.read ?: true), MyTheme.colorScheme.badge)
+                .unread(!(chat.messageList.firstOrNull()?.read ?: true), WechatTheme.colorScheme.badge)
                 .clip(RoundedCornerShape(4.dp))
         )
         val newestMessage = chat.messageList.firstOrNull() ?: return
         Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
-            Text(chat.friend.name, fontSize = 17.sp, color = MyTheme.colorScheme.textPrimary)
-            Text(newestMessage.text, fontSize = 14.sp, color = MyTheme.colorScheme.textSecondary)
+            Text(chat.friend.name, fontSize = 17.sp, color = WechatTheme.colorScheme.textPrimary)
+            Text(newestMessage.text, fontSize = 14.sp, color = WechatTheme.colorScheme.textSecondary)
         }
         Text(
             newestMessage.time,
             Modifier.padding(8.dp, 8.dp, 12.dp, 8.dp),
-            fontSize = 11.sp, color = MyTheme.colorScheme.textSecondary
+            fontSize = 11.sp, color = WechatTheme.colorScheme.textSecondary
         )
     }
 }

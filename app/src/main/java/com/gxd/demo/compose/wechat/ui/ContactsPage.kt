@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gxd.demo.compose.R
-import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.ui.theme.WechatTheme
 import com.gxd.demo.compose.wechat.HomeViewModel
 import com.gxd.demo.compose.wechat.data.User
 
@@ -43,25 +43,25 @@ fun ContactsPage() {
     }
     Column(Modifier.fillMaxSize()) {
         TopBar("通讯录")
-        Box(Modifier.background(MyTheme.colorScheme.background).fillMaxSize()) {
-            LazyColumn(Modifier.background(MyTheme.colorScheme.listItem).fillMaxWidth()) {
+        Box(Modifier.background(WechatTheme.colorScheme.background).fillMaxSize()) {
+            LazyColumn(Modifier.background(WechatTheme.colorScheme.listItem).fillMaxWidth()) {
                 itemsIndexed(itemList) { index, contact ->
                     ContactListItem(contact)
                     if (index >= itemList.lastIndex) return@itemsIndexed
-                    HorizontalDivider(Modifier.padding(start = 56.dp), color = MyTheme.colorScheme.divider, thickness = 0.8f.dp)
+                    HorizontalDivider(Modifier.padding(start = 56.dp), color = WechatTheme.colorScheme.divider, thickness = 0.8f.dp)
                 }
                 item {
                     Text(
                         "朋友",
-                        Modifier.background(MyTheme.colorScheme.background).fillMaxWidth().padding(12.dp, 8.dp),
+                        Modifier.background(WechatTheme.colorScheme.background).fillMaxWidth().padding(12.dp, 8.dp),
                         fontSize = 14.sp,
-                        color = MyTheme.colorScheme.onBackground
+                        color = WechatTheme.colorScheme.onBackground
                     )
                 }
                 itemsIndexed(viewModel.contactList) { index, contact ->
                     ContactListItem(contact)
                     if (index >= itemList.lastIndex) return@itemsIndexed
-                    HorizontalDivider(Modifier.padding(start = 56.dp), color = MyTheme.colorScheme.divider, thickness = 0.8f.dp)
+                    HorizontalDivider(Modifier.padding(start = 56.dp), color = WechatTheme.colorScheme.divider, thickness = 0.8f.dp)
                 }
             }
         }
@@ -79,7 +79,7 @@ fun ContactListItem(contact: User) {
             contact.name,
             Modifier.weight(1f).align(Alignment.CenterVertically),
             fontSize = 17.sp,
-            color = MyTheme.colorScheme.textPrimary
+            color = WechatTheme.colorScheme.textPrimary
         )
     }
 }

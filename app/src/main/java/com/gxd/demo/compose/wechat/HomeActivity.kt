@@ -9,7 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.core.view.WindowCompat
-import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.ui.theme.WechatTheme
 import com.gxd.demo.compose.wechat.ui.ChatPage
 import com.gxd.demo.compose.wechat.ui.HomePage
 
@@ -23,8 +23,8 @@ class HomeActivity : ComponentActivity() {
         val insetsController = WindowCompat.getInsetsController(window, window.decorView)
 
         setContent {
-            MyTheme(viewModel.theme) {
-                val isForegroundDark = viewModel.theme == MyTheme.Theme.Light
+            WechatTheme(viewModel.theme) {
+                val isForegroundDark = viewModel.theme == WechatTheme.Theme.Light
                 insetsController.isAppearanceLightStatusBars = isForegroundDark
                 insetsController.isAppearanceLightNavigationBars = isForegroundDark
                 Box {

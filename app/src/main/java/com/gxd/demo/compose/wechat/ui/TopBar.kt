@@ -21,19 +21,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gxd.demo.compose.R
-import com.gxd.demo.compose.ui.theme.MyTheme
+import com.gxd.demo.compose.ui.theme.WechatTheme
 import com.gxd.demo.compose.wechat.HomeViewModel
 
 @Composable
 fun TopBar(title: String? = null, onBackClick: (() -> Unit)? = null) {
-    Row(Modifier.fillMaxWidth().background(MyTheme.colorScheme.background).statusBarsPadding().height(48.dp)) {
+    Row(Modifier.fillMaxWidth().background(WechatTheme.colorScheme.background).statusBarsPadding().height(48.dp)) {
         if (onBackClick == null) {
             Spacer(Modifier.size(36.dp))
         } else {
             Icon(
                 painterResource(R.drawable.ic_back), "返回",
                 Modifier.size(36.dp).align(Alignment.CenterVertically).clickable(onClick = onBackClick).padding(8.dp),
-                tint = MyTheme.colorScheme.icon
+                tint = WechatTheme.colorScheme.icon
             )
         }
         Spacer(Modifier.weight(1f))
@@ -42,7 +42,7 @@ fun TopBar(title: String? = null, onBackClick: (() -> Unit)? = null) {
                 title,
                 Modifier.align(Alignment.CenterVertically),
                 fontSize = 15.sp,
-                color = MyTheme.colorScheme.textPrimary,
+                color = WechatTheme.colorScheme.textPrimary,
                 fontWeight = FontWeight.W600
             )
             Spacer(Modifier.weight(1f))
@@ -55,13 +55,13 @@ fun TopBar(title: String? = null, onBackClick: (() -> Unit)? = null) {
                 .align(Alignment.CenterVertically)
                 .clickable {
                     viewModel.theme = when (viewModel.theme) {
-                        MyTheme.Theme.Light -> MyTheme.Theme.Dark
-                        MyTheme.Theme.Dark -> MyTheme.Theme.NewYear
-                        MyTheme.Theme.NewYear -> MyTheme.Theme.Light
+                        WechatTheme.Theme.Light -> WechatTheme.Theme.Dark
+                        WechatTheme.Theme.Dark -> WechatTheme.Theme.Red
+                        WechatTheme.Theme.Red -> WechatTheme.Theme.Light
                     }
                 }
                 .padding(8.dp),
-            tint = MyTheme.colorScheme.icon
+            tint = WechatTheme.colorScheme.icon
         )
     }
 }
