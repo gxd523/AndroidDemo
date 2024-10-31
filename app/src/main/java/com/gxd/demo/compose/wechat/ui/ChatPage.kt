@@ -7,6 +7,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -39,6 +40,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
@@ -176,8 +179,12 @@ fun Avatar(message: ChatMessage, shakingAngleBubble: Animatable<Float, Animation
 
 @Composable
 fun ChatBottomBar(viewModel: HomeViewModel, chat: Chat, onBombClick: () -> Unit) {
+    val focusRequester = remember { FocusRequester() }
     var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
 //    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit) { focusRequester.freeFocus() }// 默认释放「TextField」的焦点
+
     Row(
         Modifier
             .fillMaxWidth()
@@ -199,7 +206,9 @@ fun ChatBottomBar(viewModel: HomeViewModel, chat: Chat, onBombClick: () -> Unit)
                 .align(Alignment.CenterVertically)
                 .clip(RoundedCornerShape(4.dp))
                 .background(WechatTheme.colorScheme.textFieldBackground)
-                .padding(start = 8.dp, top = 10.dp, end = 8.dp),
+                .padding(start = 8.dp, top = 10.dp, end = 8.dp)
+                .focusRequester(focusRequester)
+                .focusable(),
             cursorBrush = SolidColor(WechatTheme.colorScheme.textPrimary),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = {
