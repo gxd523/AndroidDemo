@@ -53,7 +53,7 @@ private fun ChatItem(chat: Chat) {
             Modifier
                 .padding(8.dp)
                 .size(48.dp)
-                .unread(!(chat.messageList.firstOrNull()?.read ?: true), WechatTheme.colorScheme.badge)
+                .unread(chat.messageList.firstOrNull()?.read == false, WechatTheme.colorScheme.badge)
                 .clip(RoundedCornerShape(4.dp))
         )
         val newestMessage = chat.messageList.firstOrNull() ?: return

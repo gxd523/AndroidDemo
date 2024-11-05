@@ -1,6 +1,5 @@
 package com.gxd.demo.compose.wechat.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import com.gxd.demo.compose.wechat.HomeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun HomePage() {
     val viewModel: HomeViewModel = viewModel()
     Column {

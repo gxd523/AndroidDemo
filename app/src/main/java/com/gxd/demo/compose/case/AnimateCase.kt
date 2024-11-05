@@ -3,7 +3,6 @@ package com.gxd.demo.compose.case
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationEndReason
@@ -13,9 +12,9 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -57,13 +56,13 @@ fun ReboundCase() {
 
     BoxWithConstraints {
         val offsetX = remember(animatableX.value) {
-            val maxOffsetWidth = maxWidth - 100.dp
+            val maxOffsetWidth = this.maxWidth - 100.dp
             var cacOffsetX = animatableX.value
             while (cacOffsetX > maxOffsetWidth * 2) cacOffsetX -= maxOffsetWidth * 2
             if (cacOffsetX < maxOffsetWidth) cacOffsetX else maxOffsetWidth * 2 - cacOffsetX
         }
         val offsetY = remember(animatableY.value) {
-            val maxOffsetHeight = maxHeight - 100.dp
+            val maxOffsetHeight = this.maxHeight - 100.dp
             var cacOffsetY = animatableY.value
             while (cacOffsetY > maxOffsetHeight * 2) cacOffsetY -= maxOffsetHeight * 2
             if (cacOffsetY < maxOffsetHeight) cacOffsetY else maxOffsetHeight * 2 - cacOffsetY
@@ -72,7 +71,7 @@ fun ReboundCase() {
 //        animatableY.updateBounds(0.dp, maxHeight - 100.dp)
 
         Box(Modifier.fillMaxSize()) {
-            Box(Modifier.size(100.dp).offset(offsetX, offsetY).background(Color.Green).clickable { toggle = !(toggle ?: false) })
+            Box(Modifier.size(100.dp).offset(offsetX, offsetY).background(Color.Green).clickable { toggle = toggle != true })
         }
     }
 
@@ -85,26 +84,25 @@ fun ReboundCase() {
             do {
                 val initialVelocity = result?.endState?.velocity?.times(-1) ?: 3000.dp
                 result = animatableX.animateDecay(initialVelocity, decay)
-            } while (result?.endReason == AnimationEndReason.BoundReached)
+            } while (result.endReason == AnimationEndReason.BoundReached)
         }
         launch {
             var result: AnimationResult<Dp, AnimationVector1D>? = null
             do {
                 val initialVelocity = result?.endState?.velocity?.times(-1) ?: 4000.dp
                 result = animatableY.animateDecay(initialVelocity, decay)
-            } while (result?.endReason == AnimationEndReason.BoundReached)
+            } while (result.endReason == AnimationEndReason.BoundReached)
         }
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Preview(showBackground = true)
 @Composable
 fun UpdateTransitionCase() {
     var targetState by remember { mutableStateOf(MyState.End) }
     val transitionState = remember { MutableTransitionState(MyState.Init) }
     transitionState.targetState = targetState
-    val transition = updateTransition(transitionState, label = "transitionA")
+    val transition = rememberTransition(transitionState, label = "transitionA")
     transition.AnimatedVisibility({ state -> state == MyState.End }) {
         Box(Modifier.size(50.dp).background(Color.Red))
     }
