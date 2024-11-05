@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,6 +47,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gxd.demo.compose.util.halfScreenHeight
+import com.gxd.demo.compose.util.screenSizePercent
 
 
 /**
@@ -97,8 +99,8 @@ fun SurfaceCase() {
 
 @Preview(showBackground = true)
 @Composable
-fun BoxWithConstraintsCase() {
-    BoxWithConstraints(Modifier.fillMaxWidth(), Alignment.Center) {
+fun BoxWithConstraintsCase(widthPercent: Int = 80) {
+    BoxWithConstraints(Modifier.screenSizePercent(widthPercent, 15), Alignment.Center) {
         if (this.maxWidth < 300.dp) Text("Small Screen") else Button(onClick = {}) { Text("Large Screen") }
     }
 }
@@ -107,7 +109,7 @@ fun BoxWithConstraintsCase() {
 @Preview
 @Composable
 fun TopAppBarCase() {
-    var selectedItem by remember { mutableStateOf(0) }
+    var selectedItem by remember { mutableIntStateOf(0) }
     val items = listOf("主页", "我喜欢", "设置")
     Scaffold(
         topBar = {
@@ -132,7 +134,8 @@ fun TopAppBarCase() {
                     }
                 }
             }
-        }
+        },
+        modifier = Modifier.halfScreenHeight(30)
     ) { innerPadding ->
         Box(Modifier.padding(innerPadding)) {
             Text("Main content goes here", Modifier.align(Alignment.Center))

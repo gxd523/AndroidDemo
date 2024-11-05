@@ -10,7 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -37,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.gxd.demo.compose.R
+import com.gxd.demo.compose.util.screenSizePercent
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -165,7 +165,10 @@ fun LookaheadScopeCase() {
         }
 
         var isColumn by remember { mutableStateOf(true) }
-        Box(Modifier.fillMaxSize().clickable { isColumn = !isColumn }, contentAlignment = Alignment.Center) {// 点击切换布局
+        Box(
+            Modifier.screenSizePercent(60, 30).clickable { isColumn = !isColumn },
+            Alignment.Center
+        ) {// 点击切换布局
             if (isColumn) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) { layoutContent() }
             } else {
