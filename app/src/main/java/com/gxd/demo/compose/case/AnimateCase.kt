@@ -51,8 +51,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun ReboundCase() {
     var toggle by remember { mutableStateOf<Boolean?>(null) }
-    val animatableX = remember { Animatable(0.dp, Dp.VectorConverter, label = "labelX") }
-    val animatableY = remember { Animatable(0.dp, Dp.VectorConverter, label = "labelY") }
+    val animatableX = remember {
+        Animatable(0.dp, Dp.VectorConverter, label = "labelX")
+    }
+    val animatableY = remember {
+        Animatable(0.dp, Dp.VectorConverter, label = "labelY")
+    }
 
     BoxWithConstraints {
         val offsetX = remember(animatableX.value) {
@@ -71,7 +75,13 @@ fun ReboundCase() {
 //        animatableY.updateBounds(0.dp, maxHeight - 100.dp)
 
         Box(Modifier.fillMaxSize()) {
-            Box(Modifier.size(100.dp).offset(offsetX, offsetY).background(Color.Green).clickable { toggle = toggle != true })
+            Box(
+                Modifier
+                    .size(100.dp)
+                    .offset(offsetX, offsetY)
+                    .background(Color.Green)
+                    .clickable { toggle = toggle != true }
+            )
         }
     }
 
@@ -135,7 +145,13 @@ fun UpdateTransitionCase() {
         }
     }
     Box(Modifier.fillMaxSize()) {
-        Box(Modifier.size(100.dp).offset(offsetX).background(bgColor).clickable { targetState = targetState.next() })
+        Box(
+            Modifier
+                .size(100.dp)
+                .offset(offsetX)
+                .background(bgColor)
+                .clickable { targetState = targetState.next() }
+        )
     }
 }
 
@@ -155,16 +171,12 @@ fun AnimateVisibilityCase() {
     Row {
         var toggle by remember { mutableStateOf(true) }
         Button(modifier = Modifier.align(Alignment.CenterVertically), onClick = { toggle = !toggle }) { Text("切换") }
-        AnimatedVisibility(
-            toggle,
-            enter = scaleIn(
-                tween(2_000), transformOrigin = TransformOrigin(1f, 1f),
-            ),
-            exit = shrinkOut(
-                tween(2_000), shrinkTowards = Alignment.Center, clip = false,
-                targetSize = { IntSize(it.width / 2, it.height / 2) }
-            )
-        ) {
+        val transformOrigin = TransformOrigin(1f, 1f)
+        val enter = scaleIn(tween(2_000), transformOrigin = transformOrigin)
+        val targetSize: (IntSize) -> IntSize = { IntSize(it.width / 2, it.height / 2) }
+        val animationSpec = tween<IntSize>(2_000)
+        val exit = shrinkOut(animationSpec, Alignment.Center, false, targetSize)
+        AnimatedVisibility(toggle, enter = enter, exit = exit) {
             Box(Modifier.size(100.dp).background(Color.Red))
         }
     }
@@ -196,8 +208,17 @@ fun AnimatedContentCase() {
         var targetState by remember { mutableStateOf(true) }
         AnimatedContent(targetState, transitionSpec = {
             when (targetState) {
-                true -> fadeIn(tween(1_000)) togetherWith fadeOut(tween(2_000))
-                false -> fadeIn(tween(3_000)) togetherWith fadeOut(tween(4_000))
+                true -> {
+                    val fadeInTweenSpec = tween<Float>(1_000)
+                    val fadeOutTweenSpec = tween<Float>(2_000)
+                    fadeIn(fadeInTweenSpec) togetherWith fadeOut(fadeOutTweenSpec)
+                }
+
+                false -> {
+                    val fadeInTweenSpec = tween<Float>(3_000)
+                    val fadeOutTweenSpec = tween<Float>(4_000)
+                    fadeIn(fadeInTweenSpec) togetherWith fadeOut(fadeOutTweenSpec)
+                }
             }
         }, label = "animatedContent") { state ->
             when (state) {

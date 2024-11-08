@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,10 +44,12 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -264,4 +267,35 @@ fun BasicTextFieldCase() {
             }
         }
     )
+}
+
+/**
+ * 滑动删除
+ */
+@Preview
+@Composable
+fun SwipeToDismissCase() {
+    val state = rememberSwipeToDismissBoxState()
+    val backgroundContent: @Composable RowScope.() -> Unit = {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .background(Color.Red),
+            Alignment.Center
+        ) {
+            Text("Delete", color = Color.White)
+        }
+    }
+    SwipeToDismissBox(state, backgroundContent) {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .background(Color.LightGray),
+            Alignment.Center
+        ) {
+            Text("Swipe to dismiss", color = Color.Black)
+        }
+    }
 }
