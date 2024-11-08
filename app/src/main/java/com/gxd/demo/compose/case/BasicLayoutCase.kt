@@ -47,7 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gxd.demo.compose.util.halfScreenHeight
+import com.gxd.demo.compose.util.screenHeightPercent
 import com.gxd.demo.compose.util.screenSizePercent
 
 
@@ -135,7 +135,7 @@ fun TopAppBarCase() {
                 }
             }
         },
-        modifier = Modifier.halfScreenHeight(30)
+        modifier = Modifier.screenHeightPercent(30)
     ) { innerPadding ->
         Box(Modifier.padding(innerPadding)) {
             Text("Main content goes here", Modifier.align(Alignment.Center))
