@@ -8,10 +8,17 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationEndReason
 import androidx.compose.animation.core.AnimationResult
 import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -35,19 +42,127 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.gxd.demo.compose.util.screenHeightPercent
 import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.random.Random
 
-@Preview
+/**
+ * 随机生成一个大于「min」小于「max」且相比之前的值变化超过30%的新值
+ */
+private fun Dp.coerceInNewRandomDp(min: Dp = 30.dp, max: Dp = 200.dp): Dp {
+    val random = Random.nextInt(max.value.toInt() / 30) * 30f
+    val newValue = random.coerceIn(min.value, max.value)
+    return if (abs(newValue - this.value) / this.value < 0.3f) this.coerceInNewRandomDp(min, max) else Dp(newValue)
+}
+
+/**
+ * animateAsState动画示例
+ */
+@Preview(showBackground = true)
+@Composable
+fun AnimateAsStateCase() {
+    var size by remember { mutableStateOf(50.dp) }
+    val animationSpec = remember { tween<Dp>(500, 500) }
+    val sizeAnimate by animateDpAsState(size, animationSpec, "size") // 不用「remember」包裹
+    Box(Modifier.screenHeightPercent(50), Alignment.Center) {
+        Box(
+            Modifier
+                .size(sizeAnimate)
+                .background(Color.Red)
+                .clickable { size = size.coerceInNewRandomDp() }
+        )
+    }
+}
+
+/**
+ * Animatable动画示例
+ */
+@Preview(showBackground = true)
+@Composable
+fun AnimatableCase(initialValue: Dp = 50.dp) {
+    val sizeAnimatable = remember { Animatable(initialValue, Dp.VectorConverter) }
+    val scope = rememberCoroutineScope()
+
+    Box(Modifier.screenHeightPercent(50), Alignment.Center) {
+        Box(Modifier.size(sizeAnimatable.value).background(Color.Red).clickable {
+            scope.launch {
+                val targetSize = sizeAnimatable.value.coerceInNewRandomDp()
+                sizeAnimatable.animateTo(targetSize)
+            }
+        })
+    }
+}
+
+/**
+ * AnimationSpec示例
+ * 自定义Easing：Easing {...}
+ * 三姐贝塞尔曲线：CubicBezierEasing(.75f, 0f, .09f, 1f)
+ */
+@Preview(showBackground = true)
+@Composable
+fun AnimationSpecCase(boxSize: Dp = 50.dp, easing: Easing = CubicBezierEasing(.75f, 0f, .09f, 1f)) {
+    var offsetX by remember { mutableStateOf(0.dp) }
+    val animationSpec = tween<Dp>(1_000, easing = easing)
+    val offsetAnimate by animateDpAsState(offsetX, animationSpec, "animationSpec")
+    val configuration = LocalConfiguration.current
+    Box(Modifier.screenHeightPercent()) {
+        Box(
+            Modifier
+                .size(boxSize)
+                .offset(offsetAnimate, offsetAnimate)
+                .background(Color.Red)
+                .clickable { offsetX = Dp((configuration.screenWidthDp - boxSize.value).toFloat()) }
+        )
+    }
+}
+
+/**
+ * 关键帧动画示例
+ */
+@Preview(showBackground = true)
+@Composable
+fun KeyframesSpecCase(boxSize: Dp = 50.dp, initialValue: Dp = 0.dp, durationMillis: Int = 500) {
+    val configuration = LocalConfiguration.current
+    val targetValue = Dp((configuration.screenWidthDp - boxSize.value).toFloat())
+
+    val animationSpec = keyframes {
+        this.durationMillis = durationMillis
+        initialValue at 0 using LinearEasing// 注意这里
+        targetValue / 5 at durationMillis / 10 using FastOutSlowInEasing
+        targetValue / 2 at durationMillis / 10 * 9 using LinearOutSlowInEasing
+        targetValue at durationMillis
+    }
+    val animatable = remember { Animatable(initialValue, Dp.VectorConverter) }
+
+    val scope = rememberCoroutineScope()
+
+    Box(Modifier.screenHeightPercent()) {
+        Box(
+            Modifier
+                .size(boxSize)
+                .offset(animatable.value, animatable.value)
+                .background(Color.Red)
+                .clickable { scope.launch { animatable.animateTo(targetValue, animationSpec) } }
+        )
+    }
+}
+
+/**
+ * 反弹动画示例
+ */
+@Preview(showBackground = true)
 @Composable
 fun ReboundCase() {
     var toggle by remember { mutableStateOf<Boolean?>(null) }
@@ -165,7 +280,7 @@ enum class MyState {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun AnimateVisibilityCase() {
     Row {
@@ -182,7 +297,7 @@ fun AnimateVisibilityCase() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun CrossfadeCase() {
     Column {
@@ -201,7 +316,7 @@ fun CrossfadeCase() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun AnimatedContentCase() {
     Column {

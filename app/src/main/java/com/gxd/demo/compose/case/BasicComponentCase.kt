@@ -75,7 +75,7 @@ import coil.decode.SvgDecoder
 import com.skydoves.landscapist.coil.CoilImage
 import kotlin.math.roundToInt
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun AlertDialogCase() {
     var toggle by remember { mutableStateOf(false) }
@@ -91,7 +91,7 @@ fun AlertDialogCase() {
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DialogCase() {
     var toggle by remember { mutableStateOf(false) }
@@ -112,7 +112,7 @@ fun DialogCase() {
 /**
  * MutableInteractionSource用法待研究，应该可以获取按键状态
  */
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun ButtonCase() {
     val interactionSource = remember { MutableInteractionSource() }
