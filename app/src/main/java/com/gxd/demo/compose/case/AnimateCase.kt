@@ -14,6 +14,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateDpAsState
@@ -156,6 +157,30 @@ fun KeyframesSpecCase(boxSize: Dp = 50.dp, initialValue: Dp = 0.dp, durationMill
                 .background(Color.Red)
                 .clickable { scope.launch { animatable.animateTo(targetValue, animationSpec) } }
         )
+    }
+}
+
+/**
+ * 弹簧动画示例
+ */
+@Preview(showBackground = true)
+@Composable
+fun SpringSpecCase(initialValue: Dp = 0.dp) {
+    val offsetYAnimatable = remember { Animatable(initialValue, Dp.VectorConverter) }
+    val scope = rememberCoroutineScope()
+    val configuration = LocalConfiguration.current
+    val animationSpec = remember {
+        spring<Dp>(Spring.DampingRatioHighBouncy, Spring.StiffnessHigh)
+    }
+    val boxSize = 50.dp
+    val targetValue = remember(configuration.screenWidthDp) {
+        Dp((configuration.screenWidthDp - boxSize.value).toFloat())
+    }
+
+    Box(Modifier.screenHeightPercent(50), Alignment.TopCenter) {
+        Box(Modifier.size(boxSize).offset(0.dp, offsetYAnimatable.value).background(Color.Red).clickable {
+            scope.launch { offsetYAnimatable.animateTo(targetValue, animationSpec) }
+        })
     }
 }
 
