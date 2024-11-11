@@ -49,7 +49,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
 
     implementation(libs.coil.compose)
-    implementation(libs.coil.landscapist)
+    implementation(libs.coil.okhttp)
     implementation(libs.coil.svg)
 
     implementation(libs.coroutines.android)

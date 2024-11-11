@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -70,9 +69,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import coil.ImageLoader
-import coil.decode.SvgDecoder
-import com.skydoves.landscapist.coil.CoilImage
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.svg.SvgDecoder
+import com.gxd.demo.compose.util.screenSizePercent
 import kotlin.math.roundToInt
 
 @Preview(showBackground = true)
@@ -153,7 +153,7 @@ fun CardCase() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun FloatingActionButtonCase() {
     FloatingActionButton(shape = CircleShape, containerColor = Color.Black, onClick = { /*TODO*/ }) {
@@ -182,27 +182,27 @@ fun IconButtonCase() {
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun ImageCase() {
+fun ImageCase(imageUrl: String = "https://coil-kt.github.io/coil/images/coil_logo_black.svg") {
     var toggle by remember { mutableStateOf(false) }
     val sizeAnim by animateDpAsState(if (toggle) 450.dp else 50.dp, label = "")
-
     val context = LocalContext.current
-    val imageLoader = remember {// 加载svg需要配置imageLoader
-        ImageLoader.Builder(context).components { add(SvgDecoder.Factory()) }.build()
+    val imageRequest = remember(imageUrl) {
+        ImageRequest.Builder(context)
+            .data(imageUrl)
+            .decoderFactory(SvgDecoder.Factory())
+            .build()
     }
 
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CoilImage(
-            "https://coil-kt.github.io/coil/images/coil_logo_black.svg",
-            Modifier
-                .size(sizeAnim)
-                .clickable(
-                    onClick = { toggle = !toggle },
-                    indication = null,// 去除水波纹效果
-                    interactionSource = remember { MutableInteractionSource() }
-                ),
-            imageLoader = imageLoader
+    Box(Modifier.screenSizePercent(50, 15), Alignment.Center) {
+        AsyncImage(imageRequest, null, modifier = Modifier
+            .size(sizeAnim)
+            .clickable(
+                onClick = { toggle = !toggle },
+                indication = null,// 去除水波纹效果
+                interactionSource = remember { MutableInteractionSource() }
+            )
         )
     }
 }
