@@ -14,6 +14,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateDp
@@ -21,6 +22,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberTransition
+import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -168,11 +170,11 @@ fun KeyframesSpecCase(boxSize: Dp = 50.dp, initialValue: Dp = 0.dp, durationMill
 fun SpringSpecCase(initialValue: Dp = 0.dp) {
     val offsetYAnimatable = remember { Animatable(initialValue, Dp.VectorConverter) }
     val scope = rememberCoroutineScope()
-    val configuration = LocalConfiguration.current
     val animationSpec = remember {
         spring<Dp>(Spring.DampingRatioHighBouncy, Spring.StiffnessHigh)
     }
     val boxSize = 50.dp
+    val configuration = LocalConfiguration.current
     val targetValue = remember(configuration.screenWidthDp) {
         Dp((configuration.screenWidthDp - boxSize.value).toFloat())
     }
@@ -185,64 +187,124 @@ fun SpringSpecCase(initialValue: Dp = 0.dp) {
 }
 
 /**
+ * 「RepeatableSpec」+「TweenSpec」示例
+ */
+@Preview(showBackground = true)
+@Composable
+fun RepeatableAndSnapSpecCase(initialValue: Dp = 0.dp) {
+    val offsetAnimatable = remember { Animatable(initialValue, Dp.VectorConverter) }
+    val scope = rememberCoroutineScope()
+    val animationSpec = remember {
+        repeatable<Dp>(9, tween(50, 1_000), RepeatMode.Reverse)
+    }
+    val boxSize = 50.dp
+    val configuration = LocalConfiguration.current
+    val targetValue = remember(configuration.screenWidthDp) {
+        Dp((configuration.screenWidthDp - boxSize.value).toFloat())
+    }
+
+    Box(Modifier.screenHeightPercent(50)) {
+        Box(
+            Modifier
+                .size(boxSize)
+                .offset(offsetAnimatable.value, offsetAnimatable.value)
+                .background(Color.Red)
+                .clickable {
+                    scope.launch { offsetAnimatable.animateTo(targetValue, animationSpec) }
+                })
+    }
+}
+
+/**
+ * 「衰减」+「撞边」动画示例
+ */
+@Preview(showBackground = true)
+@Composable
+fun AnimateDecayCase() {
+    val decayXAnim = remember {
+        Animatable(0.dp, Dp.VectorConverter)
+    }
+    val decayYAnimatable = remember {
+        Animatable(0.dp, Dp.VectorConverter)
+    }
+    val animationSpec = remember { exponentialDecay<Dp>() }
+    val scope = rememberCoroutineScope()
+
+    BoxWithConstraints(Modifier.screenHeightPercent(50)) {
+        val boxSize = 50.dp
+        decayXAnim.updateBounds(0.dp, this.maxWidth - boxSize) // TODO: 这里只想执行一次该怎么做
+        decayYAnimatable.updateBounds(0.dp, this.maxHeight - boxSize)
+        Box(
+            Modifier
+                .size(boxSize)
+                .offset(decayXAnim.value, decayYAnimatable.value)
+                .background(Color.Red)
+                .clickable {
+                    scope.launch { decayXAnim.animateDecay(1999.dp, animationSpec) }
+                    scope.launch { decayYAnimatable.animateDecay(999.dp, animationSpec) }
+                })
+    }
+}
+
+/**
  * 反弹动画示例
  */
 @Preview(showBackground = true)
 @Composable
 fun ReboundCase() {
     var toggle by remember { mutableStateOf<Boolean?>(null) }
-    val animatableX = remember {
-        Animatable(0.dp, Dp.VectorConverter, label = "labelX")
+    val offsetXAnim = remember {
+        Animatable(0.dp, Dp.VectorConverter)
     }
-    val animatableY = remember {
-        Animatable(0.dp, Dp.VectorConverter, label = "labelY")
+    val offsetYAnim = remember {
+        Animatable(0.dp, Dp.VectorConverter)
     }
 
-    BoxWithConstraints {
-        val offsetX = remember(animatableX.value) {
-            val maxOffsetWidth = this.maxWidth - 100.dp
-            var cacOffsetX = animatableX.value
+    BoxWithConstraints(Modifier.screenHeightPercent()) {
+        val boxSize = 100.dp
+        // 相比「updateBounds」更精准的做法
+        val offsetX = remember(offsetXAnim.value) {
+            val maxOffsetWidth = this.maxWidth - boxSize
+            var cacOffsetX = offsetXAnim.value
             while (cacOffsetX > maxOffsetWidth * 2) cacOffsetX -= maxOffsetWidth * 2
             if (cacOffsetX < maxOffsetWidth) cacOffsetX else maxOffsetWidth * 2 - cacOffsetX
         }
-        val offsetY = remember(animatableY.value) {
-            val maxOffsetHeight = this.maxHeight - 100.dp
-            var cacOffsetY = animatableY.value
+        val offsetY = remember(offsetYAnim.value) {
+            val maxOffsetHeight = this.maxHeight - boxSize
+            var cacOffsetY = offsetYAnim.value
             while (cacOffsetY > maxOffsetHeight * 2) cacOffsetY -= maxOffsetHeight * 2
             if (cacOffsetY < maxOffsetHeight) cacOffsetY else maxOffsetHeight * 2 - cacOffsetY
         }
+        // 使用「updateBounds」有误差，因为每一帧有「16ms」的延迟
 //        animatableX.updateBounds(0.dp, maxWidth - 100.dp)
 //        animatableY.updateBounds(0.dp, maxHeight - 100.dp)
 
-        Box(Modifier.screenHeightPercent()) {
-            Box(
-                Modifier
-                    .size(100.dp)
-                    .offset(offsetX, offsetY)
-                    .background(Color.Green)
-                    .clickable { toggle = toggle != true }
-            )
-        }
+        Box(
+            Modifier
+                .size(boxSize)
+                .offset(offsetX, offsetY)
+                .background(Color.Green)
+                .clickable { toggle = toggle != true }
+        )
     }
 
-    if (toggle == null) return
+    if (toggle == null) return// 第一次组合时不要触发动画，重组时触发
 
-    val decay = remember { exponentialDecay<Dp>(1f, 1.2f) }
+    val decaySpec = remember { exponentialDecay<Dp>(1f, 1f) }
+
     LaunchedEffect(toggle) {
-        launch {
-            var result: AnimationResult<Dp, AnimationVector1D>? = null
-            do {
-                val initialVelocity = result?.endState?.velocity?.times(-1) ?: 3000.dp
-                result = animatableX.animateDecay(initialVelocity, decay)
-            } while (result.endReason == AnimationEndReason.BoundReached)
-        }
-        launch {
-            var result: AnimationResult<Dp, AnimationVector1D>? = null
-            do {
-                val initialVelocity = result?.endState?.velocity?.times(-1) ?: 4000.dp
-                result = animatableY.animateDecay(initialVelocity, decay)
-            } while (result.endReason == AnimationEndReason.BoundReached)
-        }
+        var result: AnimationResult<Dp, AnimationVector1D>? = null
+        do {
+            val initialVelocity = result?.endState?.velocity?.times(-1) ?: 4500.dp
+            result = offsetXAnim.animateDecay(initialVelocity, decaySpec)
+        } while (result.endReason == AnimationEndReason.BoundReached)
+    }
+    LaunchedEffect(toggle) {
+        var result: AnimationResult<Dp, AnimationVector1D>? = null
+        do {
+            val initialVelocity = result?.endState?.velocity?.times(-1) ?: 3500.dp
+            result = offsetYAnim.animateDecay(initialVelocity, decaySpec)
+        } while (result.endReason == AnimationEndReason.BoundReached)
     }
 }
 
