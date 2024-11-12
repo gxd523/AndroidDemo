@@ -3,6 +3,8 @@ package com.gxd.demo.compose.case
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationEndReason
@@ -28,14 +30,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
-import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -50,25 +52,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.gxd.demo.compose.util.screenHeightPercent
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.random.Random
-
-/**
- * 随机生成一个大于「min」小于「max」且相比之前的值变化超过30%的新值
- */
-private fun Dp.coerceInNewRandomDp(min: Dp = 30.dp, max: Dp = 200.dp): Dp {
-    val random = Random.nextInt(max.value.toInt() / 30) * 30f
-    val newValue = random.coerceIn(min.value, max.value)
-    return if (abs(newValue - this.value) / this.value < 0.3f) this.coerceInNewRandomDp(min, max) else Dp(newValue)
-}
 
 /**
  * animateAsState动画示例
@@ -79,7 +71,7 @@ fun AnimateAsStateCase() {
     var size by remember { mutableStateOf(50.dp) }
     val animationSpec = remember { tween<Dp>(500, 500) }
     val sizeAnimate by animateDpAsState(size, animationSpec, "size") // 不用「remember」包裹
-    Box(Modifier.screenHeightPercent(50), Alignment.Center) {
+    Box(Modifier.screenHeightPercent(), Alignment.Center) {
         Box(
             Modifier
                 .size(sizeAnimate)
@@ -98,7 +90,7 @@ fun AnimatableCase(initialValue: Dp = 50.dp) {
     val sizeAnimatable = remember { Animatable(initialValue, Dp.VectorConverter) }
     val scope = rememberCoroutineScope()
 
-    Box(Modifier.screenHeightPercent(50), Alignment.Center) {
+    Box(Modifier.screenHeightPercent(), Alignment.Center) {
         Box(Modifier.size(sizeAnimatable.value).background(Color.Red).clickable {
             scope.launch {
                 val targetSize = sizeAnimatable.value.coerceInNewRandomDp()
@@ -168,7 +160,9 @@ fun KeyframesSpecCase(boxSize: Dp = 50.dp, initialValue: Dp = 0.dp, durationMill
 @Preview(showBackground = true)
 @Composable
 fun SpringSpecCase(initialValue: Dp = 0.dp) {
-    val offsetYAnimatable = remember { Animatable(initialValue, Dp.VectorConverter) }
+    val offsetYAnimatable = remember {
+        Animatable(initialValue, Dp.VectorConverter)
+    }
     val scope = rememberCoroutineScope()
     val animationSpec = remember {
         spring<Dp>(Spring.DampingRatioHighBouncy, Spring.StiffnessHigh)
@@ -179,10 +173,16 @@ fun SpringSpecCase(initialValue: Dp = 0.dp) {
         Dp((configuration.screenWidthDp - boxSize.value).toFloat())
     }
 
-    Box(Modifier.screenHeightPercent(50), Alignment.TopCenter) {
-        Box(Modifier.size(boxSize).offset(0.dp, offsetYAnimatable.value).background(Color.Red).clickable {
-            scope.launch { offsetYAnimatable.animateTo(targetValue, animationSpec) }
-        })
+    Box(Modifier.screenHeightPercent(), Alignment.TopCenter) {
+        Box(
+            Modifier
+                .size(boxSize)
+                .offset(0.dp, offsetYAnimatable.value)
+                .background(Color.Red)
+                .clickable {
+                    scope.launch { offsetYAnimatable.animateTo(targetValue, animationSpec) }
+                }
+        )
     }
 }
 
@@ -191,7 +191,7 @@ fun SpringSpecCase(initialValue: Dp = 0.dp) {
  */
 @Preview(showBackground = true)
 @Composable
-fun RepeatableAndSnapSpecCase(initialValue: Dp = 0.dp) {
+fun RepeatableSpecCase(initialValue: Dp = 0.dp) {
     val offsetAnimatable = remember { Animatable(initialValue, Dp.VectorConverter) }
     val scope = rememberCoroutineScope()
     val animationSpec = remember {
@@ -310,127 +310,134 @@ fun ReboundCase() {
 
 @Preview(showBackground = true)
 @Composable
-fun UpdateTransitionCase() {
-    var targetState by remember { mutableStateOf(MyState.End) }
-    val transitionState = remember { MutableTransitionState(MyState.Init) }
-    transitionState.targetState = targetState
-    val transition = rememberTransition(transitionState, label = "transitionA")
+fun TransitionCase() {
+    val transitionState = remember { MutableTransitionState(MyState.Start) }
+    val transition = rememberTransition(transitionState, "transitionA")
+
     transition.AnimatedVisibility({ state -> state == MyState.End }) {
-        Box(Modifier.size(50.dp).background(Color.Red))
+        Box(Modifier.size(150.dp).background(Color.Black))
     }
-    val offsetX by transition.animateDp(label = "offsetX", transitionSpec = {
+
+    val offsetTransAnim by transition.animateDp({
         when {
-            MyState.Init isTransitioningTo MyState.Middle -> tween(1_000)
-            MyState.Init isTransitioningTo MyState.End -> tween(2_000)
+            MyState.Start isTransitioningTo MyState.Middle -> tween(1_000)
+            MyState.Start isTransitioningTo MyState.End -> tween(2_000)
             MyState.Middle isTransitioningTo MyState.End -> spring()
             else -> tween(0)
         }
-    }) { state ->
+    }, "offsetX") { state ->
         when (state) {
-            MyState.Init -> 0.dp
-            MyState.Middle -> 100.dp
-            MyState.End -> 200.dp
+            MyState.Start -> 0.dp
+            MyState.Middle -> 150.dp
+            MyState.End -> 300.dp
         }
     }
-    val bgColor by transition.animateColor(label = "bgColor", transitionSpec = {
+
+    val colorTransAnim by transition.animateColor({
         when {
-            MyState.Init isTransitioningTo MyState.Middle -> tween(1_000)
-            MyState.Init isTransitioningTo MyState.End -> tween(2_000)
+            MyState.Start isTransitioningTo MyState.Middle -> tween(1_000)
+            MyState.Start isTransitioningTo MyState.End -> tween(2_000)
             MyState.Middle isTransitioningTo MyState.End -> spring()
             else -> tween(0)
         }
-    }) { state ->
+    }, "bgColor") { state ->
         when (state) {
-            MyState.Init -> Color.Red
+            MyState.Start -> Color.Red
             MyState.Middle -> Color.Green
             MyState.End -> Color.Blue
         }
     }
+
     Box(Modifier.screenHeightPercent()) {
         Box(
             Modifier
                 .size(100.dp)
-                .offset(offsetX)
-                .background(bgColor)
-                .clickable { targetState = targetState.next() }
+                .offset(offsetTransAnim, offsetTransAnim)
+                .background(colorTransAnim)
+                .clickable { transitionState.targetState = transitionState.targetState.next() }
         )
-    }
-}
-
-enum class MyState {
-    Init, Middle, End;
-
-    fun next(): MyState = when (this) {
-        Init -> Middle
-        Middle -> End
-        End -> Init
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun AnimateVisibilityCase() {
-    Row {
+fun AnimatedVisibilityCase() {
+    Box(Modifier.screenHeightPercent(), Alignment.Center) {
         var toggle by remember { mutableStateOf(true) }
-        Button(modifier = Modifier.align(Alignment.CenterVertically), onClick = { toggle = !toggle }) { Text("切换") }
-        val transformOrigin = TransformOrigin(1f, 1f)
-        val enter = scaleIn(tween(2_000), transformOrigin = transformOrigin)
-        val targetSize: (IntSize) -> IntSize = { IntSize(it.width / 2, it.height / 2) }
-        val animationSpec = tween<IntSize>(2_000)
-        val exit = shrinkOut(animationSpec, Alignment.Center, false, targetSize)
+        val (enter, exit) = createEnterExitTransition()
+
         AnimatedVisibility(toggle, enter = enter, exit = exit) {
-            Box(Modifier.size(100.dp).background(Color.Red))
+            Box(Modifier.size(300.dp).background(Color.Red))
         }
+
+        Button({ toggle = !toggle }) { Text("切换") }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun CrossfadeCase() {
-    Column {
-        var targetState by remember { mutableStateOf(MyState.Init) }
-        Crossfade(targetState, label = "crossfade") { state ->
+    Box(Modifier.screenHeightPercent(), Alignment.Center) {
+        var targetState by remember { mutableStateOf(MyState.Start) }
+        Crossfade(targetState, label = "crossfade", animationSpec = tween(1_000)) { state ->
             when (state) {
-                MyState.Init -> Box(Modifier.size(100.dp).background(Color.Red))
-                MyState.Middle -> Box(Modifier.size(80.dp).background(Color.Green))
-                MyState.End -> Box(Modifier.size(120.dp).background(Color.Blue))
+                MyState.Start -> Box(Modifier.size(300.dp).background(Color.Red))
+                MyState.Middle -> Box(Modifier.size(150.dp).background(Color.Green))
+                MyState.End -> Box(Modifier.size(250.dp).background(Color.Blue))
             }
         }
-        Button(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            onClick = { targetState = targetState.next() }
-        ) { Text("切换") }
+        Button({ targetState = targetState.next() }) { Text("切换") }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun AnimatedContentCase() {
-    Column {
+    Box(Modifier.screenHeightPercent(), Alignment.Center) {
         var targetState by remember { mutableStateOf(true) }
         AnimatedContent(targetState, transitionSpec = {
             when (targetState) {
-                true -> {
-                    val fadeInTweenSpec = tween<Float>(1_000)
-                    val fadeOutTweenSpec = tween<Float>(2_000)
-                    fadeIn(fadeInTweenSpec) togetherWith fadeOut(fadeOutTweenSpec)
-                }
-
-                false -> {
-                    val fadeInTweenSpec = tween<Float>(3_000)
-                    val fadeOutTweenSpec = tween<Float>(4_000)
-                    fadeIn(fadeInTweenSpec) togetherWith fadeOut(fadeOutTweenSpec)
-                }
+                true -> createEnterExitTransition(1_000).run { first togetherWith second }
+                false -> createEnterExitTransition(2_000).run { first togetherWith second }
             }
         }, label = "animatedContent") { state ->
             when (state) {
-                true -> Box(Modifier.size(200.dp).background(Color.Red))
-                false -> Box(Modifier.size(100.dp).background(Color.Green))
+                true -> Box(Modifier.size(300.dp).background(Color.Red))
+                false -> Box(Modifier.size(150.dp).background(Color.Green))
             }
         }
-        Button(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            onClick = { targetState = !targetState }
-        ) { Text("切换") }
+        Button({ targetState = !targetState }) { Text("切换") }
     }
+}
+
+private enum class MyState {
+    Start, Middle, End;
+
+    fun next(): MyState = when (this) {
+        Start -> Middle
+        Middle -> End
+        End -> Start
+    }
+}
+
+/**
+ * 随机生成一个大于「min」小于「max」且相比之前的值变化超过30%的新值
+ */
+private fun Dp.coerceInNewRandomDp(min: Dp = 30.dp, max: Dp = 200.dp): Dp {
+    val random = Random.nextInt(max.value.toInt() / 30) * 30f
+    val newValue = random.coerceIn(min.value, max.value)
+    return if (abs(newValue - this.value) / this.value < 0.3f) this.coerceInNewRandomDp(min, max) else Dp(newValue)
+}
+
+private fun createEnterExitTransition(duration: Int = 1_000): Pair<EnterTransition, ExitTransition> {
+    val floatTweenSpec = tween<Float>(duration)
+    val intOffsetTweenSpec = tween<IntOffset>(duration)
+
+    val enter = slideInHorizontally(intOffsetTweenSpec) { -it } +
+            scaleIn(floatTweenSpec) +
+            fadeIn(floatTweenSpec)
+    val exit = slideOutHorizontally(intOffsetTweenSpec) { it } +
+            scaleOut(floatTweenSpec) +
+            fadeOut(floatTweenSpec)
+    return Pair(enter, exit)
 }
