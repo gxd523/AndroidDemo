@@ -6,7 +6,7 @@ composeBom = "2024.10.01"
 
 activity = "1.9.3"
 lifecycle = "2.8.7"
-core = "1.13.1"
+core = "1.15.0"
 appcompat = "1.7.0"
 
 retrofit = "2.11.0"
