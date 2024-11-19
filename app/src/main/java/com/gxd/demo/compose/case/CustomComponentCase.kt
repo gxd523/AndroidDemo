@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,11 +32,10 @@ import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.gxd.demo.compose.R
-import com.gxd.demo.compose.util.screenSizePercent
-import kotlin.math.max
 import kotlin.math.roundToInt
 
 @Preview(showBackground = true)
@@ -78,34 +76,36 @@ fun CustomDrawCase() {
     }
 }
 
+/**
+ * 自定义「Layout」实现「Row」效果
+ */
 @Composable
-fun CustomLayoutCase(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Layout(content, modifier) { measurableList, constraints ->
-        var width = 0
-        var height = 0
-        val placeableList = measurableList.map { measurable ->
-            measurable.measure(constraints).also { placeable ->
-                width = max(width, placeable.width)
-                height += placeable.height
-            }
-        }
-        layout(width, height) {
-            var totalHeight = 0
-            placeableList.forEach { placeable ->
-                placeable.placeRelative(0, totalHeight)
-                totalHeight += placeable.height
+fun CustomRowLayout(modifier: Modifier = Modifier, spacing: Dp = 0.dp, content: @Composable () -> Unit) {
+    Layout(content, modifier) { measurables, constraints ->
+        val spacingPx = spacing.roundToPx()
+        val newConstraints = constraints.copy(minHeight = 0, minWidth = 0)
+        val placeables = measurables.map { measurable -> measurable.measure(newConstraints) }
+
+        val totalWidth = placeables.sumOf { it.width } + (placeables.size - 1) * spacingPx
+        val maxHeight = placeables.maxOfOrNull { it.height } ?: 0
+
+        layout(totalWidth, maxHeight) {
+            var xOffset = 0
+            placeables.forEach { placeable ->
+                placeable.placeRelative(xOffset, 0)
+                xOffset += placeable.width + spacingPx
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun CustomLayoutCasePreview() {
-    CustomLayoutCase {
-        Text("标题")
-        Button(onClick = {}) { Text("按钮") }
-        Text("内容")
+fun CustomRowLayoutExample() {
+    CustomRowLayout(Modifier.size(200.dp).background(Color.LightGray).padding(16.dp), 16.dp) {
+        Box(Modifier.size(50.dp).background(Color.Red))
+        Box(Modifier.size(50.dp).background(Color.Green))
+        Box(Modifier.size(50.dp).background(Color.Blue))
     }
 }
 
@@ -133,8 +133,10 @@ fun SubcomposeLayoutCase(title: String = "title", content: String = "This is the
         val contentHeight = contentPlaceableList.maxOf { it.height }
         val spaceHeight = 16.dp.roundToPx()
         // 设置布局的总高度和宽度
-        val layoutHeight = titleHeight + contentHeight + spaceHeight
-        val layoutWidth = max(titlePlaceableList.maxOf { it.width }, contentPlaceableList.maxOf { it.width })
+//        val layoutHeight = titleHeight + contentHeight + spaceHeight
+        val layoutHeight = with(density) { 200.dp.roundToPx() }
+//        val layoutWidth = max(titlePlaceableList.maxOf { it.width }, contentPlaceableList.maxOf { it.width })
+        val layoutWidth = with(density) { 200.dp.roundToPx() }
 
         layout(layoutWidth, layoutHeight) {// 布局子组件
             var yOffset = 0
@@ -157,7 +159,7 @@ fun SubcomposeLayoutCase(title: String = "title", content: String = "This is the
 @Composable
 fun LookaheadScopeCase() {
     LookaheadScope {
-        val colorList = remember { listOf(Color.Red, Color.Green, Color.Blue, Color.Yellow) }
+        val colorList = remember { listOf(Color.Red, Color.Green, Color.Blue) }
         val layoutContent = remember {
             movableContentOf {// 动态生成布局内容，支持在 Row 和 Column 间切换
                 colorList.forEach { color -> Box(Modifier.size(50.dp).background(color)) }
@@ -166,7 +168,7 @@ fun LookaheadScopeCase() {
 
         var isColumn by remember { mutableStateOf(true) }
         Box(
-            Modifier.screenSizePercent(60, 30).clickable { isColumn = !isColumn },
+            Modifier.size(200.dp).clickable { isColumn = !isColumn },
             Alignment.Center
         ) {// 点击切换布局
             if (isColumn) {
