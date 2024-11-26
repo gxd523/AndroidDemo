@@ -1,8 +1,9 @@
 [versions]
 agp = "8.7.2"
-kotlin = "2.0.0"
+kotlin = "2.0.21"
 coroutine = "1.9.0"
 composeBom = "2024.10.01"
+ksp = "2.0.21-1.0.28"
 
 activity = "1.9.3"
 lifecycle = "2.8.7"
@@ -10,7 +11,7 @@ core = "1.15.0"
 appcompat = "1.7.0"
 
 retrofit = "2.11.0"
-coil = "3.0.2"
+coil = "3.0.4"
 
 [libraries]
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine" }
@@ -44,3 +45,4 @@ coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil"
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
