@@ -36,7 +36,9 @@ class XfermodeView(context: Context, attrs: AttributeSet? = null) : View(context
         leftOffset = (w - contentSize) / 2f
         topOffset = (h - contentSize) / 2f
 
-        layerBounds.set(leftOffset, topOffset, leftOffset + contentSize.toFloat(), topOffset + contentSize.toFloat())
+        layerBounds.set(
+            leftOffset, topOffset, leftOffset + contentSize.toFloat(), topOffset + contentSize.toFloat()
+        )
 
         circleBitmap = Bitmap.createBitmap(contentSize, contentSize, Bitmap.Config.ARGB_8888)
         squareBitmap = Bitmap.createBitmap(contentSize, contentSize, Bitmap.Config.ARGB_8888)
