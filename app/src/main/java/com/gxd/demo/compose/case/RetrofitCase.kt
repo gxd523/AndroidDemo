@@ -1,5 +1,6 @@
 package com.gxd.demo.compose.case
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button

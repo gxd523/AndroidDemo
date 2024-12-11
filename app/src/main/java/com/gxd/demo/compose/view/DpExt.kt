@@ -10,12 +10,7 @@ val Float.sp
     get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this, Resources.getSystem().displayMetrics)
 
 val Int.dp
-    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), Resources.getSystem().displayMetrics).toInt()
+    get() = this.toFloat().dp.toInt()
 
 val Int.sp
-    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this.toFloat(), Resources.getSystem().displayMetrics).toInt()
-
-val Int.px
-    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, this.toFloat(), Resources.getSystem().displayMetrics).toInt()
-
-fun Int.toDp(): Int = (this / Resources.getSystem().displayMetrics.density).toInt()
+    get() = this.toFloat().sp.toInt()

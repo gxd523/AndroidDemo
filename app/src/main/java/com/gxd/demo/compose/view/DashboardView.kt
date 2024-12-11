@@ -10,7 +10,6 @@ import android.graphics.PathMeasure
 import android.graphics.PointF
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.view.View
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
@@ -19,19 +18,13 @@ import kotlin.math.sin
  * 仪表板
  * 重点：PathEffect、PathMeasure
  */
-class DashboardView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
+class DashboardView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
     companion object {
         private const val DEFAULT_ANGLE = 120
         private const val DEFAULT_COUNT = 20
         private const val DEFAULT_INDEX = 8
     }
 
-    private val paint by lazy {
-        Paint().apply {
-            style = Paint.Style.STROKE
-            strokeWidth = dashWidth
-        }
-    }
     private val arcPath by lazy { Path() }
     private val lineStopPointF by lazy { PointF() }
 
@@ -44,6 +37,11 @@ class DashboardView(context: Context, attrs: AttributeSet? = null) : View(contex
     private var angle: Int = DEFAULT_ANGLE
     private var count: Int = DEFAULT_COUNT
     private var index: Int = DEFAULT_INDEX
+
+    init {
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = dashWidth
+    }
 
     fun init(angle: Int = DEFAULT_ANGLE, count: Int = DEFAULT_COUNT, index: Int = DEFAULT_INDEX) {
         this.angle = angle

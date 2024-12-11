@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import com.gxd.demo.compose.R
@@ -18,25 +17,24 @@ import com.gxd.demo.compose.R
  * paint.breakText
  * paint.fontSpacing
  */
-class MultilineTextView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
+class MultilineTextView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
     companion object {
         private const val DEFAULT_TEXT =
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu erat, suscipit a vehicula eu, condimentum vel turpis. Aenean viverra euismod neque nec hendrerit. Sed fermentum ex vitae diam tristique, in accumsan arcu convallis. Nam malesuada arcu quis purus cursus, non suscipit turpis egestas. Fusce massa ex, molestie vel elit eget, porta malesuada quam."
     }
 
-    private val paint by lazy {
-        Paint().apply {
-            color = Color.BLACK
-            typeface = ResourcesCompat.getFont(context, R.font.oppo_sans)
-            textSize = 20f.sp
-            getFontMetrics(fontMetric)
-        }
-    }
     private val fontMetric by lazy { Paint.FontMetrics() }
     private val imageSize by lazy { 100.dp }
     private val imageSrcRect by lazy { Rect() }
     private val imageDstRect by lazy { Rect() }
     private lateinit var image: Bitmap
+
+    init {
+        paint.color = Color.BLACK
+        paint.typeface = ResourcesCompat.getFont(context, R.font.oppo_sans)
+        paint.textSize = 20f.sp
+        paint.getFontMetrics(fontMetric)
+    }
 
     fun init(@DrawableRes drawableId: Int = R.drawable.avatar_png) {
         image = BitmapFactory.decodeResource(resources, drawableId)

@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationEndReason
@@ -397,8 +398,8 @@ fun AnimatedContentCase() {
         var targetState by remember { mutableStateOf(true) }
         AnimatedContent(targetState, transitionSpec = {
             when (targetState) {
-                true -> createEnterExitTransition(1_000).run { first togetherWith second }
-                false -> createEnterExitTransition(2_000).run { first togetherWith second }
+                true -> createEnterExitTransition(1_000).run { first togetherWith second } using SizeTransform(false)
+                false -> createEnterExitTransition(2_000).run { first togetherWith second } using SizeTransform(false)
             }
         }, label = "animatedContent") { state ->
             when (state) {
@@ -423,7 +424,7 @@ private enum class MyState {
 /**
  * 随机生成一个大于「min」小于「max」且相比之前的值变化超过30%的新值
  */
-private fun Dp.coerceInNewRandomDp(min: Dp = 30.dp, max: Dp = 200.dp): Dp {
+fun Dp.coerceInNewRandomDp(min: Dp = 30.dp, max: Dp = 200.dp): Dp {
     val random = Random.nextInt(max.value.toInt() / 30) * 30f
     val newValue = random.coerceIn(min.value, max.value)
     return if (abs(newValue - this.value) / this.value < 0.3f) this.coerceInNewRandomDp(min, max) else Dp(newValue)

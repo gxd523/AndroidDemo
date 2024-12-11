@@ -4,10 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.view.View
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
@@ -15,9 +13,8 @@ import kotlin.math.sin
 /**
  * 饼图
  */
-class PieView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
+class PieView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
     private val pieOffset = 20.dp
-    private val paint by lazy { Paint() }
     private val ovalRectF by lazy { RectF() }
     private lateinit var dataList: List<Pair<Float, Color>>
     private var startAngle = 0f

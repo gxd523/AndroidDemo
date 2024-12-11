@@ -7,29 +7,21 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.gxd.demo.compose.R
-import kotlin.math.min
 
-class RingView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
-    private val paint by lazy { Paint() }
+class RingView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
     private val ovalRectF by lazy { RectF() }
     private val strokeWidth by lazy { 15f.dp }
     private val textBoundsRect by lazy { Rect() }
     private val fontMetric by lazy { Paint.FontMetrics() }
-    private var leftOffset = 0f
-    private var topOffset = 0f
-    private var contentSize = 0
 
     fun init() {
 
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        contentSize = min(w, h)
-        leftOffset = (w - contentSize) / 2f
-        topOffset = (h - contentSize) / 2f
+        super.onSizeChanged(w, h, oldw, oldh)
         ovalRectF.set(
             leftOffset + strokeWidth / 2,
             topOffset + strokeWidth / 2,

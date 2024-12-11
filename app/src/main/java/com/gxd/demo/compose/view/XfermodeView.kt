@@ -4,37 +4,32 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.graphics.Xfermode
 import android.util.AttributeSet
-import android.view.View
-import kotlin.math.min
 
 /**
  * Xfermode使用示例
  */
-class XfermodeView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
-    private val paint by lazy { Paint() }
+class XfermodeView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
     private val layerBounds by lazy { RectF() }
     private lateinit var xfermode: Xfermode
-    private var leftOffset = 0f
-    private var topOffset = 0f
     private var circleBitmap: Bitmap? = null
     private var squareBitmap: Bitmap? = null
+
+    init {
+        setLayerType(LAYER_TYPE_NONE, null)
+    }
 
     fun init(porterDuffMode: PorterDuff.Mode = PorterDuff.Mode.SRC_OVER) {
         xfermode = PorterDuffXfermode(porterDuffMode)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
         if (w == 0 || h == 0) return
-
-        val contentSize = min(w, h)
-        leftOffset = (w - contentSize) / 2f
-        topOffset = (h - contentSize) / 2f
 
         layerBounds.set(
             leftOffset, topOffset, leftOffset + contentSize.toFloat(), topOffset + contentSize.toFloat()
