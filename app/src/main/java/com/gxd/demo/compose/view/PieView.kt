@@ -32,6 +32,7 @@ class PieView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(con
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
         val radius = min(w, h) / 2
         ovalRectF.set(w / 2f - radius, h / 2f - radius, w / 2f + radius, h / 2f + radius)
     }

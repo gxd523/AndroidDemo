@@ -50,6 +50,7 @@ class DashboardView(context: Context, attrs: AttributeSet? = null) : AbsCustomVi
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
         val radius = min(w, h) / 2
         val ovalRectF = RectF(w / 2f - radius, h / 2f - radius, w / 2f + radius, h / 2f + radius)
         arcPath.reset()

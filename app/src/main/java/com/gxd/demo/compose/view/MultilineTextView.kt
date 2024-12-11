@@ -42,6 +42,7 @@ class MultilineTextView(context: Context, attrs: AttributeSet? = null) : AbsCust
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
         imageDstRect.set(width - imageSize, height / 2 - imageSize / 2, width, height / 2 + imageSize / 2)
     }
 
