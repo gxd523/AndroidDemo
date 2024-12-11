@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="FloatingLabelEditText">
+        <attr name="useFloatingLabel" format="boolean" />
+    </declare-styleable>
+</resources>
