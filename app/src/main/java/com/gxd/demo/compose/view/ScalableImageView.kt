@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.OverScroller
+import androidx.core.animation.doOnEnd
 import com.gxd.demo.compose.R
 import kotlinx.coroutines.Runnable
 
@@ -27,12 +28,22 @@ class ScalableImageView(
      * 「OverScroller」与「Scroller」的区别不仅仅是划过头「Over」，「Scroller」似乎没有起始速度
      */
     private val scroller by lazy { OverScroller(context) }
+    private val scaleAnim by lazy {
+        ObjectAnimator.ofFloat(this, "scaleFraction", 0f, 1f).apply {
+            doOnEnd {
+                if (big) return@doOnEnd
+                offsetX = 0f
+                offsetY = 0f
+            }
+        }
+    }
     private lateinit var bitmap: Bitmap
-    private lateinit var scaleAnim: ObjectAnimator
+    private var smallScale = 0f
+    private var bigScale = 0f
     private var offsetX = 0f
     private var offsetY = 0f
     private var big = false
-    var scaleFraction = 1f
+    var scaleFraction = 0f
         set(value) {
             field = value
             invalidate()
@@ -44,19 +55,21 @@ class ScalableImageView(
         contentLeftOffset = (w - bitmap.width) / 2f
         contentTopOffset = (h - bitmap.height) / 2f
 
-        val (smallScale, bigScale) = if (bitmap.width / bitmap.height.toFloat() > width / height.toFloat()) {
-            width / bitmap.width.toFloat() to height / bitmap.height.toFloat() * EXTRA_SCALE_FACTOR
+        if (bitmap.width / bitmap.height.toFloat() > width / height.toFloat()) {
+            smallScale = width / bitmap.width.toFloat()
+            bigScale = height / bitmap.height.toFloat() * EXTRA_SCALE_FACTOR
         } else {
-            height / bitmap.height.toFloat() to width / bitmap.width.toFloat() * EXTRA_SCALE_FACTOR
+            smallScale = height / bitmap.height.toFloat()
+            bigScale = width / bitmap.width.toFloat() * EXTRA_SCALE_FACTOR
         }
-        scaleAnim = ObjectAnimator.ofFloat(this, "scaleFraction", smallScale, bigScale)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        canvas.translate(offsetX, offsetY)
-        canvas.scale(scaleFraction, scaleFraction, width / 2f, height / 2f)
+        canvas.translate(offsetX * scaleFraction, offsetY * scaleFraction) // TODO: 这里乘「scaleFraction」很精妙
+        val scale = smallScale + (bigScale - smallScale) * scaleFraction
+        canvas.scale(scale, scale, width / 2f, height / 2f)
         canvas.drawBitmap(bitmap, contentLeftOffset, contentTopOffset, paint)
     }
 
@@ -86,8 +99,8 @@ class ScalableImageView(
         if (!big) return false
         offsetX -= distanceX
         offsetY -= distanceY
-        val maxOffsetX = scaleFraction * bitmap.width / 2 - width / 2
-        val maxOffsetY = scaleFraction * bitmap.height / 2 - height / 2
+        val maxOffsetX = bigScale * bitmap.width / 2 - width / 2
+        val maxOffsetY = bigScale * bitmap.height / 2 - height / 2
         offsetX = offsetX.coerceIn(-maxOffsetX, maxOffsetX)
         offsetY = offsetY.coerceIn(-maxOffsetY, maxOffsetY)
         Log.d("ggg", "offsetX = $offsetX, offsetY = $offsetY")
@@ -97,8 +110,8 @@ class ScalableImageView(
 
     override fun onFling(downEvent: MotionEvent?, currentEvent: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
         if (!big) return false
-        val maxOffsetX = (scaleFraction * bitmap.width / 2 - width / 2).toInt()
-        val maxOffsetY = (scaleFraction * bitmap.height / 2 - height / 2).toInt()
+        val maxOffsetX = (bigScale * bitmap.width / 2 - width / 2).toInt()
+        val maxOffsetY = (bigScale * bitmap.height / 2 - height / 2).toInt()
         scroller.fling(
             offsetX.toInt(),
             offsetY.toInt(),
