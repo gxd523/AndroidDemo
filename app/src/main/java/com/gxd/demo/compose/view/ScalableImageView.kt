@@ -12,6 +12,9 @@ import android.widget.OverScroller
 import com.gxd.demo.compose.R
 import kotlinx.coroutines.Runnable
 
+/**
+ * 实现功能：「双击缩放」、「双指捏合」、「拖动图片」
+ */
 class ScalableImageView(
     context: Context, attrs: AttributeSet? = null,
 ) : AbsCustomView(context, attrs), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, Runnable {
@@ -19,7 +22,9 @@ class ScalableImageView(
         private const val EXTRA_SCALE_FACTOR = 2.5f
     }
 
-    // setOnDoubleTapListener(this@ScalableImageView) 可以不用写
+    /**
+     * setOnDoubleTapListener(this@ScalableImageView) 可以不用写
+     */
     private val gestureDetector by lazy { GestureDetector(context, this) }
 
     /**
@@ -68,15 +73,6 @@ class ScalableImageView(
         canvas.scale(scale, scale, width / 2f, height / 2f)
         canvas.drawBitmap(bitmap, contentLeftOffset, contentTopOffset, paint)
     }
-
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean = gestureDetector.onTouchEvent(event)
-
-    /**
-     * 几乎必返回「true」
-     * 「OnGestureListener」只用到了这一个方法
-     */
-    override fun onDown(e: MotionEvent): Boolean = true
 
     /**
      * 连续按2次会触发，2次间隔「300毫秒」，短于「40毫秒」也不会触发
@@ -134,9 +130,16 @@ class ScalableImageView(
         return true
     }
 
-    override fun run() {
-        refreshFling()
-    }
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean = gestureDetector.onTouchEvent(event)
+
+    /**
+     * 几乎必返回「true」
+     * 「OnGestureListener」只用到了这一个方法
+     */
+    override fun onDown(e: MotionEvent): Boolean = true
+
+    override fun run() = refreshFling()
 
     private fun refreshFling() {
         val isRunning = scroller.computeScrollOffset()
@@ -149,11 +152,17 @@ class ScalableImageView(
     }
 
     /**
+     * 校准偏移量
+     */
+    private fun coerceInOffset() {
+        offsetX = offsetX.coerceIn(-maxOffsetX, maxOffsetX)
+        offsetY = offsetY.coerceIn(-maxOffsetY, maxOffsetY)
+    }
+
+    /**
      * 支持双击时的单击回调，按下抬起后超过「300毫秒」时回调
      */
-    override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-        return false
-    }
+    override fun onSingleTapConfirmed(e: MotionEvent): Boolean = false
 
     /**
      * 第二次按下之后的事件，很少用
@@ -172,12 +181,4 @@ class ScalableImageView(
     override fun onSingleTapUp(e: MotionEvent): Boolean = false
 
     override fun onLongPress(e: MotionEvent) {}
-
-    /**
-     * 校准偏移量
-     */
-    private fun coerceInOffset() {
-        offsetX = offsetX.coerceIn(-maxOffsetX, maxOffsetX)
-        offsetY = offsetY.coerceIn(-maxOffsetY, maxOffsetY)
-    }
 }
