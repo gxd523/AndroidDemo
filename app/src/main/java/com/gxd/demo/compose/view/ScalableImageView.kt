@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.OverScroller
@@ -17,7 +16,7 @@ class ScalableImageView(
     context: Context, attrs: AttributeSet? = null,
 ) : AbsCustomView(context, attrs), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, Runnable {
     companion object {
-        private const val EXTRA_SCALE_FACTOR = 1.5f
+        private const val EXTRA_SCALE_FACTOR = 2.5f
     }
 
     // setOnDoubleTapListener(this@ScalableImageView) 可以不用写
@@ -35,6 +34,8 @@ class ScalableImageView(
     private var bigScale = 0f
     private var offsetX = 0f
     private var offsetY = 0f
+    private var maxOffsetX = 0f
+    private var maxOffsetY = 0f
     private var big = false
     private var scaleFraction = 0f
         set(value) {
@@ -55,6 +56,8 @@ class ScalableImageView(
             smallScale = height / bitmap.height.toFloat()
             bigScale = width / bitmap.width.toFloat() * EXTRA_SCALE_FACTOR
         }
+        maxOffsetX = bigScale * bitmap.width / 2 - width / 2
+        maxOffsetY = bigScale * bitmap.height / 2 - height / 2
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -84,9 +87,10 @@ class ScalableImageView(
         if (big) {
             // TODO: 这里比较难懂
             val doubleTapToCenterOffsetX = e.x - width / 2// 「双击点」到「缩放中心点」的「偏移量」
-            offsetX = -(doubleTapToCenterOffsetX * bigScale / smallScale - doubleTapToCenterOffsetX)
             val doubleTapToCenterOffsetY = e.y - height / 2// 「双击点」到「缩放中心点」的「偏移量」
+            offsetX = -(doubleTapToCenterOffsetX * bigScale / smallScale - doubleTapToCenterOffsetX)
             offsetY = -(doubleTapToCenterOffsetY * bigScale / smallScale - doubleTapToCenterOffsetY)
+            coerceInOffset()
 
             scaleAnim.start()
         } else {
@@ -103,28 +107,22 @@ class ScalableImageView(
         if (!big) return false
         offsetX -= distanceX
         offsetY -= distanceY
-        val maxOffsetX = bigScale * bitmap.width / 2 - width / 2
-        val maxOffsetY = bigScale * bitmap.height / 2 - height / 2
-        offsetX = offsetX.coerceIn(-maxOffsetX, maxOffsetX)
-        offsetY = offsetY.coerceIn(-maxOffsetY, maxOffsetY)
-        Log.d("ggg", "offsetX = $offsetX, offsetY = $offsetY")
+        coerceInOffset()
         invalidate()
         return true
     }
 
     override fun onFling(downEvent: MotionEvent?, currentEvent: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
         if (!big) return false
-        val maxOffsetX = (bigScale * bitmap.width / 2 - width / 2).toInt()
-        val maxOffsetY = (bigScale * bitmap.height / 2 - height / 2).toInt()
         scroller.fling(
             offsetX.toInt(),
             offsetY.toInt(),
             velocityX.toInt(),
             velocityY.toInt(),
-            -maxOffsetX,
-            maxOffsetX,
-            -maxOffsetY,
-            maxOffsetY,
+            -maxOffsetX.toInt(),
+            maxOffsetX.toInt(),
+            -maxOffsetY.toInt(),
+            maxOffsetY.toInt(),
             50.dp,
             50.dp
         )
@@ -174,4 +172,12 @@ class ScalableImageView(
     override fun onSingleTapUp(e: MotionEvent): Boolean = false
 
     override fun onLongPress(e: MotionEvent) {}
+
+    /**
+     * 校准偏移量
+     */
+    private fun coerceInOffset() {
+        offsetX = offsetX.coerceIn(-maxOffsetX, maxOffsetX)
+        offsetY = offsetY.coerceIn(-maxOffsetY, maxOffsetY)
+    }
 }
