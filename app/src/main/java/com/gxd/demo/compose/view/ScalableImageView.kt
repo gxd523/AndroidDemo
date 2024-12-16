@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.OverScroller
-import androidx.core.animation.doOnEnd
 import com.gxd.demo.compose.R
 import kotlinx.coroutines.Runnable
 
@@ -29,13 +28,7 @@ class ScalableImageView(
      */
     private val scroller by lazy { OverScroller(context) }
     private val scaleAnim by lazy {
-        ObjectAnimator.ofFloat(this, "scaleFraction", 0f, 1f).apply {
-            doOnEnd {
-                if (big) return@doOnEnd
-                offsetX = 0f
-                offsetY = 0f
-            }
-        }
+        ObjectAnimator.ofFloat(this, "scaleFraction", 0f, 1f)
     }
     private lateinit var bitmap: Bitmap
     private var smallScale = 0f
@@ -43,7 +36,7 @@ class ScalableImageView(
     private var offsetX = 0f
     private var offsetY = 0f
     private var big = false
-    var scaleFraction = 0f
+    private var scaleFraction = 0f
         set(value) {
             field = value
             invalidate()
@@ -88,7 +81,18 @@ class ScalableImageView(
      */
     override fun onDoubleTap(e: MotionEvent): Boolean {
         big = !big
-        if (big) scaleAnim.start() else scaleAnim.reverse()
+        if (big) {
+            // TODO: 这里比较难懂
+            val doubleTapToCenterOffsetX = e.x - width / 2// 「双击点」到「缩放中心点」的「偏移量」
+            offsetX = -(doubleTapToCenterOffsetX * bigScale / smallScale - doubleTapToCenterOffsetX)
+            val doubleTapToCenterOffsetY = e.y - height / 2// 「双击点」到「缩放中心点」的「偏移量」
+            offsetY = -(doubleTapToCenterOffsetY * bigScale / smallScale - doubleTapToCenterOffsetY)
+
+            scaleAnim.start()
+        } else {
+            scaleAnim.reverse()
+        }
+
         return true
     }
 
