@@ -32,7 +32,7 @@ class XfermodeView(context: Context, attrs: AttributeSet? = null) : AbsCustomVie
         if (w == 0 || h == 0) return
 
         layerBounds.set(
-            leftOffset, topOffset, leftOffset + contentSize.toFloat(), topOffset + contentSize.toFloat()
+            contentLeftOffset, contentTopOffset, contentLeftOffset + contentSize.toFloat(), contentTopOffset + contentSize.toFloat()
         )
 
         circleBitmap = Bitmap.createBitmap(contentSize, contentSize, Bitmap.Config.ARGB_8888)
@@ -54,12 +54,12 @@ class XfermodeView(context: Context, attrs: AttributeSet? = null) : AbsCustomVie
         val saveCount = canvas.saveLayer(layerBounds, null)
 
         circleBitmap?.let {
-            canvas.drawBitmap(it, leftOffset, topOffset, paint)
+            canvas.drawBitmap(it, contentLeftOffset, contentTopOffset, paint)
         }
 
         squareBitmap?.let {
             paint.xfermode = xfermode
-            canvas.drawBitmap(it, leftOffset, topOffset, paint)
+            canvas.drawBitmap(it, contentLeftOffset, contentTopOffset, paint)
             paint.xfermode = null
         }
 

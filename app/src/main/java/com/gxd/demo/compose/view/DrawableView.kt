@@ -9,8 +9,8 @@ class DrawableView(context: Context, attrs: AttributeSet? = null) : AbsCustomVie
     private val drawable by lazy { MeshDrawable() }
 
     override fun onDraw(canvas: Canvas) {
-        val leftOffsetInt = leftOffset.roundToInt()
-        val topOffsetInt = topOffset.roundToInt()
+        val leftOffsetInt = contentLeftOffset.roundToInt()
+        val topOffsetInt = contentTopOffset.roundToInt()
         drawable.setBounds(leftOffsetInt, topOffsetInt, contentSize + leftOffsetInt, contentSize + topOffsetInt)
         drawable.draw(canvas)
     }

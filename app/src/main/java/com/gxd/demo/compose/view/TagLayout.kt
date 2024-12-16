@@ -71,4 +71,10 @@ class TagLayout(context: Context, attrs: AttributeSet? = null) : ViewGroup(conte
     }
 
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams? = MarginLayoutParams(context, attrs)
+
+    /**
+     * 如果当前「ViewGroup」不能滑动，则不应该让内部的「子View」等待一段时间在设置为按下
+     * todo 小细节
+     */
+    override fun shouldDelayChildPressedState(): Boolean = false
 }

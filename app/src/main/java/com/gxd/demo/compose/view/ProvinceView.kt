@@ -57,7 +57,7 @@ class ProvinceView(context: Context, attrs: AttributeSet? = null) : AbsCustomVie
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawText(province, leftOffset + contentSize / 2, topOffset + contentSize / 2, paint)
+        canvas.drawText(province, contentLeftOffset + contentSize / 2, contentTopOffset + contentSize / 2, paint)
     }
 
     class ProvinceEvaluator : TypeEvaluator<String> {

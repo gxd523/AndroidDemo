@@ -23,10 +23,10 @@ class RingView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(co
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         ovalRectF.set(
-            leftOffset + strokeWidth / 2,
-            topOffset + strokeWidth / 2,
-            leftOffset + contentSize - strokeWidth / 2,
-            topOffset + contentSize - strokeWidth / 2
+            contentLeftOffset + strokeWidth / 2,
+            contentTopOffset + strokeWidth / 2,
+            contentLeftOffset + contentSize - strokeWidth / 2,
+            contentTopOffset + contentSize - strokeWidth / 2
         )
     }
 
@@ -36,7 +36,7 @@ class RingView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(co
         paint.color = Color.DKGRAY
 
         val radius = contentSize / 2f
-        canvas.drawCircle(radius + leftOffset, radius + topOffset, radius - strokeWidth / 2, paint)
+        canvas.drawCircle(radius + contentLeftOffset, radius + contentTopOffset, radius - strokeWidth / 2, paint)
 
         paint.strokeCap = Paint.Cap.ROUND
         paint.color = Color.RED
@@ -54,8 +54,8 @@ class RingView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(co
         paint.color = Color.BLACK
         canvas.drawText(
             text,
-            leftOffset + contentSize / 2f,
-            topOffset + contentSize / 2f - (fontMetric.ascent + fontMetric.descent) / 2,
+            contentLeftOffset + contentSize / 2f,
+            contentTopOffset + contentSize / 2f - (fontMetric.ascent + fontMetric.descent) / 2,
             paint
         )
     }
