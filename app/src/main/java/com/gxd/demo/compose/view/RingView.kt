@@ -9,6 +9,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import androidx.core.content.res.ResourcesCompat
 import com.gxd.demo.compose.R
+import com.gxd.demo.compose.view.util.dp
 
 class RingView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
     private val ovalRectF by lazy { RectF() }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
+import com.gxd.demo.compose.view.util.dp
 import kotlin.math.roundToInt
 
 /**

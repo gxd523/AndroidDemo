@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import androidx.core.graphics.withSave
 import coil3.Bitmap
 import com.gxd.demo.compose.R
+import com.gxd.demo.compose.view.util.getBitmap
 
 /**
  * 「几何变换」+「Camera」+「属性动画」实现照片翻转

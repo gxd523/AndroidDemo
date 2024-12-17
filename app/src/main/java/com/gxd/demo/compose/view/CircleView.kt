@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.util.AttributeSet
+import com.gxd.demo.compose.view.util.dp
 
 /**
  * 对「自定义View」通过「自定义尺寸计算」完整重写「onMeasure」

@@ -1,4 +1,4 @@
-package com.gxd.demo.compose.view
+package com.gxd.demo.compose.view.touch
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -11,6 +11,9 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.widget.OverScroller
 import com.gxd.demo.compose.R
+import com.gxd.demo.compose.view.AbsCustomView
+import com.gxd.demo.compose.view.util.dp
+import com.gxd.demo.compose.view.util.getBitmap
 import kotlinx.coroutines.Runnable
 
 /**

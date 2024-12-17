@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
 import com.gxd.demo.compose.R
+import com.gxd.demo.compose.view.util.dp
 
 /**
  * 自定义属性动画

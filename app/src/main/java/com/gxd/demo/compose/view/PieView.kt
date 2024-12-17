@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.RectF
 import android.util.AttributeSet
+import com.gxd.demo.compose.view.util.dp
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin

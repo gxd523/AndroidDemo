@@ -1,4 +1,4 @@
-package com.gxd.demo.compose.view
+package com.gxd.demo.compose.view.util
 
 import android.content.res.Resources
 import android.graphics.BitmapFactory

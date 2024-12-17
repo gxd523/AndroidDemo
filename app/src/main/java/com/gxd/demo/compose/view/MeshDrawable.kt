@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.toColorInt
+import com.gxd.demo.compose.view.util.dp
 
 @SuppressLint("NewApi")
 class MeshDrawable : Drawable() {

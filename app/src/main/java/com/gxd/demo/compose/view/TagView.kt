@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.collection.floatListOf
+import com.gxd.demo.compose.view.util.dp
 import java.util.Random
 
 class TagView(context: Context, attrs: AttributeSet? = null) : AppCompatTextView(context, attrs) {

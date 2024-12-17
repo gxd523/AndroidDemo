@@ -11,6 +11,8 @@ import android.util.AttributeSet
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import com.gxd.demo.compose.R
+import com.gxd.demo.compose.view.util.dp
+import com.gxd.demo.compose.view.util.sp
 
 /**
  * 多行文字环绕图片
