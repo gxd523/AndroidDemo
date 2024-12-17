@@ -9,6 +9,13 @@ import kotlin.math.max
 
 /**
  * 最复杂的「自定义Layout」，需要重写「onMeasure」、「onLayout」
+ * • 重写 OnMeasure（）
+ *      • 遍历每个子 View，测量子 View
+ *          • 测量完成后，得出子 View 的实际位置和尺寸，并暂时保存
+ *          • 有些子 View 可能需要重新测量
+ *      • 测量出所有子 View 的位置和尺寸后，计算出自己的尺寸，并用 setMeasuredDimension（width，height）保存
+ * • 重写 onLayout（）
+ *      •遍历每个子 View，调用它们的 layout（）方法来将位置和尺寸传给它们
  */
 class TagLayout(context: Context, attrs: AttributeSet? = null) : ViewGroup(context, attrs) {
     private val childrenBoundList = mutableListOf<Rect>()

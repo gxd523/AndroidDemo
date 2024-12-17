@@ -8,6 +8,9 @@ import com.gxd.demo.compose.view.util.dp
 
 /**
  * 对「自定义View」通过「自定义尺寸计算」完整重写「onMeasure」
+ * 1、重写「onMeasure」
+ * 2、用「resolveSize」修成结果，调用「子View」的「measure」
+ * 3、调用「setMeasuredDimension」保存尺寸
  */
 class CircleView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
     private val radius by lazy { 50f.dp }
