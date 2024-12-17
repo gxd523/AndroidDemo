@@ -68,8 +68,8 @@ class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCust
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         bitmap = getBitmap(resources, R.drawable.test_picture, contentSize)
-        contentLeftOffset = (w - bitmap.width) / 2f
-        contentTopOffset = (h - bitmap.height) / 2f
+        contentOffsetX = (w - bitmap.width) / 2f
+        contentOffsetY = (h - bitmap.height) / 2f
 
         if (bitmap.width / bitmap.height.toFloat() > width / height.toFloat()) {
             smallScale = width / bitmap.width.toFloat()
@@ -88,7 +88,7 @@ class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCust
         canvas.translate(offsetX * scaleFraction, offsetY * scaleFraction) // TODO: 这里乘「scaleFraction」很精妙
         val scale = smallScale + (bigScale - smallScale) * scaleFraction
         canvas.scale(scale, scale, width / 2f, height / 2f)
-        canvas.drawBitmap(bitmap, contentLeftOffset, contentTopOffset, paint)
+        canvas.drawBitmap(bitmap, contentOffsetX, contentOffsetY, paint)
     }
 
     /**

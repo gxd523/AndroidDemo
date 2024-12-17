@@ -76,8 +76,8 @@ class CameraView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         bitmap = getBitmap(resources, R.drawable.avatar_png, contentSize)
-        contentLeftOffset = (w - bitmap.width) / 2f
-        contentTopOffset = (h - bitmap.height) / 2f
+        contentOffsetX = (w - bitmap.width) / 2f
+        contentOffsetY = (h - bitmap.height) / 2f
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -85,7 +85,7 @@ class CameraView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(
         val clipRadius = halfSize * 2
 
         canvas.withSave {
-            canvas.translate(contentLeftOffset + halfSize, contentTopOffset + halfSize)
+            canvas.translate(contentOffsetX + halfSize, contentOffsetY + halfSize)
             canvas.rotate(creaseDegrees)
             camera.save()
             camera.rotateX(topFlipDegrees)
@@ -93,12 +93,12 @@ class CameraView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(
             camera.restore()
             canvas.clipRect(-clipRadius, -clipRadius, clipRadius, 0)
             canvas.rotate(-creaseDegrees)
-            canvas.translate(-(contentLeftOffset + halfSize), -(contentTopOffset + halfSize))
-            canvas.drawBitmap(bitmap, contentLeftOffset, contentTopOffset, paint)
+            canvas.translate(-(contentOffsetX + halfSize), -(contentOffsetY + halfSize))
+            canvas.drawBitmap(bitmap, contentOffsetX, contentOffsetY, paint)
         }
 
         canvas.withSave {
-            canvas.translate(contentLeftOffset + halfSize, contentTopOffset + halfSize)
+            canvas.translate(contentOffsetX + halfSize, contentOffsetY + halfSize)
             canvas.rotate(creaseDegrees)
             camera.save()
             camera.rotateX(bottomFlipDegrees)
@@ -106,14 +106,14 @@ class CameraView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(
             camera.restore()
             canvas.clipRect(-clipRadius, 0, clipRadius, clipRadius)
             canvas.rotate(-creaseDegrees)
-            canvas.translate(-(contentLeftOffset + halfSize), -(contentTopOffset + halfSize))
-            canvas.drawBitmap(bitmap, contentLeftOffset, contentTopOffset, paint)
+            canvas.translate(-(contentOffsetX + halfSize), -(contentOffsetY + halfSize))
+            canvas.drawBitmap(bitmap, contentOffsetX, contentOffsetY, paint)
         }
 
         matrix.reset()
         matrix.setScale(0.5f, 0.5f, 0f, 0f)
         matrix.postRotate(180f, halfSize / 2f, halfSize / 2f)
-        matrix.postTranslate(contentLeftOffset + halfSize - halfSize / 2, contentTopOffset + halfSize - halfSize / 2)
+        matrix.postTranslate(contentOffsetX + halfSize - halfSize / 2, contentOffsetY + halfSize - halfSize / 2)
 //        canvas.drawBitmap(bitmap, matrix, paint)
     }
 }
