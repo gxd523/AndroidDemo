@@ -8,24 +8,34 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.widget.OverScroller
 import com.gxd.demo.compose.R
 import kotlinx.coroutines.Runnable
 
 /**
- * 实现功能：「双击缩放」、「双指捏合」、「拖动图片」
+ * 实现功能：「双击缩放」、「双指缩放」、「拖动图片」
  */
 class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
     companion object {
         private const val EXTRA_SCALE_FACTOR = 2.5f
     }
 
-    private val gestureListener by lazy { ScalableOnGestureListener() }
+    private val scrollAndDoubleTapGestureListener by lazy { ScrollAndDoubleTapGestureListener() }
 
     /**
      * setOnDoubleTapListener(this@ScalableImageView) 可以不用写
      */
-    private val gestureDetector by lazy { GestureDetector(context, gestureListener) }
+    private val scrollAndDoubleTapGestureDetector by lazy {
+        GestureDetector(context, scrollAndDoubleTapGestureListener)
+    }
+
+    private val scaleGestureListener by lazy { ScaleGestureListener() }
+
+    /**
+     * 「双指缩放」
+     */
+    private val scaleGestureDetector by lazy { ScaleGestureDetector(context, scaleGestureListener) }
     private val refreshFlyingTask by lazy { RefreshFlyingTask() }
 
     /**
@@ -81,10 +91,34 @@ class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCust
         canvas.drawBitmap(bitmap, contentLeftOffset, contentTopOffset, paint)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean = gestureDetector.onTouchEvent(event)
+    /**
+     * 「单指」或「双指」按下时的偏移修改，使之能够「跟随手指」的位置进行「缩放」
+     * 这里比较难懂
+     */
+    private fun scaleFollowTap(pointX: Float, pointY: Float) {
+        val doubleTapToCenterOffsetX = pointX - width / 2// 「双击点」到「缩放中心点」的「偏移量」
+        val doubleTapToCenterOffsetY = pointY - height / 2// 「双击点」到「缩放中心点」的「偏移量」
+        offsetX = -(doubleTapToCenterOffsetX * bigScale / smallScale - doubleTapToCenterOffsetX)
+        offsetY = -(doubleTapToCenterOffsetY * bigScale / smallScale - doubleTapToCenterOffsetY)
+        coerceInOffset()
+    }
 
-    private inner class ScalableOnGestureListener : GestureDetector.SimpleOnGestureListener() {
+    /**
+     * 校准偏移量
+     */
+    private fun coerceInOffset() {
+        offsetX = offsetX.coerceIn(-maxOffsetX, maxOffsetX)
+        offsetY = offsetY.coerceIn(-maxOffsetY, maxOffsetY)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        scaleGestureDetector.onTouchEvent(event)
+        if (!scaleGestureDetector.isInProgress) scrollAndDoubleTapGestureDetector.onTouchEvent(event)
+        return true
+    }
+
+    private inner class ScrollAndDoubleTapGestureListener : GestureDetector.SimpleOnGestureListener() {
         /**
          * 几乎必返回「true」
          * 「OnGestureListener」只用到了这一个方法
@@ -98,13 +132,7 @@ class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCust
         override fun onDoubleTap(e: MotionEvent): Boolean {
             big = !big
             if (big) {
-                // TODO: 这里比较难懂
-                val doubleTapToCenterOffsetX = e.x - width / 2// 「双击点」到「缩放中心点」的「偏移量」
-                val doubleTapToCenterOffsetY = e.y - height / 2// 「双击点」到「缩放中心点」的「偏移量」
-                offsetX = -(doubleTapToCenterOffsetX * bigScale / smallScale - doubleTapToCenterOffsetX)
-                offsetY = -(doubleTapToCenterOffsetY * bigScale / smallScale - doubleTapToCenterOffsetY)
-                coerceInOffset()
-
+                scaleFollowTap(e.x, e.y)
                 scaleAnim.start()
             } else {
                 scaleAnim.reverse()
@@ -143,17 +171,11 @@ class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCust
 //        for (i in 10..100 step 10) {
 //            postDelayed({ refreshFling() }, i.toLong())
 //        }
-            postOnAnimation(refreshFlyingTask) // TODO: 这里避免不停创建Runnable对象，「postAnimation」对等待「下一帧」时才推到主线程队列中
+            // TODO: 这里避免不停创建Runnable对象，「postAnimation」对等待「下一帧」时才推到主线程队列中
+            postOnAnimation(refreshFlyingTask)
             return true
         }
 
-        /**
-         * 校准偏移量
-         */
-        private fun coerceInOffset() {
-            offsetX = offsetX.coerceIn(-maxOffsetX, maxOffsetX)
-            offsetY = offsetY.coerceIn(-maxOffsetY, maxOffsetY)
-        }
         /**
          * 支持双击时的单击回调，按下抬起后超过「300毫秒」时回调
          */
@@ -178,6 +200,33 @@ class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCust
 //        override fun onLongPress(e: MotionEvent) {}
     }
 
+    private inner class ScaleGestureListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        /**
+         * 返回为「true」时，「scaleFactor」表示「当前状态」相比「上一状态」的缩放因子
+         * 返回为「false」时，「scaleFactor」表示「当前状态」相比「初始状态」的缩放因子
+         */
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+            var currentScale = smallScale + (bigScale - smallScale) * scaleFraction
+            currentScale = (currentScale * detector.scaleFactor)
+            if (currentScale < smallScale || currentScale > bigScale) {
+                return false
+            } else {
+                scaleFraction = (currentScale - smallScale) / (bigScale - smallScale)
+                return true
+            }
+        }
+
+        /**
+         * 类似「onDown」必须返回「true」
+         */
+        override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+            scaleFollowTap(detector.focusX, detector.focusY)// 这里取「双指中心点」
+            return true
+        }
+
+        override fun onScaleEnd(detector: ScaleGestureDetector) = super.onScaleEnd(detector)
+    }
+
     private inner class RefreshFlyingTask : Runnable {
         override fun run() {
             val isRunning = scroller.computeScrollOffset()
@@ -186,7 +235,8 @@ class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCust
             invalidate()
 
             if (!isRunning) return
-            postOnAnimation(this) // TODO: 这里避免不停创建Runnable对象，「postAnimation」对等待「下一帧」时才推到主线程队列中
+            // TODO: 这里避免不停创建Runnable对象，「postAnimation」对等待「下一帧」时才推到主线程队列中
+            postOnAnimation(this)
         }
     }
 }
