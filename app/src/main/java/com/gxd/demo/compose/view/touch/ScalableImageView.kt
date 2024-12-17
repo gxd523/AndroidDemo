@@ -18,6 +18,7 @@ import kotlinx.coroutines.Runnable
 
 /**
  * 实现功能：「双击缩放」、「双指缩放」、「拖动图片」
+ * 不完善，细节有问题
  */
 class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
     companion object {
