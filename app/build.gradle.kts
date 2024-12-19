@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.gxd.demo.compose"
-        minSdk = 22
+        minSdk = 24
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.constraintlayout)
 
     implementation(libs.coil.compose)
     implementation(libs.coil.okhttp)
