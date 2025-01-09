@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.gxd.demo.compose",
+    "sha256_cert_fingerprints":
+    ["31:5E:BC:02:C4:98:13:CC:C4:57:F9:FD:E7:25:9B:46:FC:E3:5C:7D:07:59:61:C2:8B:E6:D6:B6:6F:F0:53:C5"]
+  }
+}]
