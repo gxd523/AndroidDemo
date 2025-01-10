@@ -5,3 +5,10 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.ksp) apply false
 }
+
+tasks.register("ggg") {
+    dependsOn(":app:assembleDebug")
+    doLast {
+        println("hahaha")
+    }
+}
