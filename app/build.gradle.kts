@@ -43,24 +43,24 @@ android {
         versionName = "1.0"
     }
 
-    signingConfigs {
-        create("sign_config") {
-            storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
-    }
+//    signingConfigs {
+//        create("sign_config") {
+//            storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore")
+//            storePassword = "android"
+//            keyAlias = "androiddebugkey"
+//            keyPassword = "android"
+//        }
+//    }
     buildTypes {
         debug {
             isMinifyEnabled = false
             isDebuggable = true
-            signingConfig = signingConfigs.getByName("sign_config")
+            signingConfig = signingConfigs.named("debug").get()
         }
         release {
             isMinifyEnabled = true
             isDebuggable = false
-            signingConfig = signingConfigs.getByName("sign_config")
+            signingConfig = signingConfigs.named("debug").get()
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -90,6 +90,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons)
 
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
