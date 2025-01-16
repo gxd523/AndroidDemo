@@ -203,6 +203,9 @@ fun SwipeRefreshCase(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * 自定义下拉刷新指示器
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MySwipeRefreshIndicator(state: PullToRefreshState, isRefreshing: Boolean, modifier: Modifier = Modifier) {
