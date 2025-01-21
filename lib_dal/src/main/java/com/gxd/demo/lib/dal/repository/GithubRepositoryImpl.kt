@@ -27,7 +27,7 @@ class GithubRepositoryImpl @Inject constructor(
             if (e is CancellationException) throw e else emptyList<NetworkRepo>()
         }
         val repoList = networkRepoList.map {
-            RepoEntity(it.id ?: 0, username, it.name ?: "", it.url ?: "", it.description ?: "")
+            RepoEntity(it.id ?: 0, username, it.name ?: "", it.htmlUrl ?: "", it.description ?: "")
         }
         databaseDataSource.deleteAndInsert(repoList)
     }

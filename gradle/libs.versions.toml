@@ -14,6 +14,7 @@ appcompat = "1.7.0"
 constraintlayout = "2.2.0"
 constraintlayoutCompose = "1.1.0"
 recyclerview = "1.4.0"
+browser = "1.8.0"
 
 retrofit = "2.11.0"
 coil = "3.0.4"
@@ -50,6 +51,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }

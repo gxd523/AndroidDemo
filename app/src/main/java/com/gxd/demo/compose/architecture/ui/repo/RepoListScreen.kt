@@ -1,5 +1,6 @@
 package com.gxd.demo.compose.architecture.ui.repo
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +36,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gxd.demo.compose.architecture.uitl.launchCustomChromeTab
+import com.gxd.demo.compose.ui.theme.WechatTheme
+import com.gxd.demo.lib.dal.repository.Repo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,7 +91,8 @@ fun RepoListScreen(modifier: Modifier = Modifier) {
                 bottom.linkTo(parent.bottom)
             }) {
                 items(uiState.repoList.size) { index ->
-                    RepoItemComponent(uiState, index)
+                    uiState.repoList
+                    RepoItemComponent(uiState.repoList[index])
                 }
             }
         }
@@ -93,21 +100,27 @@ fun RepoListScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun RepoItemComponent(uiState: RepoListUiState, index: Int) = Card(
-    Modifier.fillMaxWidth().padding(15.dp).clickable {},
-    elevation = elevatedCardElevation(defaultElevation = 8.dp),
-    shape = RoundedCornerShape(3.dp)
-) {
-    Column(Modifier.padding(10.dp)) {
-        val repo = uiState.repoList[index]
-        Text(buildAnnotatedString {
-            append("库名: ")
-            val spanStyle = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
-            withStyle(spanStyle) { append(repo.name) }
-        })
-        Text(buildAnnotatedString {
-            append("地址: ")
-            withStyle(style = SpanStyle(fontWeight = FontWeight.W900)) { append(repo.url) }
-        })
+private fun RepoItemComponent(repo: Repo) {
+    val context = LocalContext.current
+    val toolbarColor = WechatTheme.colorScheme.background.toArgb()
+    Card(
+        Modifier.fillMaxWidth().padding(15.dp).clickable {
+            context.launchCustomChromeTab(Uri.parse(repo.url), toolbarColor)
+        },
+        elevation = elevatedCardElevation(defaultElevation = 8.dp),
+        shape = RoundedCornerShape(3.dp)
+    ) {
+        Column(Modifier.padding(10.dp)) {
+
+            Text(buildAnnotatedString {
+                append("库名: ")
+                val spanStyle = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                withStyle(spanStyle) { append(repo.name) }
+            })
+            Text(buildAnnotatedString {
+                append("地址: ")
+                withStyle(style = SpanStyle(fontWeight = FontWeight.W900)) { append(repo.url) }
+            })
+        }
     }
 }

@@ -107,6 +107,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.activity)
+    implementation(libs.androidx.browser)
 
     implementation(libs.coil.compose)
     implementation(libs.coil.okhttp)
