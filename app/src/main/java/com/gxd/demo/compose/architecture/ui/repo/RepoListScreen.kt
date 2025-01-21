@@ -3,6 +3,7 @@ package com.gxd.demo.compose.architecture.ui.repo
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -33,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gxd.demo.compose.architecture.uitl.launchCustomChromeTab
@@ -50,13 +51,8 @@ fun RepoListScreen(modifier: Modifier = Modifier) {
         { viewModel.pullToRefresh() },
         modifier.systemGesturesPadding().fillMaxSize()
     ) {
-        ConstraintLayout(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize()) {
             var text by remember(uiState.username) { mutableStateOf(uiState.username) }
-            val (
-                textFieldId,
-                textId,
-                lazyColumnId,
-            ) = createRefs()
             BasicTextField(
                 text,
                 {
@@ -68,31 +64,18 @@ fun RepoListScreen(modifier: Modifier = Modifier) {
                     .background(Color.LightGray, CircleShape)
                     .fillMaxWidth()
                     .padding(10.dp)
-                    .wrapContentHeight()
-                    .constrainAs(textFieldId) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end)
-                    },
+                    .wrapContentHeight(),
             )
-            if (uiState.repoList.isEmpty()) {
-                Text(uiState.errorMsg, Modifier.constrainAs(textId) {
-                    start.linkTo(parent.start)
-                    top.linkTo(textFieldId.bottom)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                }, fontSize = 50.sp)
-                return@ConstraintLayout
-            }
-            LazyColumn(Modifier.fillMaxSize().constrainAs(lazyColumnId) {
-                start.linkTo(parent.start)
-                top.linkTo(textFieldId.bottom, margin = 60.dp)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
-            }) {
-                items(uiState.repoList.size) { index ->
-                    uiState.repoList
-                    RepoItemComponent(uiState.repoList[index])
+            Box(Modifier.fillMaxSize(), Alignment.Center) {
+                if (uiState.repoList.isEmpty()) {
+                    Text(uiState.errorMsg, fontSize = 50.sp)
+                    return@Column
+                }
+                LazyColumn(Modifier.fillMaxSize()) {
+                    items(uiState.repoList.size) { index ->
+                        uiState.repoList
+                        RepoItemComponent(uiState.repoList[index])
+                    }
                 }
             }
         }
