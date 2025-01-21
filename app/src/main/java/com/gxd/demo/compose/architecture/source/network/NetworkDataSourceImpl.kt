@@ -1,6 +1,5 @@
 package com.gxd.demo.compose.architecture.source.network
 
-import com.gxd.demo.compose.data.NetworkRepo
 import com.gxd.demo.compose.request.GithubService
 import retrofit2.Retrofit
 import javax.inject.Inject

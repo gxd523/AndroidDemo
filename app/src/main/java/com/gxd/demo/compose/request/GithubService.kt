@@ -1,6 +1,6 @@
 package com.gxd.demo.compose.request
 
-import com.gxd.demo.compose.data.NetworkRepo
+import com.gxd.demo.compose.architecture.source.network.NetworkRepo
 import retrofit2.http.GET
 import retrofit2.http.Path
 

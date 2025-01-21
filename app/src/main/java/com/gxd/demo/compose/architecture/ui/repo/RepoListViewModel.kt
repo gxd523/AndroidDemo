@@ -29,7 +29,7 @@ class RepoListViewModel @Inject constructor(
         private const val INPUT_DEBOUNCE_TIMEOUT = 1_000L
     }
 
-    private val inputUsernameFlow = MutableStateFlow("gxd523")
+    private val inputUsernameFlow = MutableStateFlow("")
 
     @OptIn(FlowPreview::class)
     private val debouncedInputUsernameFlow = inputUsernameFlow.debounce(

@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.gxd.demo.compose.data.NetworkRepo
+import com.gxd.demo.compose.architecture.source.network.NetworkRepo
 import com.gxd.demo.compose.request.service
 import kotlinx.coroutines.launch
 

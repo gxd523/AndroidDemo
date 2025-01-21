@@ -3,7 +3,7 @@ package com.gxd.demo.compose.architecture.repository
 import com.gxd.demo.compose.architecture.source.database.DatabaseDataSource
 import com.gxd.demo.compose.architecture.source.database.table.RepoTable
 import com.gxd.demo.compose.architecture.source.network.NetworkDataSource
-import com.gxd.demo.compose.data.NetworkRepo
+import com.gxd.demo.compose.architecture.source.network.NetworkRepo
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
