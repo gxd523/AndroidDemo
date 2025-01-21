@@ -1,9 +1,9 @@
-package com.gxd.demo.compose.architecture.source.database.table
+package com.gxd.demo.lib.dal.source.database.model
 
 import androidx.room.Entity
 
 @Entity(tableName = "repo", primaryKeys = ["id", "username"])
-data class RepoTable(
+data class RepoEntity(
     val id: Int = 0,
     val username: String = "",
     val name: String = "",

@@ -1,9 +1,9 @@
-package com.gxd.demo.compose.architecture.repository
+package com.gxd.demo.lib.dal.repository
 
-import com.gxd.demo.compose.architecture.source.database.DatabaseDataSource
-import com.gxd.demo.compose.architecture.source.database.table.RepoTable
-import com.gxd.demo.compose.architecture.source.network.NetworkDataSource
-import com.gxd.demo.compose.architecture.source.network.NetworkRepo
+import com.gxd.demo.lib.dal.source.database.DatabaseDataSource
+import com.gxd.demo.lib.dal.source.database.model.RepoEntity
+import com.gxd.demo.lib.dal.source.network.NetworkDataSource
+import com.gxd.demo.lib.dal.source.network.model.NetworkRepo
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +27,7 @@ class GithubRepositoryImpl @Inject constructor(
             if (e is CancellationException) throw e else emptyList<NetworkRepo>()
         }
         val repoList = networkRepoList.map {
-            RepoTable(it.id ?: 0, username, it.name ?: "", it.url ?: "", it.description ?: "")
+            RepoEntity(it.id ?: 0, username, it.name ?: "", it.url ?: "", it.description ?: "")
         }
         databaseDataSource.deleteAndInsert(repoList)
     }

@@ -1,4 +1,4 @@
-package com.gxd.demo.compose.architecture.source.network
+package com.gxd.demo.lib.dal.source.network.model
 
 import com.google.gson.annotations.SerializedName
 

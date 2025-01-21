@@ -1,6 +1,7 @@
 package com.gxd.demo.compose.case
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.systemGesturesPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
@@ -11,19 +12,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.tooling.preview.Preview
-import com.gxd.demo.compose.architecture.source.network.NetworkRepo
-import com.gxd.demo.compose.request.service
+import androidx.compose.ui.Modifier
+import com.gxd.demo.lib.dal.source.network.model.NetworkRepo
+import com.gxd.demo.lib.dal.source.network.service.GithubService
 import kotlinx.coroutines.launch
 
-@Preview(showBackground = true)
 @Composable
-fun SimpleRetrofitRequest(user: String = "gxd523") {
-    Column {
+fun SimpleRetrofitRequestCase(githubService: GithubService, user: String = "gxd523") {
+    Column(Modifier.systemGesturesPadding()) {
         val scope = rememberCoroutineScope()
         var repoList by remember { mutableStateOf<List<NetworkRepo>>(emptyList()) }
         Button(onClick = {
-            scope.launch { repoList = service.requestRepoList(user) }
+            scope.launch { repoList = githubService.requestRepoList(user) }
         }) {
             Text("获取 $user 的所有Repo")
         }

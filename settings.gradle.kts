@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ComposeDemo"
 include(":app")
- 
+include(":lib_dal")

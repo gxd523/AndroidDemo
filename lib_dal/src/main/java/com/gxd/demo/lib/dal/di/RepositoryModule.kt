@@ -1,7 +1,7 @@
-package com.gxd.demo.compose.architecture.di
+package com.gxd.demo.lib.dal.di
 
-import com.gxd.demo.compose.architecture.repository.GithubRepository
-import com.gxd.demo.compose.architecture.repository.GithubRepositoryImpl
+import com.gxd.demo.lib.dal.repository.GithubRepository
+import com.gxd.demo.lib.dal.repository.GithubRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

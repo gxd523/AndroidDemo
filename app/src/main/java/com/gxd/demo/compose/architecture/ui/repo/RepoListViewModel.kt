@@ -3,10 +3,10 @@ package com.gxd.demo.compose.architecture.ui.repo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gxd.demo.compose.architecture.Result
-import com.gxd.demo.compose.architecture.repository.GithubRepository
-import com.gxd.demo.compose.architecture.repository.Repo
 import com.gxd.demo.compose.architecture.uitl.WhileUiSubscribed
 import com.gxd.demo.compose.architecture.uitl.executeEnsureTime
+import com.gxd.demo.lib.dal.repository.GithubRepository
+import com.gxd.demo.lib.dal.repository.Repo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

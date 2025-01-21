@@ -1,9 +1,9 @@
-package com.gxd.demo.compose.architecture.di
+package com.gxd.demo.lib.dal.di
 
 import android.content.Context
 import androidx.room.Room
-import com.gxd.demo.compose.architecture.source.database.GithubDatabase
-import com.gxd.demo.compose.architecture.source.database.table.RepoDao
+import com.gxd.demo.lib.dal.source.database.GithubDatabase
+import com.gxd.demo.lib.dal.source.database.dao.RepoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

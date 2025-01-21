@@ -1,4 +1,4 @@
-package com.gxd.demo.compose.architecture.repository
+package com.gxd.demo.lib.dal.repository
 
 import kotlinx.coroutines.flow.Flow
 

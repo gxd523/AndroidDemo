@@ -1,4 +1,4 @@
-package com.gxd.demo.compose.architecture.repository
+package com.gxd.demo.lib.dal.repository
 
 data class Repo(
     val id: Int = 0,

@@ -1,9 +1,9 @@
-package com.gxd.demo.compose.architecture.di
+package com.gxd.demo.lib.dal.di
 
-import com.gxd.demo.compose.architecture.source.database.DatabaseDataSource
-import com.gxd.demo.compose.architecture.source.database.DatabaseDataSourceImpl
-import com.gxd.demo.compose.architecture.source.network.NetworkDataSource
-import com.gxd.demo.compose.architecture.source.network.NetworkDataSourceImpl
+import com.gxd.demo.lib.dal.source.database.DatabaseDataSource
+import com.gxd.demo.lib.dal.source.database.DatabaseDataSourceImpl
+import com.gxd.demo.lib.dal.source.network.NetworkDataSource
+import com.gxd.demo.lib.dal.source.network.NetworkDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

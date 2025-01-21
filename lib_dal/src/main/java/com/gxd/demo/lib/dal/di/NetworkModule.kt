@@ -1,5 +1,6 @@
-package com.gxd.demo.compose.architecture.di
+package com.gxd.demo.lib.dal.di
 
+import com.gxd.demo.lib.dal.source.network.service.GithubService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +16,7 @@ import javax.inject.Singleton
 class NetworkModule {
     @Singleton
     @Provides
-    fun provideOkHttpClientXxx(): OkHttpClient = OkHttpClient.Builder()
+    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(20, TimeUnit.SECONDS)
         .writeTimeout(20, TimeUnit.SECONDS)
@@ -28,4 +29,8 @@ class NetworkModule {
         .addConverterFactory(GsonConverterFactory.create())
         .client(okHttpClient)
         .build()
+
+    @Singleton
+    @Provides
+    fun provideGithubService(retrofit: Retrofit): GithubService = retrofit.create(GithubService::class.java)
 }
