@@ -2,7 +2,7 @@ package com.gxd.demo.compose.data
 
 import com.google.gson.annotations.SerializedName
 
-data class Repo(
+data class NetworkRepo(
     @SerializedName("allow_forking")
     val allowForking: Boolean? = null,
     @SerializedName("archive_url")

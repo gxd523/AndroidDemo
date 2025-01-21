@@ -1,6 +1,5 @@
 package com.gxd.demo.compose.case
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
@@ -13,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.gxd.demo.compose.data.Repo
+import com.gxd.demo.compose.data.NetworkRepo
 import com.gxd.demo.compose.request.service
 import kotlinx.coroutines.launch
 
@@ -22,9 +21,9 @@ import kotlinx.coroutines.launch
 fun SimpleRetrofitRequest(user: String = "gxd523") {
     Column {
         val scope = rememberCoroutineScope()
-        var repoList by remember { mutableStateOf<List<Repo>>(emptyList()) }
+        var repoList by remember { mutableStateOf<List<NetworkRepo>>(emptyList()) }
         Button(onClick = {
-            scope.launch { repoList = service.listRepos(user) }
+            scope.launch { repoList = service.requestRepoList(user) }
         }) {
             Text("获取 $user 的所有Repo")
         }
