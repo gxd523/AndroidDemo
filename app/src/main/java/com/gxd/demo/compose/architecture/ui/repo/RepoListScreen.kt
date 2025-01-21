@@ -71,7 +71,7 @@ fun RepoListScreen(modifier: Modifier = Modifier) {
                     Text(uiState.errorMsg, fontSize = 50.sp)
                     return@Column
                 }
-                LazyColumn(Modifier.fillMaxSize()) {
+                LazyColumn {
                     items(uiState.repoList.size) { index ->
                         uiState.repoList
                         RepoItemComponent(uiState.repoList[index])
