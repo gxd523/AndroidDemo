@@ -14,11 +14,10 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,14 +32,19 @@ class RepoListViewModel @Inject constructor(
         private const val REPO_LIST_REQUEST_MIN_TIME = 300
     }
 
+    private val _uiState = MutableStateFlow(RepoListUiState(onItemClick = ::addReadRepoCount))
+    val uiState: StateFlow<RepoListUiState> = _uiState
+
     private val inputUsernameFlow = MutableStateFlow("")
 
     @OptIn(FlowPreview::class)
     private val debouncedInputUsernameFlow = inputUsernameFlow.debounce(
         INPUT_DEBOUNCE_TIMEOUT
-    ).stateIn(viewModelScope, WhileUiSubscribed, "")
+    ).onEach { newUsername ->
+        _uiState.update { it.copy(username = newUsername) }
+    }.stateIn(viewModelScope, WhileUiSubscribed, "")
 
-    private val _isLoading = MutableStateFlow(true)
+    private val _isLoading = MutableStateFlow(false)
     val loadingUiState: StateFlow<Boolean> = _isLoading
 
     init {
@@ -54,20 +58,44 @@ class RepoListViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch(Dispatchers.IO) {
+            @OptIn(ExperimentalCoroutinesApi::class)
+            debouncedInputUsernameFlow.flatMapLatest { newUsername ->
+                githubRepository.getObservableRepoList(newUsername).map { handleTask(it) }
+            }.catch {
+                emit(Result.Error(Exception("异常了")))
+            }.collect { result ->
+                _uiState.update {
+                    when (result) {
+                        is Result.Error -> it.copy(
+                            repoList = emptyList(),
+                            readRepoList = emptyList(),
+                            errorMsg = result.exception.message ?: "没有异常信息"
+                        )
+
+                        Result.Loading -> it
+                        is Result.Success -> it.copy(repoList = result.data, errorMsg = "")
+                    }
+                }
+            }
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val observableRepoList = debouncedInputUsernameFlow.flatMapLatest { newUsername ->
-        githubRepository.getObservableRepoList(newUsername).map { handleTask(it) }
-    }.catch {
-        emit(Result.Error(Exception("异常了")))
-    }
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    private val observableRepoList = debouncedInputUsernameFlow.flatMapLatest { newUsername ->
+//        githubRepository.getObservableRepoList(newUsername).map { handleTask(it) }
+//    }.catch {
+//        emit(Result.Error(Exception("异常了")))
+//    }
 
     private val readRepoList = MutableStateFlow(mutableListOf<Repo>())
     private fun addReadRepoCount(repo: Repo) {
         readRepoList.update {
-            it.toMutableList().also {
-                if (!it.any { repo.name == it.name }) it.add(repo)
+            it.toMutableList().also { newReadRepoList ->
+                if (!newReadRepoList.any { repo.name == it.name }) {
+                    newReadRepoList.add(repo)
+                    _uiState.update { it.copy(readRepoList = newReadRepoList) }
+                }
             }
         }
     }
@@ -76,32 +104,32 @@ class RepoListViewModel @Inject constructor(
      * 不相关、更新频率不同的数据项，也可以拆分成多个「uiState」
      * 尤其是当其中某个状态的更新频率高于其他状态的更新频率时
      */
-    val uiState = combine(
-        debouncedInputUsernameFlow, observableRepoList, readRepoList
-    ) { username, repoListResult, readRepoList ->
-        when (repoListResult) {
-            is Result.Error -> RepoListUiState(
-                username = username,
-                errorMsg = repoListResult.exception.message ?: "没有异常信息",
-                onItemClick = ::addReadRepoCount,
-                readRepoList = readRepoList
-            )
-
-            Result.Loading -> RepoListUiState(onItemClick = ::addReadRepoCount, readRepoList = readRepoList)
-
-            is Result.Success -> RepoListUiState(
-                repoListResult.data,
-                username,
-                errorMsg = "",
-                onItemClick = ::addReadRepoCount,
-                readRepoList = readRepoList
-            )
-        }
-    }.distinctUntilChanged { old, new ->
-        old.repoList == new.repoList && old.errorMsg == new.errorMsg && old.readRepoList == new.readRepoList
-    }.stateIn(
-        viewModelScope, WhileUiSubscribed, RepoListUiState()
-    )
+//    val uiStateX = combine(
+//        debouncedInputUsernameFlow, observableRepoList, readRepoList
+//    ) { username, repoListResult, readRepoList ->
+//        when (repoListResult) {
+//            is Result.Error -> RepoListUiState(
+//                username = username,
+//                errorMsg = repoListResult.exception.message ?: "没有异常信息",
+//                onItemClick = ::addReadRepoCount,
+//                readRepoList = readRepoList
+//            )
+//
+//            Result.Loading -> RepoListUiState(onItemClick = ::addReadRepoCount, readRepoList = readRepoList)
+//
+//            is Result.Success -> RepoListUiState(
+//                repoListResult.data,
+//                username,
+//                errorMsg = "",
+//                onItemClick = ::addReadRepoCount,
+//                readRepoList = readRepoList
+//            )
+//        }
+//    }.distinctUntilChanged { old, new ->
+//        old.repoList == new.repoList && old.errorMsg == new.errorMsg && old.readRepoList == new.readRepoList
+//    }.stateIn(
+//        viewModelScope, WhileUiSubscribed, RepoListUiState()
+//    )
 
     fun pullToRefresh() {
         _isLoading.value = true
