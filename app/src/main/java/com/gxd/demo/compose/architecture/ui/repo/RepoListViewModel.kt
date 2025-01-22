@@ -12,12 +12,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,6 +30,7 @@ class RepoListViewModel @Inject constructor(
 ) : ViewModel() {
     companion object {
         private const val INPUT_DEBOUNCE_TIMEOUT = 1_000L
+        private const val REPO_LIST_REQUEST_MIN_TIME = 300
     }
 
     private val inputUsernameFlow = MutableStateFlow("")
@@ -36,10 +40,18 @@ class RepoListViewModel @Inject constructor(
         INPUT_DEBOUNCE_TIMEOUT
     ).stateIn(viewModelScope, WhileUiSubscribed, "")
 
+    private val _isLoading = MutableStateFlow(true)
+    val loadingUiState: StateFlow<Boolean> = _isLoading
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             debouncedInputUsernameFlow.collect { debouncedNewUsername ->
-                githubRepository.updateRepoList(debouncedNewUsername)
+                if (debouncedNewUsername.isEmpty()) return@collect
+                _isLoading.value = true
+                executeEnsureTime(REPO_LIST_REQUEST_MIN_TIME) {
+                    githubRepository.updateRepoList(debouncedNewUsername)
+                    _isLoading.value = false
+                }
             }
         }
     }
@@ -50,27 +62,53 @@ class RepoListViewModel @Inject constructor(
     }.catch {
         emit(Result.Error(Exception("异常了")))
     }
-    private val isLoading by lazy { MutableStateFlow(false) }
-    val uiState = combine(
-        isLoading, debouncedInputUsernameFlow, observableRepoList
-    ) { isLoading, username, repoListResult ->
-        when (repoListResult) {
-            is Result.Error -> RepoListUiState(username = username, errorMsg = repoListResult.exception.message ?: "没有异常信息")
-            Result.Loading -> RepoListUiState(isLoading = true)
-            is Result.Success -> RepoListUiState(repoListResult.data, username, isLoading, errorMsg = "")
+
+    private val readRepoList = MutableStateFlow(mutableListOf<Repo>())
+    private fun addReadRepoCount(repo: Repo) {
+        readRepoList.update {
+            it.toMutableList().also {
+                if (!it.any { repo.name == it.name }) it.add(repo)
+            }
         }
+    }
+
+    /**
+     * 不相关、更新频率不同的数据项，也可以拆分成多个「uiState」
+     * 尤其是当其中某个状态的更新频率高于其他状态的更新频率时
+     */
+    val uiState = combine(
+        debouncedInputUsernameFlow, observableRepoList, readRepoList
+    ) { username, repoListResult, readRepoList ->
+        when (repoListResult) {
+            is Result.Error -> RepoListUiState(
+                username = username,
+                errorMsg = repoListResult.exception.message ?: "没有异常信息",
+                onItemClick = ::addReadRepoCount,
+                readRepoList = readRepoList
+            )
+
+            Result.Loading -> RepoListUiState(onItemClick = ::addReadRepoCount, readRepoList = readRepoList)
+
+            is Result.Success -> RepoListUiState(
+                repoListResult.data,
+                username,
+                errorMsg = "",
+                onItemClick = ::addReadRepoCount,
+                readRepoList = readRepoList
+            )
+        }
+    }.distinctUntilChanged { old, new ->
+        old.repoList == new.repoList && old.errorMsg == new.errorMsg && old.readRepoList == new.readRepoList
     }.stateIn(
-        viewModelScope,
-        WhileUiSubscribed,
-        RepoListUiState(isLoading = false)
+        viewModelScope, WhileUiSubscribed, RepoListUiState()
     )
 
     fun pullToRefresh() {
-        isLoading.value = true
+        _isLoading.value = true
         viewModelScope.launch {
-            executeEnsureTime(500) {
+            executeEnsureTime(REPO_LIST_REQUEST_MIN_TIME) {
                 githubRepository.updateRepoList(debouncedInputUsernameFlow.value)
-                isLoading.value = false
+                _isLoading.value = false
             }
         }
     }

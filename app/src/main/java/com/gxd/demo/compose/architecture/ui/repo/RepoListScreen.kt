@@ -43,11 +43,11 @@ import com.gxd.demo.lib.dal.repository.Repo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RepoListScreen(modifier: Modifier = Modifier) {
-    val viewModel: RepoListViewModel = viewModel()
+fun RepoListScreen(viewModel: RepoListViewModel = viewModel(), modifier: Modifier = Modifier) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isLoading by viewModel.loadingUiState.collectAsStateWithLifecycle()
     PullToRefreshBox(
-        uiState.isLoading,
+        isLoading,
         { viewModel.pullToRefresh() },
         modifier.systemGesturesPadding().fillMaxSize()
     ) {
@@ -72,9 +72,15 @@ fun RepoListScreen(modifier: Modifier = Modifier) {
                     return@Column
                 }
                 LazyColumn {
+                    item {
+                        Text(
+                            uiState.readRepoList.map { it.name }.joinToString(", "),
+                            Modifier.padding(10.dp).wrapContentHeight().background(Color.LightGray)
+                        )
+                    }
                     items(uiState.repoList.size) { index ->
                         uiState.repoList
-                        RepoItemComponent(uiState.repoList[index])
+                        RepoItemComponent(uiState.repoList[index], uiState.onItemClick)
                     }
                 }
             }
@@ -82,13 +88,17 @@ fun RepoListScreen(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * 「item」中不要直接获取「viewModel」，「onItemClick」可以放到「uiState」中
+ */
 @Composable
-private fun RepoItemComponent(repo: Repo) {
+private fun RepoItemComponent(repo: Repo, onItemClick: (Repo) -> Unit) {
     val context = LocalContext.current
     val toolbarColor = WechatTheme.colorScheme.background.toArgb()
     Card(
         Modifier.fillMaxWidth().padding(15.dp).clickable {
             context.launchCustomChromeTab(Uri.parse(repo.url), toolbarColor)
+            onItemClick.invoke(repo)
         },
         elevation = elevatedCardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(3.dp)
