@@ -52,7 +52,7 @@ fun RepoListScreen(viewModel: RepoListViewModel = viewModel(), modifier: Modifie
         modifier.systemGesturesPadding().fillMaxSize()
     ) {
         Column(Modifier.fillMaxSize()) {
-            var text by remember(uiState.username) { mutableStateOf(uiState.username) }
+            var text by remember { mutableStateOf("") }
             BasicTextField(
                 text,
                 {

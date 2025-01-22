@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,9 +39,7 @@ class RepoListViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private val debouncedInputUsernameFlow = inputUsernameFlow.debounce(
         INPUT_DEBOUNCE_TIMEOUT
-    ).onEach { newUsername ->
-        _uiState.update { it.copy(username = newUsername) }
-    }.stateIn(viewModelScope, WhileUiSubscribed, "")
+    ).stateIn(viewModelScope, WhileUiSubscribed, "")
 
     private val _isLoading = MutableStateFlow(false)
     val loadingUiState: StateFlow<Boolean> = _isLoading
@@ -74,7 +71,7 @@ class RepoListViewModel @Inject constructor(
                         )
 
                         Result.Loading -> it
-                        is Result.Success -> it.copy(repoList = result.data, errorMsg = "")
+                        is Result.Success -> it.copy(repoList = result.data, readRepoList = readRepoList.value, errorMsg = "")
                     }
                 }
             }
