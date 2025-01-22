@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -42,6 +44,12 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        val properties = Properties()
+        val inputStream = project.rootProject.file("local.properties").inputStream()
+        properties.load(inputStream)
+        buildConfigField("String", "API_KEY", "\"${properties.getProperty("api_key") ?: ""}\"")
+        buildConfigField("String", "BASE_URL", "\"${project.findProperty("BASE_URL") ?: ""}\"")
     }
 
 //    signingConfigs {
@@ -81,8 +89,23 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeCompiler { /* 配置Compose编译器 */ }
+
+    flavorDimensions += listOf("default")
+    productFlavors {
+        create("tst") {
+            dimension = "default"
+            applicationIdSuffix = ".test"
+            manifestPlaceholders["app_name"] = "ComposeDemoTest"
+            manifestPlaceholders["app_icon"] = "@android:mipmap/sym_def_app_icon"
+            buildConfigField("String", "BASE_URL", "\"https://test.api.github.com/\"")
+        }
+        create("prod") {
+            dimension = "default"
+        }
+    }
 }
 
 dependencies {
