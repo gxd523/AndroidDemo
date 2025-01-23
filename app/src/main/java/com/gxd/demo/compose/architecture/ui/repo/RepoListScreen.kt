@@ -72,11 +72,13 @@ fun RepoListScreen(viewModel: RepoListViewModel = viewModel(), modifier: Modifie
                     return@Column
                 }
                 LazyColumn {
-                    item {
-                        Text(
-                            uiState.readRepoList.map { it.name }.joinToString(", "),
-                            Modifier.padding(10.dp).wrapContentHeight().background(Color.LightGray)
-                        )
+                    if (uiState.readRepoList.isNotEmpty()) {
+                        item {
+                            Text(
+                                uiState.readRepoList.map { it.name }.joinToString(", "),
+                                Modifier.padding(10.dp).wrapContentHeight().background(Color.LightGray)
+                            )
+                        }
                     }
                     items(uiState.repoList.size) { index ->
                         uiState.repoList

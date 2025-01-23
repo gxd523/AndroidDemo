@@ -11,20 +11,23 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface RepoDao {
     @Query("SELECT * FROM repo WHERE username = :username")
-    fun observe(username: String): Flow<List<RepoEntity>>
+    fun observeRepoList(username: String): Flow<List<RepoEntity>>
+
+    @Query("SELECT * FROM repo")
+    fun observeAllRepoList(): Flow<List<RepoEntity>>
 
     @Upsert
-    suspend fun upsert(repoList: List<RepoEntity>)
+    suspend fun upsertRepoList(repoList: List<RepoEntity>)
 
     @Query("DELETE FROM repo")
-    suspend fun deleteAll()
+    suspend fun deleteAllRepoList()
 
     @Insert
-    suspend fun insertAll(repoList: List<RepoEntity>)
+    suspend fun insertAllRepoList(repoList: List<RepoEntity>)
 
     @Transaction
-    suspend fun deleteAndInsert(repoList: List<RepoEntity>) {
-        deleteAll()
-        insertAll(repoList)
+    suspend fun deleteAndInsertRepoList(repoList: List<RepoEntity>) {
+        deleteAllRepoList()
+        insertAllRepoList(repoList)
     }
 }

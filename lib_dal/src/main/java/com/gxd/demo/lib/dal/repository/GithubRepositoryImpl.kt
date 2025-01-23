@@ -16,7 +16,11 @@ class GithubRepositoryImpl @Inject constructor(
     private val networkDataSource: NetworkDataSource,
     private val databaseDataSource: DatabaseDataSource,
 ) : GithubRepository {
-    override fun getObservableRepoList(username: String): Flow<List<Repo>> = databaseDataSource.observe(username).map {
+    override fun getObservableRepoList(username: String): Flow<List<Repo>> = if (username.isEmpty()) {
+        databaseDataSource.observeAllRepoList()
+    } else {
+        databaseDataSource.observeRepoList(username)
+    }.map {
         it.map { Repo(it.id, it.name, it.url, it.description) }
     }.flowOn(Dispatchers.IO)
 
@@ -29,6 +33,6 @@ class GithubRepositoryImpl @Inject constructor(
         val repoList = networkRepoList.map {
             RepoEntity(it.id ?: 0, username, it.name ?: "", it.htmlUrl ?: "", it.description ?: "")
         }
-        databaseDataSource.deleteAndInsert(repoList)
+        databaseDataSource.deleteAndInsertRepoList(repoList)
     }
 }

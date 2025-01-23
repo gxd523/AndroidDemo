@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.gxd.demo.lib.dal.source.database.GithubDatabase
 import com.gxd.demo.lib.dal.source.database.dao.RepoDao
+import com.gxd.demo.lib.dal.source.database.dao.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,4 +25,7 @@ class DatabaseModule {
 
     @Provides
     fun provideRepoDao(database: GithubDatabase): RepoDao = database.repoDao()
+
+    @Provides
+    fun provideUserDao(database: GithubDatabase): UserDao = database.userDao()
 }
