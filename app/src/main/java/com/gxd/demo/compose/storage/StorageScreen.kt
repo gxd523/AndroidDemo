@@ -47,6 +47,7 @@ private fun ButtonList(viewModel: StorageViewModel = viewModel(), modifier: Modi
     Button(onClick = { viewModel.readAlbumPhoto(context) }) { Text("读取相册照片") }
     Button(onClick = { viewModel.addPhotoToAlbum("avatar.jpg", context) }) { Text("添加照片到相册") }
     Button(onClick = { viewModel.removePhotoFromAlbum(context) }) { Text("删除相册中的照片") }
+    Button(onClick = { viewModel.shareImage(context) }) { Text("分享图片") }
     Button(onClick = { viewModel.createFile(context) }) { Text("创建文件") }
     Button(onClick = { viewModel.writeFile(context) }) { Text("写入文件") }
     Button(onClick = { viewModel.readFile(context) }) { Text("读取文件") }

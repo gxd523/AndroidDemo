@@ -113,4 +113,13 @@ class StorageViewModel : ViewModel() {
             }
         }
     }
+
+    fun shareImage(context: Context) {
+        val firstImageUri = uriStateList.firstOrNull() ?: return
+        val launcher = (context as? StorageActivity)?.createFileLauncher ?: return
+        Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_STREAM, firstImageUri)
+            setType("image/*")
+        }.let(launcher::launch)
+    }
 }
