@@ -35,22 +35,19 @@ fun StorageScreen(viewModel: StorageViewModel = viewModel(), modifier: Modifier 
     LazyVerticalGrid(GridCells.Fixed(3), contentPadding = PaddingValues(10.dp)) {
         items(imageBitmapList.size) { Image(imageBitmapList[it], "") }
     }
+    val readTxt = viewModel.readTxt.value
+    if (!readTxt.isNullOrEmpty()) Text(readTxt)
     ButtonList()
 }
 
 @Composable
 private fun ButtonList(viewModel: StorageViewModel = viewModel(), modifier: Modifier = Modifier) = Column(modifier) {
     val context = LocalContext.current
-    Button(onClick = { viewModel.usePhotoPicker(context) }) {
-        Text("照片选择器")
-    }
-    Button(onClick = { viewModel.readAlbumPhoto(context) }) {
-        Text("读取相册照片")
-    }
-    Button(onClick = { viewModel.addPhotoToAlbum("avatar.jpg", context) }) {
-        Text("添加照片到相册")
-    }
-    Button(onClick = { viewModel.removePhotoFromAlbum(context) }) {
-        Text("删除相册中的照片")
-    }
+    Button(onClick = { viewModel.usePhotoPicker(context) }) { Text("照片选择器") }
+    Button(onClick = { viewModel.readAlbumPhoto(context) }) { Text("读取相册照片") }
+    Button(onClick = { viewModel.addPhotoToAlbum("avatar.jpg", context) }) { Text("添加照片到相册") }
+    Button(onClick = { viewModel.removePhotoFromAlbum(context) }) { Text("删除相册中的照片") }
+    Button(onClick = { viewModel.createFile(context) }) { Text("创建文件") }
+    Button(onClick = { viewModel.writeFile(context) }) { Text("写入文件") }
+    Button(onClick = { viewModel.readFile(context) }) { Text("读取文件") }
 }
