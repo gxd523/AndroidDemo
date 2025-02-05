@@ -2,7 +2,7 @@
 agp = "8.8.0"
 kotlin = "2.1.0"
 coroutine = "1.10.1"
-composeBom = "2025.01.00"
+composeBom = "2025.01.01"
 ksp = "2.1.0-1.0.29"
 hilt = "2.54"
 room = "2.6.1"
