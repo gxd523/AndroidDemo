@@ -29,7 +29,7 @@ fun Context.getPhoneNumber(permissionLauncher: ActivityResultLauncher<Array<Stri
     }
 }
 
-fun Context.getSha1Signature(): String? {
+fun Context.getAppSignature(): String? {
     val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         PackageManager.GET_SIGNING_CERTIFICATES
     } else {
