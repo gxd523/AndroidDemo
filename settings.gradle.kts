@@ -16,6 +16,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { setUrl("https://jitpack.io") }
+        maven { setUrl("https://developer.huawei.com/repo") }
+        maven { setUrl("https://developer.hihonor.com/repo") }
     }
 }
 

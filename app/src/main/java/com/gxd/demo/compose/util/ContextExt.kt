@@ -8,7 +8,13 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.app.ActivityCompat
+import com.github.gzuliyujiang.oaid.DeviceID
+import com.github.gzuliyujiang.oaid.DeviceIdentifier
+import com.github.gzuliyujiang.oaid.IGetter
+import kotlinx.coroutines.suspendCancellableCoroutine
+import java.lang.Exception
 import java.security.MessageDigest
+import kotlin.coroutines.resume
 
 fun Context.getPhoneNumber(permissionLauncher: ActivityResultLauncher<Array<String>>): String? {
     val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -48,3 +54,32 @@ fun Context.getAppSignature(): String? {
 
     return digestByteArray.joinToString("") { String.format("%02x", it).uppercase() }
 }
+
+suspend fun Context.getDeviceID(): String = if (DeviceID.supportedOAID(this)) {// 是否支持OAID/AAID
+    val oaid = DeviceIdentifier.getOAID(this)
+    if (oaid.checkXxxID()) {
+        oaid
+    } else {
+        suspendCancellableCoroutine<String> { continuation ->
+            DeviceID.getOAID(this, object : IGetter {
+                override fun onOAIDGetComplete(oaid: String?) {
+                    val result = if (!oaid.isNullOrEmpty() && oaid.checkXxxID()) oaid else getAndroidIdOrGUID()
+                    continuation.resume(result)
+                }
+
+                override fun onOAIDGetError(error: Exception?) {
+                    getAndroidIdOrGUID().let(continuation::resume)
+                }
+            })
+        }
+    }
+} else {
+    getAndroidIdOrGUID()
+}
+
+private fun Context.getAndroidIdOrGUID(): String {
+    val androidID = DeviceIdentifier.getAndroidID(this)
+    return if (androidID.checkXxxID() && androidID.lowercase() != "9774d56d682e549c") androidID else DeviceID.getGUID(this)
+}
+
+private fun String?.checkXxxID(): Boolean = !isNullOrEmpty() && !all { it == '0' }

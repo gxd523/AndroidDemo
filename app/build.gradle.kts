@@ -140,6 +140,11 @@ dependencies {
 
     implementation(libs.retrofit)
 
+    implementation("com.github.gzu-liyujiang:Android_CN_OAID:4.2.11") {
+//        exclude(group = "com.huawei.hms", module = "ads-identifier")
+//        exclude(group = "com.hihonor.mcs", module = "ads-identifier")
+    }
+
 //    debugImplementation(libs.leakcanary)
 //    releaseImplementation(libs.leakcanary.no.op)
 
