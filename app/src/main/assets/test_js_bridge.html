@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test JsBridge</title>
+</head>
+
+<body>
+    <h1>Test JsBridge</h1>
+    <script>
+        function jsFunc(message) {
+            console.log(`native call jsMethod, param = ${message}`)
+            return "JsReturnValue"
+        }
+        function nativeFuncWrap() {
+            let result = window.JsBridge.nativeFunc('hello')
+            console.log(`nativeFunc return = ${result}`)
+        }
+
+        var callNativeMethodCallbackMap = {}
+        var callNativeMethodCallbackId = 1000
+        var webMethodMap = {}
+        webMethodMap['webMethodA'] = function (message) {
+            return `${message}->${Math.random() * 1000}`
+        }
+        webMethodMap['webMethodB'] = function (message) {
+            return `${message}->${Math.random() * 1000}`
+        }
+
+        /**
+         * 1、调用「native方法」之后「native端」回调时走这里
+         * 2、「native端」调用「js方法」时走这里
+         **/
+        function handleNativeMessage(message) {
+            var param = JSON.parse(message.toString())
+            var data = param.data
+            var callbackId = param.callbackId
+            var callNativeMethodCallback = callNativeMethodCallbackMap[callbackId]
+            if (callNativeMethodCallback == null) {// 「native端」调用「js方法」
+                var handler = webMethodMap[param.methodName]
+                var returnData = handler(data)
+                const returnParam = {
+                    methodName: param.methodName,
+                    callbackId: callbackId,
+                    data: returnData
+                }
+                console.log(`「native端」调用「js方法」, web端回调native数据 = ${JSON.stringify(returnParam)}`)
+                window.JsBridge.handleJsMessage(JSON.stringify(returnParam))
+            } else {// 「web端」调用「native方法」后的回调
+                console.log(`「web端」调用「native方法」的回调数据 = ${message}`)
+                callNativeMethodCallback(data)
+            }
+        }
+
+        function callNativeMethod(nativeMethodName, data, callback) {
+            callNativeMethodCallbackId++
+            callNativeMethodCallbackMap[callNativeMethodCallbackId] = callback
+            const param = {
+                methodName: nativeMethodName,
+                callbackId: callNativeMethodCallbackId,
+                data: data
+            }
+            console.log(`web端」调用「native方法」数据 = ${JSON.stringify(param)}`)
+            window.JsBridge.handleJsMessage(JSON.stringify(param))
+        }
+    </script>
+    <button onClick="nativeFuncWrap()">调用native方法</button>
+    <button onClick="callNativeMethod('nativeMethodA', `${Math.random() * 1000}`, (value => console.log(value)))">
+        JsBridge调用nativeMethodA
+    </button>
+    <button onClick="callNativeMethod('nativeMethodB', `${Math.random() * 1000}`, (value => console.log(value)))">
+        JsBridge调用nativeMethodB
+    </button>
+</body>
+
+</html>
