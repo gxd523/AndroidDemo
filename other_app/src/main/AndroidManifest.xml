@@ -1,0 +1,42 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:name=".launchmode.OtherApplication"
+        android:icon="@android:mipmap/sym_def_app_icon"
+        android:label="OtherApp"
+        android:theme="@android:style/Theme.Light.NoTitleBar">
+        <activity
+            android:name=".launchmode.OtherMainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".launchmode.OtherStandardActivity"
+            android:exported="true"
+            android:launchMode="standard" />
+        <activity
+            android:name=".launchmode.OtherSingleTaskActivity"
+            android:exported="true"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".launchmode.TaskAffinityActivity"
+            android:exported="true"
+            android:label="TaskAffinity"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.gxd.demo.compose" />
+        <activity
+            android:name=".launchmode.OtherSingleInstanceActivity"
+            android:exported="true"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".launchmode.AllowTaskReparentingActivity"
+            android:allowTaskReparenting="true"
+            android:exported="true"
+            android:launchMode="standard" />
+    </application>
+</manifest>
