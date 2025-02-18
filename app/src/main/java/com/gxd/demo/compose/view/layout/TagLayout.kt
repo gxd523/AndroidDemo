@@ -1,4 +1,4 @@
-package com.gxd.demo.compose.view
+package com.gxd.demo.compose.view.layout
 
 import android.content.Context
 import android.graphics.Rect
@@ -68,6 +68,7 @@ class TagLayout(context: Context, attrs: AttributeSet? = null) : ViewGroup(conte
             lineMaxHeight = max(lineMaxHeight, child.measuredHeight)
         }
         setMeasuredDimension(totalWidthUsed, totalHeightUsed + lineMaxHeight)
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
