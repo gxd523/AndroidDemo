@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Process
 import android.util.Log
 import com.gxd.demo.compose.util.getAppSignature
+import com.gxd.demo.compose.util.startFrameMonitor
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -16,5 +17,6 @@ class MyApplication : Application() {
         super.onCreate()
         instance = this
         Log.d("ggg", "MyApplication...${Process.myPid()}...${getAppSignature()}")
+        startFrameMonitor(skipFrameWarningLimit = 1)
     }
 }
