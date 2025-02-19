@@ -6,63 +6,62 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
-import android.graphics.RectF
-import android.graphics.Xfermode
 import android.util.AttributeSet
 
 /**
- * Xfermode使用示例
+ * 「Xfermode」使用示例
  */
 class XfermodeView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
-    private val layerBounds by lazy { RectF() }
-    private lateinit var xfermode: Xfermode
-    private var circleBitmap: Bitmap? = null
-    private var squareBitmap: Bitmap? = null
+    var porterDuffMode = PorterDuff.Mode.XOR
+
+    //    private val layerBounds by lazy { RectF() }
+    private val xfermode by lazy { PorterDuffXfermode(porterDuffMode) }
+    private var redCircleBitmap: Bitmap? = null
+    private var blueSquareBitmap: Bitmap? = null
 
     init {
-        setLayerType(LAYER_TYPE_NONE, null)
-    }
-
-    fun init(porterDuffMode: PorterDuff.Mode = PorterDuff.Mode.SRC_OVER) {
-        xfermode = PorterDuffXfermode(porterDuffMode)
+        // 设置「硬件离屏缓冲」，相比「saveLayer」不用每次绘制都创建「离屏缓冲」，性能消耗小很多
+        // 默认「layerType」为「NONE」，没有「离屏缓冲」
+        setLayerType(LAYER_TYPE_HARDWARE, null)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         if (w == 0 || h == 0) return
 
-        layerBounds.set(
-            contentOffsetX, contentOffsetY, contentOffsetX + contentSize.toFloat(), contentOffsetY + contentSize.toFloat()
-        )
+//        layerBounds.set(
+//            contentOffsetX, contentOffsetY,
+//            contentOffsetX + contentSize.toFloat(),
+//            contentOffsetY + contentSize.toFloat()
+//        )
 
-        circleBitmap = Bitmap.createBitmap(contentSize, contentSize, Bitmap.Config.ARGB_8888)
-        squareBitmap = Bitmap.createBitmap(contentSize, contentSize, Bitmap.Config.ARGB_8888)
+        // 注意这里「Bitmap」的要是「方块」和「圆」的「并集」大小
+        redCircleBitmap = Bitmap.createBitmap(contentSize, contentSize, Bitmap.Config.ARGB_8888)
+        blueSquareBitmap = Bitmap.createBitmap(contentSize, contentSize, Bitmap.Config.ARGB_8888)
 
         val canvas = Canvas()
-        canvas.setBitmap(circleBitmap)
+        canvas.setBitmap(redCircleBitmap)
         paint.color = Color.RED
         canvas.drawOval(contentSize / 3f, 0f, contentSize.toFloat(), contentSize * 2 / 3f, paint)
 
-        canvas.setBitmap(squareBitmap)
+        canvas.setBitmap(blueSquareBitmap)
         paint.color = Color.BLUE
         canvas.drawRect(0f, contentSize / 3f, contentSize * 2 / 3f, contentSize.toFloat(), paint)
     }
 
     override fun onDraw(canvas: Canvas) {
-        if (!::xfermode.isInitialized) return
+//        val saveCount = canvas.saveLayer(layerBounds, null)
 
-        val saveCount = canvas.saveLayer(layerBounds, null)
-
-        circleBitmap?.let {
+        redCircleBitmap?.let {
             canvas.drawBitmap(it, contentOffsetX, contentOffsetY, paint)
         }
 
-        squareBitmap?.let {
+        blueSquareBitmap?.let {
             paint.xfermode = xfermode
             canvas.drawBitmap(it, contentOffsetX, contentOffsetY, paint)
             paint.xfermode = null
         }
 
-        canvas.restoreToCount(saveCount)
+//        canvas.restoreToCount(saveCount)
     }
 }
