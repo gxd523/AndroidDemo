@@ -38,16 +38,6 @@ abstract class BaseActivity : ComponentActivity() {
         super.onRestoreInstanceState(savedInstanceState, persistentState)
     }
 
-    override fun onResume() {
-        Log.d("ggg", "${this.javaClass.simpleName}...onResume.................${this.hashCode()}")
-        super.onResume()
-    }
-
-    override fun onPause() {
-        Log.d("ggg", "${this.javaClass.simpleName}...onPause..................${this.hashCode()}")
-        super.onPause()
-    }
-
     override fun onNewIntent(intent: Intent) {
         Log.d("ggg", "${this.javaClass.simpleName}...onNewIntent..............${this.hashCode()}")
         super.onNewIntent(intent)
@@ -56,6 +46,16 @@ abstract class BaseActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
         Log.d("ggg", "${this.javaClass.simpleName}...onNewIntent2.............${this.hashCode()}")
         super.onNewIntent(intent, caller)
+    }
+
+    override fun onResume() {
+        Log.d("ggg", "${this.javaClass.simpleName}...onResume.................${this.hashCode()}")
+        super.onResume()
+    }
+
+    override fun onPause() {
+        Log.d("ggg", "${this.javaClass.simpleName}...onPause..................${this.hashCode()}")
+        super.onPause()
     }
 
     override fun onStop() {
