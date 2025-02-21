@@ -72,13 +72,10 @@ class TwoPager(context: Context, attrs: AttributeSet) : ViewGroup(context, attrs
                 downScrollX = scrollX.toFloat()
             }
 
-            MotionEvent.ACTION_MOVE -> if (!scrolling) {
-                val dx = downPointF.x - event.x
-                if (abs(dx) > pagingSlop) {
-                    scrolling = true
-                    parent.requestDisallowInterceptTouchEvent(true)
-                    return true
-                }
+            MotionEvent.ACTION_MOVE -> if (!scrolling && abs(downPointF.x - event.x) > pagingSlop) {
+                scrolling = true
+                parent.requestDisallowInterceptTouchEvent(true)
+                return true
             }
         }
         return false

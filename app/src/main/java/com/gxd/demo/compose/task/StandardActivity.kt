@@ -47,7 +47,7 @@ class StandardActivity : ComponentActivity() {
                 }
                 val activityName4 = "AllowTaskReparentingActivity"
                 Button({
-                    Intent().apply {3
+                    Intent().apply {
                         val packageName = "com.gxd.demo.other"
                         ComponentName(packageName, "$packageName.launchmode.$activityName4").let(::setComponent)
                     }.let(::startActivity)

@@ -8,11 +8,13 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gxd.demo.compose.wechat.HomeViewModel
 import kotlinx.coroutines.launch
@@ -20,6 +22,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomePage() {
     val viewModel: HomeViewModel = viewModel()
+    LaunchedEffect(Unit) { viewModel.requestChatList() }
     Column {
         val pagerState = rememberPagerState(pageCount = { 4 })
         LaunchedEffect(pagerState) {
@@ -28,8 +31,9 @@ fun HomePage() {
             }
         }
         HorizontalPager(pagerState, Modifier.weight(1f)) { pageIndex ->
+            val chatList by viewModel.chatList.collectAsStateWithLifecycle()
             when (pageIndex) {
-                0 -> ChatList(viewModel.chatList)
+                0 -> ChatList(chatList)
                 1 -> ContactsPage()
                 2 -> DiscoveryPage()
                 3 -> MePage()

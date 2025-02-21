@@ -32,9 +32,9 @@
         android:icon="@android:mipmap/sym_def_app_icon"
         android:label="ComposeDemo"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".wechat.HomeActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
