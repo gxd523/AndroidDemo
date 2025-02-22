@@ -35,11 +35,11 @@ fun Project.myExtension(action: MyExtension.() -> Unit) {
 }
 
 android {
-    namespace = "com.gxd.demo.compose"
+    namespace = "com.gxd.demo.android"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.gxd.demo.compose"
+        applicationId = "com.gxd.demo.android"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
