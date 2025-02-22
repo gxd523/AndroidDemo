@@ -8,7 +8,7 @@ import java.io.FileOutputStream
 import java.lang.reflect.Array
 
 /**
- * 「热修复」、「插件化」示例，「插件化」如何不合并「classLoader」就得通过
+ * 「热修复」、「插件化」示例
  * 将「plugin.apk」的「dex」转为「classLoader」
  * 并获取「element数组」
  * 合并到应用的「dexPathList」的「element数组」中
