@@ -1,4 +1,4 @@
-package com.gxd.demo.android
+package com.gxd.demo.android.links
 
 import android.content.Intent
 import android.net.Uri

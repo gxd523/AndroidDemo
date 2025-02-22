@@ -44,7 +44,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AppLinksActivity"
+            android:name=".links.AppLinksActivity"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter android:autoVerify="true">
