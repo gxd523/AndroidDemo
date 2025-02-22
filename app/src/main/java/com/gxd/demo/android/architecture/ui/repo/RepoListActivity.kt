@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import com.gxd.demo.android.ui.theme.WechatTheme
+import com.gxd.demo.android.compose.wechat.theme.WechatTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gxd.demo.android.architecture.uitl.launchCustomChromeTab
-import com.gxd.demo.android.ui.theme.WechatTheme
+import com.gxd.demo.android.compose.wechat.theme.WechatTheme
 import com.gxd.demo.lib.dal.repository.Repo
 
 @OptIn(ExperimentalMaterial3Api::class)
