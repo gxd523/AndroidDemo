@@ -22,7 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ComposeDemo"
+rootProject.name = "AndroidDemo"
 include(":app")
 include(":lib_dal")
 include(":other_app")
