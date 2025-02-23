@@ -36,12 +36,12 @@ fun Project.myExtension(action: MyExtension.() -> Unit) {
 
 android {
     namespace = "com.gxd.demo.android"
-    compileSdk = 35
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.gxd.demo.android"
-        minSdk = 24
-        targetSdk = 35
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
