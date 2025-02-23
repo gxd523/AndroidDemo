@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
      * 自定义Flow操作符实现按钮防抖
      * 「debounce」更适合「搜索」场景
      */
-    fun <T> Flow<T>.throttle(time: Duration): Flow<T> = flow {
+    private fun <T> Flow<T>.throttle(time: Duration): Flow<T> = flow {
         var lastTime = 0L
         this@throttle.collect {
             val currentTime = System.currentTimeMillis()
@@ -82,12 +82,8 @@ class MainActivity : ComponentActivity() {
     /**
      * 「callbackFlow」是「channelFlow」实现的
      */
-    fun Button.buttonClickFlow(): Flow<Unit> = callbackFlow {
-        val listener = object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                trySend(Unit)
-            }
-        }
+    private fun Button.buttonClickFlow(): Flow<Unit> = callbackFlow {
+        val listener = View.OnClickListener { trySend(Unit) }
 
         this@buttonClickFlow.setOnClickListener(listener)
         awaitClose {
