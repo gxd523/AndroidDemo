@@ -29,7 +29,12 @@ class GithubRepositoryImpl @Inject constructor(
 
     private var githubUserFlow: MutableStateFlow<GithubUser?>? = null
 
-    override fun getObservableGithubUser(): Flow<GithubUser?> = MutableStateFlow<GithubUser?>(null).also { githubUserFlow = it }
+    override fun getObservableGithubUser(): Flow<GithubUser?> = MutableStateFlow<GithubUser?>(null).also {
+        githubUserFlow = it.also aaa@{
+            val githubUser = cacheDataSource[CacheDataSource.GITHUB_USER] ?: return@aaa
+            it.value = githubUser as GithubUser
+        }
+    }
 
     override suspend fun updateRepoList(username: String) = withContext(Dispatchers.IO) {
         val networkRepoList = try {

@@ -63,6 +63,9 @@
             android:name=".task.StandardActivity"
             android:exported="true" />
         <activity
+            android:name=".architecture.ui.repo.RepoListActivity"
+            android:exported="true" />
+        <activity
             android:name=".architecture.ui.oauth.OauthLoginActivity"
             android:exported="true">
             <intent-filter android:autoVerify="true">

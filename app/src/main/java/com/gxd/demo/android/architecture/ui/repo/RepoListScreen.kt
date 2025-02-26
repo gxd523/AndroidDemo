@@ -97,9 +97,9 @@ fun RepoListScreen(viewModel: RepoListViewModel = viewModel(), modifier: Modifie
 
 @Composable
 private fun GithubUserItem(uiState: RepoListUiState) {
-    val context = LocalContext.current
     val githubUser = uiState.githubUser
     if (githubUser == null) {
+        val context = LocalContext.current
         val toolbarColor = WechatTheme.colorScheme.background.toArgb()
         Button({
             val authUrl = Uri.parse("https://github.com/login/oauth/authorize").buildUpon()

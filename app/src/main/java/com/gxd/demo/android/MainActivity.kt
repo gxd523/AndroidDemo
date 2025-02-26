@@ -1,6 +1,8 @@
 package com.gxd.demo.android
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,9 +12,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
+import com.gxd.demo.android.architecture.ui.repo.RepoListActivity
+import com.gxd.demo.android.architecture.uitl.launchCustomChromeTab
+import com.gxd.demo.android.compose.wechat.theme.WechatTheme
 import com.gxd.demo.android.plugin.MyPlugin
 import com.gxd.demo.android.util.screenHeightPercent
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +56,23 @@ class MainActivity : ComponentActivity() {
             Column(Modifier.statusBarsPadding()) {
                 AndroidView({ webView }, Modifier.screenHeightPercent(30))
                 AndroidView({ channelFlowBtn })
+                val context = LocalContext.current
+                val toolbarColor = WechatTheme.colorScheme.background.toArgb()
+                Button({
+                    val authUrl = Uri.parse("https://github.com/login/oauth/authorize").buildUpon()
+                        .appendQueryParameter("client_id", BuildConfig.GITHUB_CLIENT_ID)
+                        .appendQueryParameter("redirect_uri", "https://gxd523.github.io/oauth")
+                        .appendQueryParameter("scope", "user:all")
+                        .build()
+                    context.launchCustomChromeTab(authUrl, toolbarColor)
+                }) {
+                    Text("Github授权登录")
+                }
+                Button({
+                    Intent(context, RepoListActivity::class.java).let(::startActivity)
+                }) {
+                    Text("启动RepoListActivity")
+                }
             }
         }
 
