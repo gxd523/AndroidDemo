@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults.elevatedCardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import com.gxd.demo.android.BuildConfig
 import com.gxd.demo.android.architecture.uitl.launchCustomChromeTab
 import com.gxd.demo.android.compose.wechat.theme.WechatTheme
 import com.gxd.demo.lib.dal.repository.Repo
@@ -52,7 +55,8 @@ fun RepoListScreen(viewModel: RepoListViewModel = viewModel(), modifier: Modifie
         modifier.systemGesturesPadding().fillMaxSize()
     ) {
         Column(Modifier.fillMaxSize()) {
-            var text by remember { mutableStateOf("") }
+            val defaultText by viewModel.inputUsernameState.collectAsStateWithLifecycle()
+            var text by remember { mutableStateOf(defaultText) }
             BasicTextField(
                 text,
                 {
@@ -72,10 +76,11 @@ fun RepoListScreen(viewModel: RepoListViewModel = viewModel(), modifier: Modifie
                     return@Column
                 }
                 LazyColumn {
+                    item { GithubUserItem(uiState) }
                     if (uiState.readRepoList.isNotEmpty()) {
                         item {
                             Text(
-                                uiState.readRepoList.map { it.name }.joinToString(", "),
+                                uiState.readRepoList.joinToString(", ") { it.name },
                                 Modifier.padding(10.dp).wrapContentHeight().background(Color.LightGray)
                             )
                         }
@@ -86,6 +91,31 @@ fun RepoListScreen(viewModel: RepoListViewModel = viewModel(), modifier: Modifie
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun GithubUserItem(uiState: RepoListUiState) {
+    val context = LocalContext.current
+    val githubUser = uiState.githubUser
+    if (githubUser == null) {
+        val toolbarColor = WechatTheme.colorScheme.background.toArgb()
+        Button({
+            val authUrl = Uri.parse("https://github.com/login/oauth/authorize").buildUpon()
+                .appendQueryParameter("client_id", BuildConfig.GITHUB_CLIENT_ID)
+                .appendQueryParameter("redirect_uri", "https://gxd523.github.io/oauth")
+                .appendQueryParameter("scope", "user:all")
+                .build()
+            context.launchCustomChromeTab(authUrl, toolbarColor)
+        }) {
+            Text("Github授权登录")
+        }
+    } else {
+        Column {
+            Text("${githubUser.login}")
+            Text("${githubUser.email}")
+            AsyncImage(githubUser.avatarUrl, "")
         }
     }
 }

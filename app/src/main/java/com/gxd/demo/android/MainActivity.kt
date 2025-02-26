@@ -1,5 +1,6 @@
 package com.gxd.demo.android
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -31,16 +32,20 @@ class MainActivity : ComponentActivity() {
             text = "测试channelFlow"
         }
     }
+    private val webView by lazy {
+        WebView(this).apply {
+            settings.apply {
+                @SuppressLint("SetJavaScriptEnabled")
+                javaScriptEnabled = true
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             Column(Modifier.statusBarsPadding()) {
-                AndroidView({ context ->
-                    WebView(context).also {
-                        it.loadUrl("file:///android_asset/test_app_links.html")
-                    }
-                }, Modifier.screenHeightPercent(30))
+                AndroidView({ webView }, Modifier.screenHeightPercent(30))
                 AndroidView({ channelFlowBtn })
             }
         }

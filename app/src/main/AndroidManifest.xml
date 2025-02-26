@@ -30,7 +30,7 @@
     <application
         android:name=".MyApplication"
         android:icon="@android:mipmap/sym_def_app_icon"
-        android:label="ComposeDemo"
+        android:label="AndroidDemo"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme">
         <activity
@@ -62,5 +62,20 @@
         <activity
             android:name=".task.StandardActivity"
             android:exported="true" />
+        <activity
+            android:name=".architecture.ui.oauth.OauthLoginActivity"
+            android:exported="true">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="gxd523.github.io"
+                    android:path="/oauth"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

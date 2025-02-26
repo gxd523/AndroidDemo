@@ -7,6 +7,7 @@ import com.gxd.demo.android.architecture.uitl.WhileUiSubscribed
 import com.gxd.demo.android.architecture.uitl.executeEnsureTime
 import com.gxd.demo.lib.dal.repository.GithubRepository
 import com.gxd.demo.lib.dal.repository.Repo
+import com.gxd.demo.lib.dal.source.network.model.GithubUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,18 +15,16 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RepoListViewModel @Inject constructor(
-    private val githubRepository: GithubRepository,
-) : ViewModel() {
+class RepoListViewModel @Inject constructor(private val githubRepository: GithubRepository) : ViewModel() {
     companion object {
         private const val INPUT_DEBOUNCE_TIMEOUT = 1_000L
         private const val REPO_LIST_REQUEST_MIN_TIME = 300
@@ -34,10 +33,11 @@ class RepoListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RepoListUiState(onItemClick = ::addReadRepoCount))
     val uiState: StateFlow<RepoListUiState> = _uiState
 
-    private val inputUsernameFlow = MutableStateFlow("")
+    private val _inputUsernameFlow = MutableStateFlow("")
+    val inputUsernameState: StateFlow<String> = _inputUsernameFlow
 
     @OptIn(FlowPreview::class)
-    private val debouncedInputUsernameFlow = inputUsernameFlow.debounce(
+    private val debouncedInputUsernameFlow = _inputUsernameFlow.debounce(
         INPUT_DEBOUNCE_TIMEOUT
     ).stateIn(viewModelScope, WhileUiSubscribed, "")
 
@@ -57,8 +57,11 @@ class RepoListViewModel @Inject constructor(
         }
         viewModelScope.launch(Dispatchers.IO) {
             @OptIn(ExperimentalCoroutinesApi::class)
-            debouncedInputUsernameFlow.flatMapLatest { newUsername ->
-                githubRepository.getObservableRepoList(newUsername).map { handleTask(it) }
+            val flatMapLatest = debouncedInputUsernameFlow.flatMapLatest { newUsername ->
+                githubRepository.getObservableRepoList(newUsername)
+            }
+            combine(githubRepository.getObservableGithubUser(), flatMapLatest) { githubUser, repoList ->
+                handleTask(githubUser, repoList)
             }.catch {
                 emit(Result.Error(Exception("异常了")))
             }.collect { result ->
@@ -71,7 +74,12 @@ class RepoListViewModel @Inject constructor(
                         )
 
                         Result.Loading -> it
-                        is Result.Success -> it.copy(repoList = result.data, readRepoList = readRepoList.value, errorMsg = "")
+                        is Result.Success -> it.copy(
+                            repoList = result.data.second,
+                            githubUser = result.data.first,
+                            readRepoList = readRepoList.value,
+                            errorMsg = ""
+                        )
                     }
                 }
             }
@@ -139,11 +147,11 @@ class RepoListViewModel @Inject constructor(
     }
 
     fun updateUsername(newUsername: String) {
-        inputUsernameFlow.value = newUsername
+        _inputUsernameFlow.value = newUsername
     }
 
-    private fun handleTask(repoList: List<Repo>): Result<List<Repo>> {
+    private fun handleTask(githubUser: GithubUser?, repoList: List<Repo>): Result<Pair<GithubUser?, List<Repo>>> {
         if (repoList.isEmpty()) return Result.Error(Exception("repo empty"))
-        return Result.Success(repoList)
+        return Result.Success(githubUser to repoList)
     }
 }

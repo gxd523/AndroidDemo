@@ -6,4 +6,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DatabaseDataSource @Inject constructor(val repoDao: RepoDao, val userDao: UserDao) : RepoDao by repoDao, UserDao by userDao
+class DatabaseDataSource @Inject constructor(
+    private val repoDao: RepoDao, private val userDao: UserDao,
+) : RepoDao by repoDao, UserDao by userDao

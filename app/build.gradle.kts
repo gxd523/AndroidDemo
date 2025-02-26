@@ -50,6 +50,7 @@ android {
         properties.load(inputStream)
         buildConfigField("String", "API_KEY", "\"${properties.getProperty("api_key") ?: ""}\"")
         buildConfigField("String", "BASE_URL", "\"${project.findProperty("BASE_URL") ?: ""}\"")
+        buildConfigField("String", "GITHUB_CLIENT_ID", "\"${project.findProperty("GITHUB_CLIENT_ID") ?: ""}\"")
     }
 
 //    signingConfigs {

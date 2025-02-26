@@ -32,5 +32,6 @@ dependencies {
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    implementation(libs.retrofit.scalars)
     implementation(libs.okhttp.logging)
 }
