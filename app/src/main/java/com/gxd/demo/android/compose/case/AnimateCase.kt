@@ -119,7 +119,7 @@ fun AnimationSpecCase(boxSize: Dp = 50.dp, easing: Easing = CubicBezierEasing(.7
                 .size(boxSize)
                 .offset(offsetAnimate, offsetAnimate)
                 .background(Color.Red)
-                .clickable { offsetX = Dp((configuration.screenWidthDp - boxSize.value).toFloat()) }
+                .clickable { offsetX = Dp((configuration.screenWidthDp - boxSize.value)) }
         )
     }
 }
@@ -131,7 +131,7 @@ fun AnimationSpecCase(boxSize: Dp = 50.dp, easing: Easing = CubicBezierEasing(.7
 @Composable
 fun KeyframesSpecCase(boxSize: Dp = 50.dp, initialValue: Dp = 0.dp, durationMillis: Int = 500) {
     val configuration = LocalConfiguration.current
-    val targetValue = Dp((configuration.screenWidthDp - boxSize.value).toFloat())
+    val targetValue = Dp((configuration.screenWidthDp - boxSize.value))
 
     val animationSpec = keyframes {
         this.durationMillis = durationMillis
@@ -171,7 +171,7 @@ fun SpringSpecCase(initialValue: Dp = 0.dp) {
     val boxSize = 50.dp
     val configuration = LocalConfiguration.current
     val targetValue = remember(configuration.screenWidthDp) {
-        Dp((configuration.screenWidthDp - boxSize.value).toFloat())
+        Dp((configuration.screenWidthDp - boxSize.value))
     }
 
     Box(Modifier.screenHeightPercent(), Alignment.TopCenter) {
@@ -298,14 +298,14 @@ fun ReboundCase() {
         do {
             val initialVelocity = result?.endState?.velocity?.times(-1) ?: 4500.dp
             result = offsetXAnim.animateDecay(initialVelocity, decaySpec)
-        } while (result.endReason == AnimationEndReason.BoundReached)
+        } while (result?.endReason == AnimationEndReason.BoundReached)
     }
     LaunchedEffect(toggle) {
         var result: AnimationResult<Dp, AnimationVector1D>? = null
         do {
             val initialVelocity = result?.endState?.velocity?.times(-1) ?: 3500.dp
             result = offsetYAnim.animateDecay(initialVelocity, decaySpec)
-        } while (result.endReason == AnimationEndReason.BoundReached)
+        } while (result?.endReason == AnimationEndReason.BoundReached)
     }
 }
 
