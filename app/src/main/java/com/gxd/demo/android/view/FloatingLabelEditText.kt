@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.content.withStyledAttributes
 import com.gxd.demo.android.R
 import com.gxd.demo.android.view.util.dp
 
@@ -49,9 +50,9 @@ class FloatingLabelEditText(context: Context, attrs: AttributeSet? = null) : App
 
     init {
         // 从「attrs」集合中过滤出「FloatingLabelEditText」集合
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FloatingLabelEditText)
-        useFloatingLabel = typedArray.getBoolean(R.styleable.FloatingLabelEditText_useFloatingLabel, true)
-        typedArray.recycle()
+        context.withStyledAttributes(attrs, R.styleable.FloatingLabelEditText) {
+            useFloatingLabel = getBoolean(R.styleable.FloatingLabelEditText_useFloatingLabel, true)
+        }
     }
 
     override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {

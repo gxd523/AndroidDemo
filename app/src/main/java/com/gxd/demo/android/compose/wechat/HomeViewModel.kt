@@ -53,7 +53,7 @@ class HomeViewModel : ViewModel() {
 
     fun requestChatList() {
         viewModelScope.launch {
-            delay(1_000)
+            delay(1_000)// TODO: 模拟请求耗时
             _chatList.value = Mock.chatList
             isReady = true
         }

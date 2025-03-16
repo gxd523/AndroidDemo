@@ -2,8 +2,8 @@ package com.gxd.demo.android.view.measure
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.util.AttributeSet
+import androidx.core.graphics.toColorInt
 import com.gxd.demo.android.view.AbsCustomView
 import com.gxd.demo.android.view.util.dp
 
@@ -18,7 +18,7 @@ class CircleView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(
     private val padding by lazy { 10f.dp }
 
     init {
-        paint.color = Color.parseColor("#2AACBB")
+        paint.color = "#2AACBB".toColorInt()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

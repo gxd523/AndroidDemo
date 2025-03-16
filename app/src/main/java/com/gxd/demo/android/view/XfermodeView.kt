@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.util.AttributeSet
+import androidx.core.graphics.createBitmap
 
 /**
  * 「Xfermode」使用示例
@@ -36,8 +37,8 @@ class XfermodeView(context: Context, attrs: AttributeSet? = null) : AbsCustomVie
 //        )
 
         // 注意这里「Bitmap」的要是「方块」和「圆」的「并集」大小
-        redCircleBitmap = Bitmap.createBitmap(contentSize, contentSize, Bitmap.Config.ARGB_8888)
-        blueSquareBitmap = Bitmap.createBitmap(contentSize, contentSize, Bitmap.Config.ARGB_8888)
+        redCircleBitmap = createBitmap(contentSize, contentSize)
+        blueSquareBitmap = createBitmap(contentSize, contentSize)
 
         val canvas = Canvas()
         canvas.setBitmap(redCircleBitmap)
