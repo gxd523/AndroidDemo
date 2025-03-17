@@ -1,6 +1,5 @@
 package com.gxd.demo.android.architecture.ui.repo
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -36,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
@@ -46,7 +46,7 @@ import com.gxd.demo.lib.dal.repository.Repo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RepoListScreen(viewModel: RepoListViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun RepoListScreen(modifier: Modifier = Modifier, viewModel: RepoListViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by viewModel.loadingUiState.collectAsStateWithLifecycle()
     PullToRefreshBox(
@@ -102,7 +102,7 @@ private fun GithubUserItem(uiState: RepoListUiState) {
         val context = LocalContext.current
         val toolbarColor = WechatTheme.colorScheme.background.toArgb()
         Button({
-            val authUrl = Uri.parse("https://github.com/login/oauth/authorize").buildUpon()
+            val authUrl = "https://github.com/login/oauth/authorize".toUri().buildUpon()
                 .appendQueryParameter("client_id", BuildConfig.GITHUB_CLIENT_ID)
                 .appendQueryParameter("redirect_uri", "https://gxd523.github.io/oauth")
                 .appendQueryParameter("scope", "user:all")
@@ -129,7 +129,7 @@ private fun RepoItemComponent(repo: Repo, onItemClick: (Repo) -> Unit) {
     val toolbarColor = WechatTheme.colorScheme.background.toArgb()
     Card(
         Modifier.fillMaxWidth().padding(15.dp).clickable {
-            context.launchCustomChromeTab(Uri.parse(repo.url), toolbarColor)
+            context.launchCustomChromeTab(repo.url.toUri(), toolbarColor)
             onItemClick.invoke(repo)
         },
         elevation = elevatedCardElevation(defaultElevation = 8.dp),

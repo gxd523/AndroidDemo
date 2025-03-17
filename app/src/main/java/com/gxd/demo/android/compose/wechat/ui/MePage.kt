@@ -64,7 +64,8 @@ fun MePage() {
             item {
                 MeItem(
                     R.drawable.ic_settings, "设置",
-                    Modifier.background(WechatTheme.colorScheme.background).padding(top = 8.dp).background(WechatTheme.colorScheme.listItem)
+                    Modifier.background(WechatTheme.colorScheme.background).padding(top = 8.dp)
+                        .background(WechatTheme.colorScheme.listItem)
                 )
             }
         }
@@ -77,7 +78,7 @@ fun MeItem(
     title: String,
     modifier: Modifier = Modifier,
     badge: @Composable (() -> Unit)? = null,
-    endBadge: @Composable (() -> Unit)? = null
+    endBadge: @Composable (() -> Unit)? = null,
 ) {
     Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Image(

@@ -160,7 +160,7 @@ data class NetworkRepo(
     @SerializedName("watchers_count")
     val watchersCount: Int? = null,
     @SerializedName("web_commit_signoff_required")
-    val webCommitSignoffRequired: Boolean? = null
+    val webCommitSignoffRequired: Boolean? = null,
 )
 
 data class Owner(
@@ -201,7 +201,7 @@ data class Owner(
     @SerializedName("url")
     val url: String? = null,
     @SerializedName("user_view_type")
-    val userViewType: String? = null
+    val userViewType: String? = null,
 )
 
 

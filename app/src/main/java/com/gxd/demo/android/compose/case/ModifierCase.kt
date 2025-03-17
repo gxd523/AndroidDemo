@@ -246,4 +246,4 @@ fun main() {
     println("result = ${result.name()}")
 }
 
-fun Modifier.name() = this.javaClass.simpleName
+fun Modifier.name(): String = this.javaClass.simpleName

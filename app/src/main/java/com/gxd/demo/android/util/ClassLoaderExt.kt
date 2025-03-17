@@ -1,5 +1,6 @@
 package com.gxd.demo.android.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import dalvik.system.BaseDexClassLoader
 import dalvik.system.DexClassLoader
@@ -40,6 +41,7 @@ fun Context.mergeDex(pluginFileName: String = "plugin.apk") {
     )
 
     // 获取获取「应用」和「plugin」的「dexPathList对象」
+    @SuppressLint("DiscouragedPrivateApi")
     val pathListFiled = BaseDexClassLoader::class.java.getDeclaredField("pathList")
     pathListFiled.isAccessible = true
 
@@ -48,6 +50,8 @@ fun Context.mergeDex(pluginFileName: String = "plugin.apk") {
 
     // 获取获取「应用」和「plugin」的「element数组对象」
     val dexPathListClass = Class.forName("dalvik.system.DexPathList")
+
+    @SuppressLint("DiscouragedPrivateApi")
     val dexElementsField = dexPathListClass.getDeclaredField("dexElements")
     dexElementsField.isAccessible = true
 

@@ -1,7 +1,7 @@
 package com.gxd.demo.lib.dal.source.network.service
 
-import com.gxd.demo.lib.dal.source.network.model.GithubUser
 import com.gxd.demo.lib.dal.source.network.model.GithubSecret
+import com.gxd.demo.lib.dal.source.network.model.GithubUser
 import com.gxd.demo.lib.dal.source.network.model.NetworkRepo
 import retrofit2.Response
 import retrofit2.http.Field

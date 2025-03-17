@@ -2,8 +2,8 @@ package com.gxd.demo.lib.dal.source.network
 
 import com.gxd.demo.lib.dal.di.qualifier.GithubClientId
 import com.gxd.demo.lib.dal.source.cache.model.OAuthResult
-import com.gxd.demo.lib.dal.source.network.model.GithubUser
 import com.gxd.demo.lib.dal.source.network.model.GithubSecret
+import com.gxd.demo.lib.dal.source.network.model.GithubUser
 import com.gxd.demo.lib.dal.source.network.model.NetworkRepo
 import com.gxd.demo.lib.dal.source.network.service.GithubService
 import javax.inject.Inject

@@ -25,6 +25,7 @@ okhttp = "4.12.0"
 retrofit = "2.11.0"
 coil = "3.0.4"
 # leakcanary = "2.14"
+# bugly = "4.1.9.3"
 
 [libraries]
 # coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine" }
@@ -72,6 +73,7 @@ coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil"
 
 # leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 # leakcanary-no-op = { module = "com.squareup.leakcanary:leakcanary-android-no-op", version.ref = "leakcanary" }
+# bugly = { module = "com.tencent.bugly:crashreport", version.ref = "bugly" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

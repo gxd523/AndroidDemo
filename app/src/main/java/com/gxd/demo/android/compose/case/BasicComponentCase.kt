@@ -196,13 +196,14 @@ fun ImageCase(imageUrl: String = "https://coil-kt.github.io/coil/images/coil_log
     }
 
     Box(Modifier.screenSizePercent(50, 15), Alignment.Center) {
-        AsyncImage(imageRequest, null, modifier = Modifier
-            .size(sizeAnim)
-            .clickable(
-                onClick = { toggle = !toggle },
-                indication = null,// 去除水波纹效果
-                interactionSource = remember { MutableInteractionSource() }
-            )
+        AsyncImage(
+            imageRequest, null, modifier = Modifier
+                .size(sizeAnim)
+                .clickable(
+                    onClick = { toggle = !toggle },
+                    indication = null,// 去除水波纹效果
+                    interactionSource = remember { MutableInteractionSource() }
+                )
         )
     }
 }

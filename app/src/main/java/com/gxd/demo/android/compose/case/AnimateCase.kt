@@ -298,14 +298,14 @@ fun ReboundCase() {
         do {
             val initialVelocity = result?.endState?.velocity?.times(-1) ?: 4500.dp
             result = offsetXAnim.animateDecay(initialVelocity, decaySpec)
-        } while (result?.endReason == AnimationEndReason.BoundReached)
+        } while (result.endReason == AnimationEndReason.BoundReached)
     }
     LaunchedEffect(toggle) {
         var result: AnimationResult<Dp, AnimationVector1D>? = null
         do {
             val initialVelocity = result?.endState?.velocity?.times(-1) ?: 3500.dp
             result = offsetYAnim.animateDecay(initialVelocity, decaySpec)
-        } while (result?.endReason == AnimationEndReason.BoundReached)
+        } while (result.endReason == AnimationEndReason.BoundReached)
     }
 }
 

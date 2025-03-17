@@ -137,5 +137,5 @@ data class ColorScheme(
     val bubbleOthers: Color,
     val textFieldBackground: Color,
     val more: Color,
-    val chatPageBgAlpha: Float
+    val chatPageBgAlpha: Float,
 )

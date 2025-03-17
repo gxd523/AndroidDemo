@@ -77,13 +77,15 @@ fun DiscoveryPage() {
                 )
                 MeItem(
                     R.drawable.ic_ilook, "看一看",
-                    Modifier.background(WechatTheme.colorScheme.background).padding(top = 8.dp).background(WechatTheme.colorScheme.listItem)
+                    Modifier.background(WechatTheme.colorScheme.background).padding(top = 8.dp)
+                        .background(WechatTheme.colorScheme.listItem)
                 )
                 HorizontalDivider(Modifier.padding(start = 56.dp), color = WechatTheme.colorScheme.divider, thickness = 0.8f.dp)
                 MeItem(R.drawable.ic_isearch, "搜一搜")
                 MeItem(
                     R.drawable.ic_nearby, "直播和附近",
-                    Modifier.background(WechatTheme.colorScheme.background).padding(top = 8.dp).background(WechatTheme.colorScheme.listItem)
+                    Modifier.background(WechatTheme.colorScheme.background).padding(top = 8.dp)
+                        .background(WechatTheme.colorScheme.listItem)
                 )
             }
         }

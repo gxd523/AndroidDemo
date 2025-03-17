@@ -12,7 +12,6 @@ import com.github.gzuliyujiang.oaid.DeviceID
 import com.github.gzuliyujiang.oaid.DeviceIdentifier
 import com.github.gzuliyujiang.oaid.IGetter
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.lang.Exception
 import java.security.MessageDigest
 import kotlin.coroutines.resume
 

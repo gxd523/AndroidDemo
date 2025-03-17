@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun StorageScreen(viewModel: StorageViewModel = viewModel(), modifier: Modifier = Modifier) = Column(
+fun StorageScreen(modifier: Modifier = Modifier, viewModel: StorageViewModel = viewModel()) = Column(
     modifier.fillMaxSize().systemGesturesPadding(),
     Arrangement.Center,
     Alignment.CenterHorizontally
@@ -41,7 +41,7 @@ fun StorageScreen(viewModel: StorageViewModel = viewModel(), modifier: Modifier 
 }
 
 @Composable
-private fun ButtonList(viewModel: StorageViewModel = viewModel(), modifier: Modifier = Modifier) = Column(modifier) {
+private fun ButtonList(modifier: Modifier = Modifier, viewModel: StorageViewModel = viewModel()) = Column(modifier) {
     val context = LocalContext.current
     Button(onClick = { viewModel.usePhotoPicker(context) }) { Text("照片选择器") }
     Button(onClick = { viewModel.readAlbumPhoto(context) }) { Text("读取相册照片") }
