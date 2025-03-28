@@ -16,8 +16,8 @@ class JsBridge(private val lifecycleScope: CoroutineScope, private val webView: 
     }
 
     /**
-     * 1、「web端」调用「native方法」时回到这里
-     * 2、调用「js方法」，「web端」回调时回到这里
+     * 1、「web端」调用「native方法」时会先到「handleJsMessage」，再调用「web端」的「handleNativeMessage」回调回去
+     * 2、「native端」调用「web端」时先到「web端」的「handleNativeMessage」，再调用「native端」的「handleJsMessage」回调回去
      */
     @JavascriptInterface
     fun handleJsMessage(message: String) {
@@ -26,9 +26,9 @@ class JsBridge(private val lifecycleScope: CoroutineScope, private val webView: 
         val data = jsonObject.optString("data")
 
         val callJsMethodCallback = webView.getCallJsMethodCallback(callbackId)
-        if (callJsMethodCallback != null) {
-            callJsMethodCallback.invoke(data)// 调用「js方法」后，执行回调
-        } else {
+        if (callJsMethodCallback != null) {// 「native端」调用「js方法」后，执行回调
+            callJsMethodCallback.invoke(data)
+        } else {// 「web端」调用「native方法」
             val methodName = jsonObject.optString("methodName")
             val nativeMethodHandler = webView.getNativeMethodHandler(methodName)
 

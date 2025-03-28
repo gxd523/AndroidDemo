@@ -71,7 +71,7 @@ class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCust
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        bitmap = getBitmap(resources, R.drawable.test_picture, contentSize)
+        bitmap = getBitmap(resources, R.drawable.avatar_gaolaoshi, contentSize)
         contentOffsetX = (w - bitmap.width) / 2f
         contentOffsetY = (h - bitmap.height) / 2f
 

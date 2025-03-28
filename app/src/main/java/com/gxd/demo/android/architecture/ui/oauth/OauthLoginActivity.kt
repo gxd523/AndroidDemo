@@ -21,6 +21,7 @@ class OauthLoginActivity : ComponentActivity() {
         lifecycleScope.launch {
             viewModel.uiState.collect {
                 if (it == null) return@collect
+                Log.d("ggg", "OauthLoginActivity...登录结果: ${it.login}")
                 finish()
             }
         }
