@@ -27,6 +27,9 @@
         android:name="android.permission.WRITE_SETTINGS"
         tools:node="remove" />
 
+    <!-- USB Host 模式权限 -->
+    <uses-feature android:name="android.hardware.usb.host" />
+
     <application
         android:name=".MyApplication"
         android:icon="@android:mipmap/sym_def_app_icon"
@@ -78,6 +81,21 @@
                     android:host="gxd523.github.io"
                     android:path="/oauth"
                     android:scheme="https" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".compose.navigation.NavActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="navigation.com"
+                    android:pathPattern="/.*"
+                    android:scheme="myapp" />
             </intent-filter>
         </activity>
     </application>

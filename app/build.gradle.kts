@@ -123,9 +123,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.recyclerview)
-    implementation(libs.androidx.activity)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.splashscreen)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.accompanist.navigation.animation)
 
     implementation(libs.coil.compose)
     implementation(libs.coil.okhttp)
