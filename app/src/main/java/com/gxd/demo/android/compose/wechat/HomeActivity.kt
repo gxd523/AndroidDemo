@@ -15,9 +15,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.core.animation.doOnEnd
 import androidx.core.view.WindowCompat
+import com.gxd.demo.android.compose.wechat.theme.WechatTheme
 import com.gxd.demo.android.compose.wechat.ui.ChatPage
 import com.gxd.demo.android.compose.wechat.ui.HomePage
-import com.gxd.demo.android.compose.wechat.theme.WechatTheme
 
 class HomeActivity : ComponentActivity() {
     private val viewModel by viewModels<HomeViewModel>()
