@@ -27,20 +27,6 @@ class OtherMainActivity : ComponentActivity() {
                 }) {
                     Text("启动$activityName")
                 }
-                val activityName1 = "LaunchModeActivity"
-                Button({
-                    val packageName = "com.gxd.demo.android"
-                    val intent = packageManager.getLaunchIntentForPackage(packageName)
-                    intent.let(::startActivity)
-//                    Intent().apply {
-
-
-//                        ComponentName(packageName, "$packageName.task.$activityName1").let(::setComponent)
-//                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT)
-//                    }.let(::startActivity)
-                }) {
-                    Text("启动$activityName")
-                }
             }
         }
     }
