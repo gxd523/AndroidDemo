@@ -85,6 +85,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        viewBinding = true
     }
     composeCompiler { /* 配置Compose编译器 */ }
 

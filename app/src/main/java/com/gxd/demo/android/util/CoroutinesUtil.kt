@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gxd.demo.android.architecture.uitl
+package com.gxd.demo.android.util
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -27,12 +27,11 @@ private const val StopTimeoutMillis: Long = 5000
 /**
  * A [SharingStarted] meant to be used with a [StateFlow] to expose data to the UI.
  *
- * When the UI stops observing, upstream flows stay active for some time to allow the system to
- * come back from a short-lived configuration change (such as rotations). If the UI stops
- * observing for longer, the cache is kept but the upstream flows are stopped. When the UI comes
- * back, the latest value is replayed and the upstream flows are executed again. This is done to
+ * When the UI stops observing, upstream flows stay active for some time to allow the system to come back from a short-lived configuration change (such as rotations).
+ * If the UI stops observing for longer, the cache is kept but the upstream flows are stopped.
+ * When the UI comes back, the latest value is replayed and the upstream flows are executed again. This is done to
  */
-val WhileUiSubscribed: SharingStarted = SharingStarted.Companion.WhileSubscribed(StopTimeoutMillis)
+val WhileUiSubscribed = SharingStarted.WhileSubscribed(StopTimeoutMillis)
 
 suspend fun <T> executeEnsureTime(millisTime: Int, block: suspend () -> T): T {
     val start = System.currentTimeMillis()

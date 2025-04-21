@@ -8,7 +8,7 @@ import com.gxd.demo.lib.dal.source.database.model.RepoEntity
 import com.gxd.demo.lib.dal.source.database.model.UserEntity
 
 @Database(entities = [RepoEntity::class, UserEntity::class], version = 1, exportSchema = false)
-abstract class GithubDatabase : RoomDatabase() {
+abstract class GxdDatabase : RoomDatabase() {
     abstract fun repoDao(): RepoDao
 
     abstract fun userDao(): UserDao

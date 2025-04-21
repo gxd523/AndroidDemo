@@ -5,7 +5,9 @@ import com.gxd.demo.lib.dal.source.network.model.GithubUser
 import com.gxd.demo.lib.dal.source.network.model.NetworkRepo
 
 interface NetworkDataSource {
-    suspend fun getRepositoryList(username: String): List<NetworkRepo>
+    suspend fun requestRepositoryList(
+        username: String, type: String? = null, sort: String? = null, page: Int? = null, perPage: Int? = null,
+    ): List<NetworkRepo>
 
     suspend fun requestAccessToken(authorizationCode: String, githubSecret: String, redirectUrl: String): String?
 

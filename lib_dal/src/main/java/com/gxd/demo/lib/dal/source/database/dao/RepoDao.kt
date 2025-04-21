@@ -16,6 +16,9 @@ interface RepoDao {
     @Query("SELECT * FROM repo")
     fun observeAllRepoList(): Flow<List<RepoEntity>>
 
+    @Query("SELECT * FROM repo WHERE username = :username")
+    suspend fun getRepoList(username: String): List<RepoEntity>
+
     @Upsert
     suspend fun upsertRepoList(repoList: List<RepoEntity>)
 

@@ -40,7 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.gxd.demo.android.BuildConfig
-import com.gxd.demo.android.architecture.uitl.launchCustomChromeTab
+import com.gxd.demo.android.util.launchCustomChromeTab
 import com.gxd.demo.android.compose.wechat.theme.WechatTheme
 import com.gxd.demo.lib.dal.repository.Repo
 

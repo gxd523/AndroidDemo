@@ -3,8 +3,8 @@ package com.gxd.demo.android.architecture.ui.repo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gxd.demo.android.architecture.Result
-import com.gxd.demo.android.architecture.uitl.WhileUiSubscribed
-import com.gxd.demo.android.architecture.uitl.executeEnsureTime
+import com.gxd.demo.android.util.WhileUiSubscribed
+import com.gxd.demo.android.util.executeEnsureTime
 import com.gxd.demo.lib.dal.repository.GithubRepository
 import com.gxd.demo.lib.dal.repository.Repo
 import com.gxd.demo.lib.dal.source.network.model.GithubUser

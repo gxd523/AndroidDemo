@@ -2,27 +2,35 @@ package com.gxd.demo.android
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.Looper
+import android.os.Message
 import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import android.widget.Button
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.gxd.demo.android.architecture.ui.repo.RepoListActivity
-import com.gxd.demo.android.architecture.uitl.launchCustomChromeTab
+import com.gxd.demo.android.util.launchCustomChromeTab
+import com.gxd.demo.android.base.ComposeActivity
+import com.gxd.demo.android.compose.wechat.HomeActivity
 import com.gxd.demo.android.compose.wechat.theme.WechatTheme
+import com.gxd.demo.android.monitor.MainThreadMonitor
+import com.gxd.demo.android.mvi.MviActivity
 import com.gxd.demo.android.plugin.MyPlugin
+import com.gxd.demo.android.task.StandardActivity
 import com.gxd.demo.android.util.screenHeightPercent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -32,15 +40,16 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.jvm.java
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-class MainActivity : ComponentActivity() {
-    private val channelFlowBtn by lazy {
-        Button(this@MainActivity).apply {
-            text = "测试channelFlow"
-        }
+class MainActivity : ComposeActivity() {
+    companion object {
+        private const val CONSUME_TIME_HANDLER_EVENT = 111
     }
+
+    private val channelFlowBtn by lazy { Button(this@MainActivity).apply { text = "测试channelFlow" } }
     private val webView by lazy {
         WebView(this).apply {
             settings.apply {
@@ -49,36 +58,79 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            Column(Modifier.statusBarsPadding()) {
-                AndroidView({ webView }, Modifier.screenHeightPercent(30))
-                AndroidView({ channelFlowBtn })
-                val context = LocalContext.current
-                val toolbarColor = WechatTheme.colorScheme.background.toArgb()
-                Button({
-                    val authUrl = Uri.parse("https://github.com/login/oauth/authorize").buildUpon()
-                        .appendQueryParameter("client_id", BuildConfig.GITHUB_CLIENT_ID)
-                        .appendQueryParameter("redirect_uri", "https://gxd523.github.io/oauth")
-                        .appendQueryParameter("scope", "user:all")
-                        .build()
-                    context.launchCustomChromeTab(authUrl, toolbarColor)
-                }) {
-                    Text("Github授权登录")
-                }
-                Button({
-                    Intent(context, RepoListActivity::class.java).let(::startActivity)
-                }) {
-                    Text("启动RepoListActivity")
+    private val handlerThread by lazy { HandlerThread("test-handler-thread").also { it.start() } }
+    private val handler by lazy {
+        object : Handler(Looper.getMainLooper()) {
+            override fun handleMessage(msg: Message) {
+                if (msg.what == CONSUME_TIME_HANDLER_EVENT) {
+                    val start = System.currentTimeMillis()
+                    val result = MainThreadMonitor.testCostTimeTask()
+                    Log.d("ggg", "consumeTime...${System.currentTimeMillis() - start}...$result")
                 }
             }
         }
+    }
 
-        lifecycleScope.launch { pluginTest() }
 
-        channelFlowTest()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setComposeContent { MainScreen() }
+
+//        lifecycleScope.launch { pluginTest() }
+
+//        channelFlowTest()
+
+//        Log.d("ggg", "MainActivity.onCreate...${applicationContext.hashCode()}")
+    }
+
+    @Composable
+    private fun MainScreen() = Column(Modifier.statusBarsPadding()) {
+        AndroidView({ webView }, Modifier.screenHeightPercent(30))
+        AndroidView({ channelFlowBtn })
+        val context = LocalContext.current
+        val toolbarColor = WechatTheme.colorScheme.background.toArgb()
+        Button({
+            val authUrl = "https://github.com/login/oauth/authorize".toUri().buildUpon()
+                .appendQueryParameter("client_id", BuildConfig.GITHUB_CLIENT_ID)
+                .appendQueryParameter("redirect_uri", "https://gxd523.github.io/oauth")
+                .appendQueryParameter("scope", "user:all")
+                .build()
+            context.launchCustomChromeTab(authUrl, toolbarColor)
+        }) {
+            Text("Github授权登录")
+        }
+        Button({
+            Intent(context, RepoListActivity::class.java).let(::startActivity)
+        }) {
+            Text("启动RepoListActivity")
+        }
+        Button({
+            Intent(this@MainActivity, HomeActivity::class.java).let(::startActivity)
+        }) {
+            Text("启动Wechat Compose")
+        }
+        Button({
+            Intent(this@MainActivity, MviActivity::class.java).let(::startActivity)
+        }) {
+            Text("MVI")
+        }
+        Button({
+            Log.d("ggg", "啊啊")
+        }) {
+            Text("ANR")
+        }
+        Button({
+            Intent(this@MainActivity, StandardActivity::class.java).let(::startActivity)
+        }) {
+            Text("Worker测试")
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacksAndMessages(null)
+        handlerThread.quit()
     }
 
     private fun channelFlowTest() {

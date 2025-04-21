@@ -9,8 +9,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -38,7 +40,7 @@ class GithubRepositoryImpl @Inject constructor(
 
     override suspend fun updateRepoList(username: String) = withContext(Dispatchers.IO) {
         val networkRepoList = try {
-            networkDataSource.getRepositoryList(username)
+            networkDataSource.requestRepositoryList(username)
         } catch (e: Exception) {
             if (e is CancellationException) throw e else emptyList()
         }
@@ -63,6 +65,22 @@ class GithubRepositoryImpl @Inject constructor(
         return networkDataSource.requestGithubUser("Bearer $accessToken")?.also {
             cacheDataSource[CacheDataSource.GITHUB_USER] = it
             githubUserFlow?.value = it
+        }
+    }
+
+    override fun getRepoList(
+        username: String, type: String?, sort: String?, page: Int?, perPage: Int?,
+    ): Flow<List<Repo>> = channelFlow {
+        val databaseJob = launch(Dispatchers.IO) {
+            val databaseRepoList = databaseDataSource.getRepoList(username).map { it.toRepo() }
+            send(databaseRepoList)
+        }
+        launch(Dispatchers.IO) {
+            val networkRepoList = networkDataSource.requestRepositoryList(
+                username, type, sort, page, perPage
+            ).map { it.toRepo() }
+            send(networkRepoList)
+            databaseJob.cancel()
         }
     }
 }

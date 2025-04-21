@@ -10,10 +10,29 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
-interface GithubService {
+interface GithubApiService {
     @GET("users/{user}/repos")
-    suspend fun requestRepoList(@Path("user") username: String): List<NetworkRepo>
+    suspend fun requestRepoList(
+        @Path("user") username: String,
+        /**
+         * all（用户所有仓库，包括协作的）、 owner（仅用户自己创建的，默认值）、 member（仅用户参与协作的）
+         */
+        @Query("type") type: String? = null,
+        /**
+         * created（创建时间）、 updated（更新时间）、 pushed（最后推送时间）、 full_name（仓库全名，默认值）
+         */
+        @Query("sort") sort: String? = null,
+        /**
+         * 分页页码（默认 1）
+         */
+        @Query("page") page: Int? = null,
+        /**
+         * 每页条目数（默认 30，最大 100）
+         */
+        @Query("per_page") perPage: Int? = null,
+    ): List<NetworkRepo>
 
     @POST("https://github.com/login/oauth/access_token")
     @FormUrlEncoded

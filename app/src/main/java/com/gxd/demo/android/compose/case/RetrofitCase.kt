@@ -14,16 +14,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.gxd.demo.lib.dal.source.network.model.NetworkRepo
-import com.gxd.demo.lib.dal.source.network.service.GithubService
+import com.gxd.demo.lib.dal.source.network.service.GithubApiService
 import kotlinx.coroutines.launch
 
 @Composable
-fun SimpleRetrofitRequestCase(githubService: GithubService, user: String = "gxd523") {
+fun SimpleRetrofitRequestCase(githubApiService: GithubApiService, user: String = "gxd523") {
     Column(Modifier.systemGesturesPadding()) {
         val scope = rememberCoroutineScope()
         var repoList by remember { mutableStateOf<List<NetworkRepo>>(emptyList()) }
         Button(onClick = {
-            scope.launch { repoList = githubService.requestRepoList(user) }
+            scope.launch { repoList = githubApiService.requestRepoList(user) }
         }) {
             Text("获取 $user 的所有Repo")
         }

@@ -13,5 +13,5 @@ import javax.inject.Singleton
 abstract class RepositoryModule {
     @Singleton
     @Binds
-    abstract fun bindGithubRepository(dataSource: GithubRepositoryImpl): GithubRepository
+    abstract fun bindGithubRepository(repository: GithubRepositoryImpl): GithubRepository
 }

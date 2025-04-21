@@ -7,7 +7,7 @@ import android.os.PersistableBundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 
-abstract class BaseActivity : ComponentActivity() {
+abstract class LogActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("ggg", "${this.javaClass.simpleName}...onCreate.................${this.hashCode()}")
         super.onCreate(savedInstanceState)

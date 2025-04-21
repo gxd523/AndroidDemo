@@ -4,19 +4,19 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import com.gxd.demo.android.base.BaseActivity
 
 /**
  * 共享存储示例
  * https://developer.android.com/training/data-storage/shared?hl=zh-cn
  */
-class StorageActivity : BaseActivity() {
+class StorageActivity : ComponentActivity() {
     private val viewModel: StorageViewModel by viewModels()
     internal lateinit var pickMediaLauncher: ActivityResultLauncher<PickVisualMediaRequest>
     internal lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
@@ -46,8 +46,6 @@ class StorageActivity : BaseActivity() {
             viewModel.readTxt.value = result.data?.data?.let(this@StorageActivity.contentResolver::readTextFromUri)
         }
 
-        setContent {
-            StorageScreen()
-        }
+        setContent { StorageScreen() }
     }
 }

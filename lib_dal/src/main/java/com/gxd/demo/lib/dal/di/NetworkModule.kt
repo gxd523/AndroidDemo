@@ -2,7 +2,7 @@ package com.gxd.demo.lib.dal.di
 
 import com.gxd.demo.lib.dal.const.Constants
 import com.gxd.demo.lib.dal.di.qualifier.BaseUrl
-import com.gxd.demo.lib.dal.source.network.service.GithubService
+import com.gxd.demo.lib.dal.source.network.service.GithubApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,5 +39,5 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideGithubService(retrofit: Retrofit): GithubService = retrofit.create(GithubService::class.java)
+    fun provideGithubApiService(retrofit: Retrofit): GithubApiService = retrofit.create(GithubApiService::class.java)
 }

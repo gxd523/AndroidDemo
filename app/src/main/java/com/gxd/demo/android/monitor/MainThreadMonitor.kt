@@ -1,11 +1,14 @@
 package com.gxd.demo.android.monitor
 
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import android.util.Printer
+import androidx.core.graphics.createBitmap
 import kotlin.math.sqrt
 import kotlin.random.Random
 
@@ -59,8 +62,20 @@ object MainThreadMonitor {
     fun testCostTimeTask() {
         when (Random.nextInt(3)) {
             0 -> cpuTask()
+            1 -> canvasTask()
             else -> sleepTask()
         }
+    }
+
+    /**
+     * 用来测试
+     */
+    private fun canvasTask(n: Int = Int.MAX_VALUE / 1_000_000): Int {
+        val bitmap = createBitmap(5_000, 5_000)
+        val canvas = Canvas(bitmap)
+        val paint = Paint()
+        repeat(1_000_00) { canvas.drawCircle(it % 5_000f, it % 5_000f, 100f, paint) }
+        return n
     }
 
     /**

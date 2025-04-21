@@ -11,4 +11,8 @@ interface GithubRepository {
     suspend fun updateRepoList(username: String)
 
     suspend fun requestGithubUser(authorizationCode: String, redirectUrl: String): GithubUser?
+
+    fun getRepoList(
+        username: String, type: String? = null, sort: String? = null, page: Int? = null, perPage: Int? = null,
+    ): Flow<List<Repo>>
 }

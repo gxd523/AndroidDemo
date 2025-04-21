@@ -5,24 +5,24 @@ import com.gxd.demo.lib.dal.source.cache.model.OAuthResult
 import com.gxd.demo.lib.dal.source.network.model.GithubSecret
 import com.gxd.demo.lib.dal.source.network.model.GithubUser
 import com.gxd.demo.lib.dal.source.network.model.NetworkRepo
-import com.gxd.demo.lib.dal.source.network.service.GithubService
+import com.gxd.demo.lib.dal.source.network.service.GithubApiService
 import javax.inject.Inject
 
-class NetworkDataSourceImpl @Inject constructor(
-    private val githubService: GithubService,
-) : NetworkDataSource {
-    override suspend fun getRepositoryList(username: String): List<NetworkRepo> = githubService.requestRepoList(username)
+class NetworkDataSourceImpl @Inject constructor(private val githubApiService: GithubApiService) : NetworkDataSource {
+    override suspend fun requestRepositoryList(
+        username: String, type: String?, sort: String?, page: Int?, perPage: Int?,
+    ): List<NetworkRepo> = githubApiService.requestRepoList(username, type, sort, page, perPage)
 
     @Inject
     @GithubClientId
     lateinit var githubClientId: String
 
-    override suspend fun requestGithubUser(accessToken: String): GithubUser? = githubService.getGithubUser(accessToken)
+    override suspend fun requestGithubUser(accessToken: String): GithubUser? = githubApiService.getGithubUser(accessToken)
 
-    override suspend fun requestGithubSecret(): GithubSecret? = githubService.getGithubSecret()
+    override suspend fun requestGithubSecret(): GithubSecret? = githubApiService.getGithubSecret()
 
     override suspend fun requestAccessToken(authorizationCode: String, githubSecret: String, redirectUrl: String): String? {
-        val response = githubService.getAccessToken(githubClientId, githubSecret, authorizationCode, redirectUrl)
+        val response = githubApiService.getAccessToken(githubClientId, githubSecret, authorizationCode, redirectUrl)
         if (!response.isSuccessful) return null
         val oAuthResult = response.body()?.parseTokenResponse() ?: return null
         return oAuthResult.accessToken
