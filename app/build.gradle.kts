@@ -136,6 +136,7 @@ dependencies {
     implementation(libs.coroutines.android)
 
     implementation(libs.retrofit)
+    implementation(libs.androidx.work.manager)
 
     implementation("com.github.gzu-liyujiang:Android_CN_OAID:4.2.11") {
 //        exclude(group = "com.huawei.hms", module = "ads-identifier")

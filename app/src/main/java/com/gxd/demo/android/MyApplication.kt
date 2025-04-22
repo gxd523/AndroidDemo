@@ -1,7 +1,9 @@
 package com.gxd.demo.android
 
 import android.app.Application
+import android.content.Context
 import android.os.Process
+import android.os.SystemClock
 import android.util.Log
 import com.gxd.demo.android.util.getAppSignature
 import com.gxd.demo.android.util.getDeviceID
@@ -16,10 +18,16 @@ import kotlinx.coroutines.launch
 @HiltAndroidApp
 class MyApplication : Application() {
     companion object {
-        lateinit var instance: Application
+        lateinit var instance: MyApplication
     }
 
-    private val appScope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
+    val appScope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
+    var appStartTime: Long = 0
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        appStartTime = SystemClock.uptimeMillis()
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -32,5 +40,11 @@ class MyApplication : Application() {
         startFrameMonitor(skipFrameWarningLimit = 2)
 
         mergeDex("plugin.apk") // 加载「插件」用来测试「热修复」、「插件化」
+
+//        CrashReport.initCrashReport(this, "1f8ed656d3", false)
+
+//        AnrMonitor.start {}
+
+//        MainThreadMonitor.startMonitoring()
     }
 }
