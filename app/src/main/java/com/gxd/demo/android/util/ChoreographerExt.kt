@@ -16,8 +16,7 @@ class ChoreographerFrameCallback(
     private var mLastFrameTimeNanos: Long = System.nanoTime(),
     private val skipFrameWarningLimit: Int = 30,
     private val skipFrameCallback: ((Long) -> Unit)? = null,
-) :
-    Choreographer.FrameCallback {
+) : Choreographer.FrameCallback {
     private val mFrameIntervalNanos by lazy { (1_000_000_000 / 60.0).toLong() }
 
     override fun doFrame(frameTimeNanos: Long) {
@@ -26,10 +25,9 @@ class ChoreographerFrameCallback(
         val jitterNanos = frameTimeNanos - mLastFrameTimeNanos
         if (jitterNanos >= mFrameIntervalNanos) {
             val skippedFrames = jitterNanos / mFrameIntervalNanos
-            if (skippedFrames > skipFrameWarningLimit) skipFrameCallback?.invoke(skippedFrames) ?: Log.d(
-                "ggg",
-                "丢帧数量：$skippedFrames"
-            )
+            if (skippedFrames > skipFrameWarningLimit) {
+                skipFrameCallback?.invoke(skippedFrames) ?: Log.d("ggg", "丢帧数量：$skippedFrames")
+            }
         }
 
         mLastFrameTimeNanos = frameTimeNanos
