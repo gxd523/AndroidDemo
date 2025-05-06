@@ -21,6 +21,8 @@ class DatabaseModule {
         context.applicationContext,
         GxdDatabase::class.java,
         "gxd.db"
+//    ).addMigrations(
+//        GxdDatabase.MIGRATION_1_2
     ).build()
 
     @Provides
