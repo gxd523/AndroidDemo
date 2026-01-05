@@ -1,8 +1,7 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.application)//这里不加「apply false」表示声明且应用
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
@@ -75,15 +74,8 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
     kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
+        jvmToolchain(21)
     }
     buildFeatures {
         compose = true
@@ -110,31 +102,23 @@ android {
 dependencies {
     implementation(project(":lib_dal"))
 
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.icons)
+    // Maven BOM = Bill Of Materials
+    val composeBom = platform(libs.compose.bom)
+    implementation(composeBom)
+    debugImplementation(composeBom)
+    implementation(libs.bundles.compose)
 
     implementation(libs.hilt.core)
     ksp(libs.hilt.compiler)
 
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.core.ktx)
+    implementation(libs.bundles.androidx)
+    implementation(libs.bundles.navigation)
+    implementation(libs.bundles.coil)
+
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.splashscreen)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.accompanist.navigation.animation)
-
-    implementation(libs.coil.compose)
-    implementation(libs.coil.okhttp)
-    implementation(libs.coil.svg)
 
     implementation(libs.coroutines.android)
 
@@ -149,5 +133,5 @@ dependencies {
 //    debugImplementation(libs.leakcanary)
 //    releaseImplementation(libs.leakcanary.no.op)
 
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.tooling)
 }
