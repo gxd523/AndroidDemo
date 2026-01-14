@@ -18,8 +18,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
-    private val _chatList by lazy { MutableStateFlow(emptyList<Chat>()) }
-    val chatList: StateFlow<List<Chat>> by lazy { _chatList }
+    val chatList: StateFlow<List<Chat>>
+        field = MutableStateFlow(emptyList<Chat>())
+
     val contactList by mutableStateOf(Mock.contactList)
     var selectedTab by mutableIntStateOf(0)
     var theme by mutableStateOf(WechatTheme.Theme.Light)
@@ -54,7 +55,7 @@ class HomeViewModel : ViewModel() {
     fun requestChatList() {
         viewModelScope.launch {
             delay(1_000)// TODO: 模拟请求耗时
-            _chatList.value = Mock.chatList
+            chatList.value = Mock.chatList
             isReady = true
         }
     }

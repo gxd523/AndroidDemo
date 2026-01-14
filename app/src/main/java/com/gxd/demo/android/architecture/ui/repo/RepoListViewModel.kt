@@ -30,14 +30,14 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
         private const val REPO_LIST_REQUEST_MIN_TIME = 300
     }
 
-    private val _uiState = MutableStateFlow(RepoListUiState(onItemClick = ::addReadRepoCount))
-    val uiState: StateFlow<RepoListUiState> = _uiState
+    val uiState: StateFlow<RepoListUiState>
+        field = MutableStateFlow(RepoListUiState(onItemClick = ::addReadRepoCount))
 
-    private val _inputUsernameFlow = MutableStateFlow("")
-    val inputUsernameState: StateFlow<String> = _inputUsernameFlow
+    val inputUsernameState: StateFlow<String>
+        field = MutableStateFlow("")
 
     @OptIn(FlowPreview::class)
-    private val debouncedInputUsernameFlow = _inputUsernameFlow.debounce(
+    private val debouncedInputUsernameFlow = inputUsernameState.debounce(
         INPUT_DEBOUNCE_TIMEOUT
     ).stateIn(viewModelScope, WhileUiSubscribed, "")
 
@@ -65,7 +65,7 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
             }.catch {
                 emit(Result.Error(Exception("异常了")))
             }.collect { result ->
-                _uiState.update {
+                uiState.update {
                     when (result) {
                         is Result.Error -> it.copy(
                             repoList = emptyList(),
@@ -99,7 +99,7 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
             it.toMutableList().also { newReadRepoList ->
                 if (!newReadRepoList.any { repo.name == it.name }) {
                     newReadRepoList.add(repo)
-                    _uiState.update { it.copy(readRepoList = newReadRepoList) }
+                    uiState.update { it.copy(readRepoList = newReadRepoList) }
                 }
             }
         }
@@ -147,7 +147,7 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
     }
 
     fun updateUsername(newUsername: String) {
-        _inputUsernameFlow.value = newUsername
+        inputUsernameState.value = newUsername
     }
 
     private fun handleTask(githubUser: GithubUser?, repoList: List<Repo>): Result<Pair<GithubUser?, List<Repo>>> {

@@ -3,9 +3,9 @@ android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
 
-agp = "8.13.1"
+agp = "8.13.2"
 kotlin = "2.2.0"
-ksp = "2.2.20-2.0.3"
+ksp = "2.3.4"
 coroutine = "1.10.2"
 compose-bom = "2025.12.01"
 hilt = "2.57.2"
@@ -31,7 +31,7 @@ workManager = "2.11.0"
 # bugly = "4.1.9.3"
 
 [libraries]
-# coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine" }
+ coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutine" }
 
 hilt-core = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
