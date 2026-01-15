@@ -41,17 +41,17 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
         INPUT_DEBOUNCE_TIMEOUT
     ).stateIn(viewModelScope, WhileUiSubscribed, "")
 
-    private val _isLoading = MutableStateFlow(false)
-    val loadingUiState: StateFlow<Boolean> = _isLoading
+    val loadingUiState: StateFlow<Boolean>
+        field = MutableStateFlow(false)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             debouncedInputUsernameFlow.collect { debouncedNewUsername ->
                 if (debouncedNewUsername.isEmpty()) return@collect
-                _isLoading.value = true
+                loadingUiState.value = true
                 executeEnsureTime(REPO_LIST_REQUEST_MIN_TIME) {
                     githubRepository.updateRepoList(debouncedNewUsername)
-                    _isLoading.value = false
+                    loadingUiState.value = false
                 }
             }
         }
@@ -137,11 +137,11 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
 //    )
 
     fun pullToRefresh() {
-        _isLoading.value = true
+        loadingUiState.value = true
         viewModelScope.launch {
             executeEnsureTime(REPO_LIST_REQUEST_MIN_TIME) {
                 githubRepository.updateRepoList(debouncedInputUsernameFlow.value)
-                _isLoading.value = false
+                loadingUiState.value = false
             }
         }
     }
