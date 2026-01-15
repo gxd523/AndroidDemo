@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -82,7 +83,7 @@ fun ScrollableCase() {
         return@rememberScrollableState delta
     }
     val orientation = Orientation.Horizontal
-    val overscrollEffect = ScrollableDefaults.overscrollEffect()
+    val overscrollEffect = rememberOverscrollEffect()
     val flingBehavior = ScrollableDefaults.flingBehavior()
     val interactionSource = remember { MutableInteractionSource() }
 

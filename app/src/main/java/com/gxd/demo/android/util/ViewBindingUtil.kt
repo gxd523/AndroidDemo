@@ -10,7 +10,10 @@ object ViewBindingUtil {
         val superClass = any::class.java.genericSuperclass
         if (superClass is ParameterizedType) {
             for (typeArgument in superClass.actualTypeArguments) {
-                if (typeArgument is Class<*> && ViewBinding::class.java in typeArgument.interfaces) return typeArgument as Class<T>?
+                if (typeArgument is Class<*> && ViewBinding::class.java in typeArgument.interfaces) {
+                    @Suppress("UNCHECKED_CAST")
+                    return typeArgument as Class<T>?
+                }
             }
         }
         return null
@@ -24,5 +27,6 @@ fun <T : ViewBinding> Class<T>.callInflate(inflater: LayoutInflater, parent: Vie
 
     val args = attachToParent?.let { arrayOf(inflater, parent, attachToParent) } ?: arrayOf(inflater, parent)
 
+    @Suppress("UNCHECKED_CAST")
     return getMethod("inflate", *parameterTypes).invoke(null, *args) as T?
 }

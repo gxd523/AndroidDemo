@@ -1,5 +1,6 @@
 package com.gxd.demo.android.util
 
+import android.util.Log
 import kotlinx.coroutines.Job
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -11,6 +12,15 @@ fun Job.cLog(suffix: String) {
 
 
 fun Any.cLog(result: Any? = null) {
+    assembleMsg(result).also(::println)
+}
+
+fun Any.aLog(result: Any? = null) {
+    val message = assembleMsg(result)
+    Log.d("ggg", message)
+}
+
+private fun Any.assembleMsg(result: Any?): String {
     val time = SimpleDateFormat("mm:ss:SSS", Locale.getDefault()).format(Date())
 
     val threadInfo = Thread.currentThread().name
@@ -27,8 +37,7 @@ fun Any.cLog(result: Any? = null) {
     val threadInfoFormat = formatThreadInfo.tableFormat(9)
     val logFormat = this.toString().tableFormat(4)
     val message = "$timeFormat$threadInfoFormat$logFormat$formatResult"
-
-    println(message)
+    return message
 }
 
 fun String.tableFormat(tableCount: Int = 5): String {
