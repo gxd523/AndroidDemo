@@ -3,13 +3,15 @@ android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
 
-agp = "8.13.2"
-kotlin = "2.2.0"
+agp = "9.0.0"
+kotlin = "2.3.0"
 ksp = "2.3.4"
 coroutine = "1.10.2"
 compose-bom = "2025.12.01"
-hilt = "2.57.2"
+hilt = "2.58"
 room = "2.8.4"
+ktor = "3.3.3"
+ktx-serialize = "1.9.0"
 
 activity = "1.12.2"
 lifecycle = "2.10.0"
@@ -31,7 +33,7 @@ workManager = "2.11.0"
 # bugly = "4.1.9.3"
 
 [libraries]
- coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine" }
+# coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutine" }
 
 hilt-core = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
@@ -81,6 +83,12 @@ coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil"
 # leakcanary-no-op = { module = "com.squareup.leakcanary:leakcanary-android-no-op", version.ref = "leakcanary" }
 # bugly = { module = "com.tencent.bugly:crashreport", version.ref = "bugly" }
 
+ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-serialize = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-android = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+kotlinx-serilize = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "ktx-serialize" }
+
 [bundles]
 androidx = ["androidx-lifecycle-viewmodel-compose", "androidx-lifecycle-runtime-ktx", "androidx-activity-compose", "androidx-core-ktx", "androidx-appcompat"]
 compose = ["compose-ui", "compose-ui-graphics", "compose-ui-tooling-preview", "compose-material3", "compose-material-icons"]
@@ -88,6 +96,7 @@ coil = ["coil-compose", "coil-okhttp", "coil-svg"]
 retrofit = ["retrofit", "retrofit-gson", "retrofit-scalars", "okhttp-logging"]
 room = ["room-ktx", "room-runtime"]
 navigation = ["accompanist-navigation-animation", "androidx-navigation-compose"]
+kmp = ["ktor-core", "ktor-negotiation", "ktor-serialize", "ktor-android", "kotlinx-serilize"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
