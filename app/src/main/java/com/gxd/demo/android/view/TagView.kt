@@ -8,15 +8,15 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.collection.floatListOf
 import com.gxd.demo.android.view.util.COLOR_LIST
-import com.gxd.demo.android.view.util.dp
+import com.gxd.demo.android.view.util.dpp
 import java.util.Random
 
 class TagView(context: Context, attrs: AttributeSet? = null) : AppCompatTextView(context, attrs) {
     companion object {
         private val TEXT_SIZE_LIST = floatListOf(12f, 16f, 22f, 28f, 36f)
-        private val X_PADDING by lazy { 16.dp }
-        private val Y_PADDING by lazy { 8.dp }
-        private val CORNER_RADIUS by lazy { 4f.dp }
+        private val X_PADDING by lazy { 16.dpp }
+        private val Y_PADDING by lazy { 8.dpp }
+        private val CORNER_RADIUS by lazy { 4f.dpp }
     }
 
     private val paint by lazy { Paint() }

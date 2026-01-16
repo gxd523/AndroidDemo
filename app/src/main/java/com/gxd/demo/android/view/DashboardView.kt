@@ -10,7 +10,7 @@ import android.graphics.PathMeasure
 import android.graphics.PointF
 import android.graphics.RectF
 import android.util.AttributeSet
-import com.gxd.demo.android.view.util.dp
+import com.gxd.demo.android.view.util.dpp
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
@@ -29,8 +29,8 @@ class DashboardView(context: Context, attrs: AttributeSet? = null) : AbsCustomVi
     private val arcPath by lazy { Path() }
     private val lineStopPointF by lazy { PointF() }
 
-    private val dashWidth by lazy { 2f.dp }
-    private val dashHeight by lazy { 5f.dp }
+    private val dashWidth by lazy { 2f.dpp }
+    private val dashHeight by lazy { 5f.dpp }
     private val dashPath by lazy {
         Path().apply { addRect(0f, 0f, dashWidth, dashHeight, Path.Direction.CW) }
     }
@@ -61,7 +61,7 @@ class DashboardView(context: Context, attrs: AttributeSet? = null) : AbsCustomVi
         val advance = (pathMeasure.length - dashWidth) / count
         dashPathEffect = PathDashPathEffect(dashPath, advance, 0f, PathDashPathEffect.Style.ROTATE)
 
-        val lineLength = radius - 20f.dp
+        val lineLength = radius - 20f.dpp
         val radians = Math.toRadians((90 + angle / 2 + (360 - angle) * index / count).toDouble())
         lineStopPointF.set(
             width / 2f + lineLength * cos(radians).toFloat(),

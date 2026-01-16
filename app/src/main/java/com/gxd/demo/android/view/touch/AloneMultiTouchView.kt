@@ -10,7 +10,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import com.gxd.demo.android.view.AbsCustomView
 import com.gxd.demo.android.view.util.COLOR_LIST
-import com.gxd.demo.android.view.util.dp
+import com.gxd.demo.android.view.util.dpp
 
 /**
  * 「各自为战型」多点触控
@@ -23,7 +23,7 @@ class AloneMultiTouchView(context: Context, attrs: AttributeSet? = null) : AbsCu
     init {
         paint.apply {
             style = Paint.Style.STROKE
-            strokeWidth = 4f.dp
+            strokeWidth = 4f.dpp
             strokeCap = Paint.Cap.ROUND
             strokeJoin = Paint.Join.ROUND
         }

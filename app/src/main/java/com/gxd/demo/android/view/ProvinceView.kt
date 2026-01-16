@@ -5,7 +5,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
-import com.gxd.demo.android.view.util.dp
+import com.gxd.demo.android.view.util.dpp
 import kotlin.math.roundToInt
 
 /**
@@ -53,7 +53,7 @@ class ProvinceView(context: Context, attrs: AttributeSet? = null) : AbsCustomVie
         }
 
     init {
-        paint.textSize = 80f.dp
+        paint.textSize = 80f.dpp
         paint.textAlign = Paint.Align.CENTER
     }
 

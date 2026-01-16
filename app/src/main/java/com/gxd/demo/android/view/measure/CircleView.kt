@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import androidx.core.graphics.toColorInt
 import com.gxd.demo.android.view.AbsCustomView
-import com.gxd.demo.android.view.util.dp
+import com.gxd.demo.android.view.util.dpp
 
 /**
  * 对「自定义View」通过「自定义尺寸计算」完整重写「onMeasure」
@@ -14,8 +14,8 @@ import com.gxd.demo.android.view.util.dp
  * 3、调用「setMeasuredDimension」保存尺寸
  */
 class CircleView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
-    private val radius by lazy { 50f.dp }
-    private val padding by lazy { 10f.dp }
+    private val radius by lazy { 50f.dpp }
+    private val padding by lazy { 10f.dpp }
 
     init {
         paint.color = "#2AACBB".toColorInt()

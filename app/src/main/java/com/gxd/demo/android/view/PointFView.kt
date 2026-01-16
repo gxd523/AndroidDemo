@@ -6,7 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PointF
 import android.util.AttributeSet
-import com.gxd.demo.android.view.util.dp
+import com.gxd.demo.android.view.util.dpp
 
 /**
  * TypeEvaluator
@@ -36,7 +36,7 @@ class PointFView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(
         }
 
     init {
-        paint.strokeWidth = 20f.dp
+        paint.strokeWidth = 20f.dpp
         paint.strokeCap = Paint.Cap.ROUND
     }
 

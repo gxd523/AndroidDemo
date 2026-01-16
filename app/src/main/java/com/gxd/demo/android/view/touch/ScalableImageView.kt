@@ -12,7 +12,7 @@ import android.view.ScaleGestureDetector
 import android.widget.OverScroller
 import com.gxd.demo.android.R
 import com.gxd.demo.android.view.AbsCustomView
-import com.gxd.demo.android.view.util.dp
+import com.gxd.demo.android.view.util.dpp
 import com.gxd.demo.android.view.util.getBitmap
 import kotlinx.coroutines.Runnable
 
@@ -168,8 +168,8 @@ class ScalableImageView(context: Context, attrs: AttributeSet? = null) : AbsCust
                 maxOffsetX.toInt(),
                 -maxOffsetY.toInt(),
                 maxOffsetY.toInt(),
-                50.dp,
-                50.dp
+                50.dpp,
+                50.dpp
             )
 
 //        for (i in 10..100 step 10) {

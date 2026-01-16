@@ -8,7 +8,7 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.withStyledAttributes
 import com.gxd.demo.android.R
-import com.gxd.demo.android.view.util.dp
+import com.gxd.demo.android.view.util.dpp
 
 /**
  * 自定义属性动画
@@ -28,11 +28,11 @@ class FloatingLabelEditText(context: Context, attrs: AttributeSet? = null) : App
             }
         }
 
-    private val labelTextSize = 12f.dp
-    private val labelTopMargin = 8.dp
-    private val labelHorizontalOffset = 5f.dp
-    private val labelVerticalOffset = 23f.dp
-    private val labelAnimateVerticalOffset = 16f.dp
+    private val labelTextSize = 12f.dpp
+    private val labelTopMargin = 8.dpp
+    private val labelHorizontalOffset = 5f.dpp
+    private val labelVerticalOffset = 23f.dpp
+    private val labelAnimateVerticalOffset = 16f.dpp
 
     private val paint by lazy { Paint() }
 

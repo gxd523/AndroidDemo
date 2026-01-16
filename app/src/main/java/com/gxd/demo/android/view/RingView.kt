@@ -9,11 +9,11 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import androidx.core.content.res.ResourcesCompat
 import com.gxd.demo.android.R
-import com.gxd.demo.android.view.util.dp
+import com.gxd.demo.android.view.util.dpp
 
 class RingView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(context, attrs) {
     private val ovalRectF by lazy { RectF() }
-    private val strokeWidth by lazy { 15f.dp }
+    private val strokeWidth by lazy { 15f.dpp }
     private val textBoundsRect by lazy { Rect() }
     private val fontMetric by lazy { Paint.FontMetrics() }
 
@@ -44,7 +44,7 @@ class RingView(context: Context, attrs: AttributeSet? = null) : AbsCustomView(co
         canvas.drawArc(ovalRectF, 0f, 120f, false, paint)
 
         paint.style = Paint.Style.FILL
-        paint.textSize = 70f.dp
+        paint.textSize = 70f.dpp
         paint.typeface = ResourcesCompat.getFont(context, R.font.oppo_sans)
         paint.textAlign = Paint.Align.CENTER
 

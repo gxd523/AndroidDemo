@@ -7,16 +7,16 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.toColorInt
-import com.gxd.demo.android.view.util.dp
+import com.gxd.demo.android.view.util.dpp
 
 @SuppressLint("NewApi")
 class MeshDrawable : Drawable() {
-    private val interval by lazy { 100f.dp }
+    private val interval by lazy { 100f.dpp }
     private val paint by lazy { Paint() }
 
     init {
         paint.color = "#F9A825".toColorInt()
-        paint.strokeWidth = 3f.dp
+        paint.strokeWidth = 3f.dpp
     }
 
     override fun draw(canvas: Canvas) {

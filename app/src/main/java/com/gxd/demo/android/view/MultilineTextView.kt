@@ -11,8 +11,8 @@ import android.util.AttributeSet
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import com.gxd.demo.android.R
-import com.gxd.demo.android.view.util.dp
-import com.gxd.demo.android.view.util.sp
+import com.gxd.demo.android.view.util.dpp
+import com.gxd.demo.android.view.util.spp
 
 /**
  * 多行文字环绕图片
@@ -26,7 +26,7 @@ class MultilineTextView(context: Context, attrs: AttributeSet? = null) : AbsCust
     }
 
     private val fontMetric by lazy { Paint.FontMetrics() }
-    private val imageSize by lazy { 100.dp }
+    private val imageSize by lazy { 100.dpp }
     private val imageSrcRect by lazy { Rect() }
     private val imageDstRect by lazy { Rect() }
     private lateinit var image: Bitmap
@@ -34,7 +34,7 @@ class MultilineTextView(context: Context, attrs: AttributeSet? = null) : AbsCust
     init {
         paint.color = Color.BLACK
         paint.typeface = ResourcesCompat.getFont(context, R.font.oppo_sans)
-        paint.textSize = 20f.sp
+        paint.textSize = 20f.spp
         paint.getFontMetrics(fontMetric)
     }
 
