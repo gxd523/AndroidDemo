@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.serialize)
 }
 
 android {
@@ -25,4 +26,6 @@ dependencies {
     ksp(libs.room.compiler)
 
     implementation(libs.bundles.retrofit)
+
+    implementation(libs.bundles.kmp)
 }

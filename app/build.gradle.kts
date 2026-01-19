@@ -107,6 +107,7 @@ dependencies {
     implementation(composeBom)
     debugImplementation(composeBom)
     implementation(libs.bundles.compose)
+    implementation(libs.compose.material.icons)
 
     implementation(libs.hilt.core)
     ksp(libs.hilt.compiler)

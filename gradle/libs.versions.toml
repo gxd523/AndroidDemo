@@ -7,7 +7,7 @@ agp = "9.0.0"
 kotlin = "2.3.0"
 ksp = "2.3.4"
 coroutine = "1.10.2"
-compose-bom = "2025.12.01"
+compose-bom = "2026.01.00"
 hilt = "2.58"
 room = "2.8.4"
 ktor = "3.3.3"
@@ -43,7 +43,9 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", v
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }
 compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+# 使用「Android Studio」调试、交互的预览界面需要引用此库，应该「debug」引用
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+# 使用@Preview需要引用此库
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 # compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
@@ -91,7 +93,7 @@ kotlinx-serilize = { group = "org.jetbrains.kotlinx", name = "kotlinx-serializat
 
 [bundles]
 androidx = ["androidx-lifecycle-viewmodel-compose", "androidx-lifecycle-runtime-ktx", "androidx-activity-compose", "androidx-core-ktx", "androidx-appcompat"]
-compose = ["compose-ui", "compose-ui-graphics", "compose-ui-tooling-preview", "compose-material3", "compose-material-icons"]
+compose = ["compose-material3", "compose-ui-tooling-preview"]
 coil = ["coil-compose", "coil-okhttp", "coil-svg"]
 retrofit = ["retrofit", "retrofit-gson", "retrofit-scalars", "okhttp-logging"]
 room = ["room-ktx", "room-runtime"]
@@ -105,3 +107,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+serialize = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
