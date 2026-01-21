@@ -1,5 +1,6 @@
 package com.gxd.demo.android.compose.case
 
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -53,6 +54,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,12 +63,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -174,8 +172,9 @@ fun TopAppBarCase() {
 @Preview(name = "Pull to refresh", showBackground = true)
 @Composable
 fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delayTime: Long = 1_000) {
+    var itemCounter by remember { mutableIntStateOf(initCount) }
     val itemList = remember {
-        List(initCount) { index -> index to "第${index}个初始item" }.asReversed().toMutableStateList()
+        List(itemCounter) { index -> index to "第${index}个初始item" }.asReversed().toMutableStateList()
     }
 
     var isRefreshing by remember { mutableStateOf(false) }
@@ -184,46 +183,80 @@ fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delayT
     val refreshState = rememberPullToRefreshState()
     val listState = rememberLazyListState()
 
+//    val nestedScrollConnection = remember {
+//        object : NestedScrollConnection {
+//            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+//                if (available.y < 0 && !listState.canScrollForward && !isRefreshing && !isLoadingMore) {
+//                    isLoadingMore = true
+//                }
+//                return Offset.Zero
+//            }
+//        }
+//    }
+//    LaunchedEffect(isLoadingMore) {
+//        if (!isLoadingMore) return@LaunchedEffect
+//        try {
+//            delay(delayTime)
+//            val newIndex = itemCounter++
+//            itemList.add(newIndex to "第${itemList.size}个底部item")
+//        } finally {
+//            isLoadingMore = false
+//        }
+//    }
+
     val performLoadMore: suspend () -> Unit = remember {
         {
-            if (!isLoadingMore && !isRefreshing) {
-                try {
-                    isLoadingMore = true
-                    delay(delayTime)
-                    itemList.add(itemList.size to "第${itemList.size}个底部item")
-                } finally {
-                    isLoadingMore = false
-                }
+            try {
+                isLoadingMore = true
+                delay(delayTime)
+                val newIndex = itemCounter++
+                itemList.add(newIndex to "第${newIndex}个底部item")
+            } finally {
+                isLoadingMore = false
             }
         }
     }
 
-
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (available.y < 0 && !listState.canScrollForward && !isRefreshing && !isLoadingMore) {
-                    isLoadingMore = true
-                }
-                return Offset.Zero
+    // 1. 核心逻辑：判断是否已经显示到了底部的“触发线”
+    val isAtBottom by remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val visibleItems = layoutInfo.visibleItemsInfo
+            if (visibleItems.isEmpty()) {
+                true // 初始为空，也视为需要加载
+            } else {
+                val lastVisibleItem = visibleItems.last()
+                // 如果最后一条可见项的索引，已经达到了当前列表的总长度
+                // 说明已经触底（或者数据量不足一屏）
+                lastVisibleItem.index >= layoutInfo.totalItemsCount - 1
             }
         }
     }
+    // 2. 自动补齐副作用
+    LaunchedEffect(isAtBottom, itemList.size) {
+        if (!isAtBottom || isLoadingMore || isRefreshing) return@LaunchedEffect
+        // 注意：这里可以加一个“是否还有更多数据”的后端标志位判断
+        performLoadMore()
+    }
 
-    LaunchedEffect(isLoadingMore) {
-        if (!isLoadingMore) return@LaunchedEffect
-        try {
-            delay(delayTime)
-            itemList.add(itemList.size to "第${itemList.size}个底部item")
-        } finally {
-            isLoadingMore = false
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            Log.d("ggg", "${lastVisibleItem?.index}....${itemList.size}")
+            lastVisibleItem != null && lastVisibleItem.index >= itemList.size - 2
         }
     }
+    LaunchedEffect(shouldLoadMore) {
+        if (!shouldLoadMore || isLoadingMore || isRefreshing) return@LaunchedEffect
+        performLoadMore()
+    }
+
     LaunchedEffect(isRefreshing) {
         if (!isRefreshing) return@LaunchedEffect
         try {
             delay(delayTime)
-            itemList.add(0, itemList.size to "第${itemList.size}个刷新item")
+            val newIndex = itemCounter++
+            itemList.add(0, newIndex to "第${itemList.size}个刷新item")
             listState.animateScrollToItem(0)
         } finally {
             isRefreshing = false
@@ -242,7 +275,7 @@ fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delayT
         refreshState,
         indicator = indicator
     ) {
-        LazyColumn(Modifier.fillMaxSize().nestedScroll(nestedScrollConnection), listState) {
+        LazyColumn(Modifier.fillMaxSize()/*.nestedScroll(nestedScrollConnection)*/, listState) {
             items(itemList, { it.first }) { item ->
                 ListItem({ Text(item.second) }, Modifier.padding(horizontal = 10.dp))
                 HorizontalDivider()
