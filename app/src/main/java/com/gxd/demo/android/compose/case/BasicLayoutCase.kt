@@ -52,11 +52,11 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
@@ -74,7 +74,6 @@ import androidx.compose.ui.unit.dp
 import com.gxd.demo.android.util.screenHeightPercent
 import com.gxd.demo.android.util.screenSizePercent
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 /**
@@ -199,30 +198,38 @@ fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delayT
         }
     }
 
-    val scope = rememberCoroutineScope()
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (available.y < 0 && !listState.canScrollForward && !isLoadingMore && !isRefreshing) {
-                    scope.launch { performLoadMore() }
+                if (available.y < 0 && !listState.canScrollForward && !isRefreshing && !isLoadingMore) {
+                    isLoadingMore = true
                 }
                 return Offset.Zero
             }
         }
     }
 
-    val onRefresh: () -> Unit = remember {
-        {
-            scope.launch {
-                isRefreshing = true
-
-                delay(delayTime)
-                itemList.add(0, itemList.size to "第${itemList.size}个刷新item")
-                isRefreshing = false
-            }
+    LaunchedEffect(isLoadingMore) {
+        if (!isLoadingMore) return@LaunchedEffect
+        try {
+            delay(delayTime)
+            itemList.add(itemList.size to "第${itemList.size}个底部item")
+        } finally {
+            isLoadingMore = false
         }
     }
+    LaunchedEffect(isRefreshing) {
+        if (!isRefreshing) return@LaunchedEffect
+        try {
+            delay(delayTime)
+            itemList.add(0, itemList.size to "第${itemList.size}个刷新item")
+            listState.animateScrollToItem(0)
+        } finally {
+            isRefreshing = false
+        }
+    }
+
     val indicator: @Composable BoxScope.() -> Unit = remember {
         {
             Indicator(refreshState, isRefreshing, Modifier.align(Alignment.TopCenter))
@@ -230,7 +237,7 @@ fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delayT
     }
     PullToRefreshBox(
         isRefreshing,
-        onRefresh,
+        { isRefreshing = true },
         modifier.fillMaxSize().systemGesturesPadding(),
         refreshState,
         indicator = indicator
