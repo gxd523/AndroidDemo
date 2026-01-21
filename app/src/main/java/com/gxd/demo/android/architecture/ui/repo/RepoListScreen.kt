@@ -16,7 +16,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults.elevatedCardElevation
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -40,11 +39,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.gxd.demo.android.BuildConfig
-import com.gxd.demo.android.util.launchCustomChromeTab
 import com.gxd.demo.android.compose.wechat.theme.WechatTheme
+import com.gxd.demo.android.util.launchCustomChromeTab
 import com.gxd.demo.lib.dal.repository.Repo
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepoListScreen(modifier: Modifier = Modifier, viewModel: RepoListViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

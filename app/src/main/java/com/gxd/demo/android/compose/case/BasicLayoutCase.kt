@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -14,17 +15,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemGesturesPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
@@ -34,6 +38,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -43,22 +48,27 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.PositionalThreshold
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
-import androidx.compose.material3.pulltorefresh.pullToRefreshIndicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -164,40 +174,89 @@ fun TopAppBarCase() {
 /**
  * 下拉刷新
  */
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
+@Preview(name = "Pull to refresh", showBackground = true)
 @Composable
-fun SwipeRefreshCase(modifier: Modifier = Modifier) {
-    var itemCount by remember { mutableIntStateOf(5) }
+fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delay: Long = 1_000) {
+    val itemList = remember {
+        List(initCount) { index -> "第${index}个初始item" }.asReversed().toMutableStateList()
+    }
+
     var isRefreshing by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val state = rememberPullToRefreshState()
-    PullToRefreshBox(
-        isRefreshing,
+    var isLoadingMore by remember { mutableStateOf(false) }
+
+    val refreshState = rememberPullToRefreshState()
+    val listState = rememberLazyListState()
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            lastVisibleItem != null && lastVisibleItem.index >= itemList.size - 1
+        }
+    }
+
+    val loadingMoreData: suspend () -> Unit = remember {
         {
-            isRefreshing = true
+            isLoadingMore = true
+            delay(1_000)
+            itemList.add("第${itemList.size}个底部item")
+            isLoadingMore = false
+        }
+    }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore && !isLoadingMore && !isRefreshing) {
+            scope.launch { loadingMoreData() }
+        }
+    }
+
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (available.y < 0 && !listState.canScrollForward && !isLoadingMore && !isRefreshing) {
+                    scope.launch { loadingMoreData() }
+                }
+                return Offset.Zero
+            }
+        }
+    }
+
+    val onRefresh: () -> Unit = remember {
+        {
             scope.launch {
-                delay(1_000)
-                itemCount += 5
+                isRefreshing = true
+
+                delay(delay)
+                itemList.add(0, "第${itemList.size}个刷新item")
                 isRefreshing = false
             }
-        },
-        modifier.systemGesturesPadding(),
-        state,
-        indicator = {
-            MySwipeRefreshIndicator(
-                modifier = Modifier.align(Alignment.TopCenter),
-                isRefreshing = isRefreshing,
-//                containerColor = MaterialTheme.colorScheme.primaryContainer,
-//                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                state = state
-            )
-
         }
+    }
+    val indicator: @Composable BoxScope.() -> Unit = remember {
+        {
+            Indicator(refreshState, isRefreshing, Modifier.align(Alignment.TopCenter))
+        }
+    }
+    PullToRefreshBox(
+        isRefreshing,
+        onRefresh,
+        modifier.fillMaxSize().systemGesturesPadding(),
+        refreshState,
+        indicator = indicator
     ) {
-        LazyColumn(Modifier.fillMaxSize()) {
-            items(itemCount) { index ->
-                ListItem({ Text("item $index") })
+        LazyColumn(Modifier.fillMaxSize().nestedScroll(nestedScrollConnection), listState) {
+            items(itemList) { item ->
+                ListItem({ Text(item) }, Modifier.padding(horizontal = 10.dp))
+                HorizontalDivider()
+            }
+
+            if (isLoadingMore) {
+                item {
+                    Box(Modifier.fillMaxWidth().padding(16.dp), Alignment.Center) {
+                        CircularProgressIndicator(strokeWidth = 3.dp, modifier = Modifier.size(20.dp))
+                    }
+                }
             }
         }
     }
@@ -205,30 +264,18 @@ fun SwipeRefreshCase(modifier: Modifier = Modifier) {
 
 /**
  * 自定义下拉刷新指示器
+ * 在{PullToRefreshCase}中使用
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MySwipeRefreshIndicator(state: PullToRefreshState, isRefreshing: Boolean, modifier: Modifier = Modifier) {
-    Box(
-        modifier.pullToRefreshIndicator(
-            state,
-            isRefreshing,
-            PositionalThreshold,
-            containerColor = PullToRefreshDefaults.containerColor
-        ),
-        Alignment.Center
-    ) {
-        Crossfade(
-            isRefreshing,
-            Modifier.align(Alignment.Center),
-            tween(100)
-        ) { refreshing ->
+fun PullToRefreshIndicator(state: PullToRefreshState, isRefreshing: Boolean, modifier: Modifier = Modifier) =
+    Box(modifier, Alignment.Center) {
+        Crossfade(isRefreshing, Modifier.align(Alignment.Center), tween(100)) { refreshing ->
             if (refreshing) {
                 CircularProgressIndicator(Modifier.size(20.dp))
             } else {
                 val distanceFraction = { state.distanceFraction.coerceIn(0f, 1f) }
                 Icon(
-                    Icons.Filled.CloudDownload,
+                    Icons.Filled.ArrowDownward,
                     "Refresh",
                     Modifier
                         .size(18.dp)
@@ -242,7 +289,6 @@ fun MySwipeRefreshIndicator(state: PullToRefreshState, isRefreshing: Boolean, mo
             }
         }
     }
-}
 
 @Preview
 @Composable
