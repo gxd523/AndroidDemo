@@ -204,13 +204,22 @@ fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delayT
 //        }
 //    }
 
+    val randomGenerateItemData: (Boolean, String) -> Unit = remember {
+        { isAddFirst, suffix ->
+            val randomCount = (1..3).random()
+            repeat(randomCount) {
+                val newIndex = itemCounter++
+                itemList.add(if (isAddFirst) 0 else itemList.size, newIndex to "第${newIndex}$suffix")
+            }
+        }
+    }
+
     val performLoadMore: suspend () -> Unit = remember {
         {
             try {
                 isLoadingMore = true
                 delay(delayTime)
-                val newIndex = itemCounter++
-                itemList.add(newIndex to "第${newIndex}个底部item")
+                randomGenerateItemData(false, "个底部item")
             } finally {
                 isLoadingMore = false
             }
@@ -255,8 +264,7 @@ fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delayT
         if (!isRefreshing) return@LaunchedEffect
         try {
             delay(delayTime)
-            val newIndex = itemCounter++
-            itemList.add(0, newIndex to "第${itemList.size}个刷新item")
+            randomGenerateItemData(true, "个刷新item")
             listState.animateScrollToItem(0)
         } finally {
             isRefreshing = false
