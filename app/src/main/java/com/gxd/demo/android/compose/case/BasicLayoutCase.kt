@@ -52,8 +52,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -176,9 +174,9 @@ fun TopAppBarCase() {
  */
 @Preview(name = "Pull to refresh", showBackground = true)
 @Composable
-fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delay: Long = 1_000) {
+fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delayTime: Long = 1_000) {
     val itemList = remember {
-        List(initCount) { index -> "第${index}个初始item" }.asReversed().toMutableStateList()
+        List(initCount) { index -> index to "第${index}个初始item" }.asReversed().toMutableStateList()
     }
 
     var isRefreshing by remember { mutableStateOf(false) }
@@ -187,35 +185,27 @@ fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delay:
     val refreshState = rememberPullToRefreshState()
     val listState = rememberLazyListState()
 
-    val shouldLoadMore by remember {
-        derivedStateOf {
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
-            lastVisibleItem != null && lastVisibleItem.index >= itemList.size - 1
-        }
-    }
-
-    val loadingMoreData: suspend () -> Unit = remember {
+    val performLoadMore: suspend () -> Unit = remember {
         {
-            isLoadingMore = true
-            delay(1_000)
-            itemList.add("第${itemList.size}个底部item")
-            isLoadingMore = false
+            if (!isLoadingMore && !isRefreshing) {
+                try {
+                    isLoadingMore = true
+                    delay(delayTime)
+                    itemList.add(itemList.size to "第${itemList.size}个底部item")
+                } finally {
+                    isLoadingMore = false
+                }
+            }
         }
     }
+
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(shouldLoadMore) {
-        if (shouldLoadMore && !isLoadingMore && !isRefreshing) {
-            scope.launch { loadingMoreData() }
-        }
-    }
-
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 if (available.y < 0 && !listState.canScrollForward && !isLoadingMore && !isRefreshing) {
-                    scope.launch { loadingMoreData() }
+                    scope.launch { performLoadMore() }
                 }
                 return Offset.Zero
             }
@@ -227,8 +217,8 @@ fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delay:
             scope.launch {
                 isRefreshing = true
 
-                delay(delay)
-                itemList.add(0, "第${itemList.size}个刷新item")
+                delay(delayTime)
+                itemList.add(0, itemList.size to "第${itemList.size}个刷新item")
                 isRefreshing = false
             }
         }
@@ -246,13 +236,13 @@ fun PullToRefreshCase(modifier: Modifier = Modifier, initCount: Int = 10, delay:
         indicator = indicator
     ) {
         LazyColumn(Modifier.fillMaxSize().nestedScroll(nestedScrollConnection), listState) {
-            items(itemList) { item ->
-                ListItem({ Text(item) }, Modifier.padding(horizontal = 10.dp))
+            items(itemList, { it.first }) { item ->
+                ListItem({ Text(item.second) }, Modifier.padding(horizontal = 10.dp))
                 HorizontalDivider()
             }
 
             if (isLoadingMore) {
-                item {
+                item(key = "loading_more_indicator") {
                     Box(Modifier.fillMaxWidth().padding(16.dp), Alignment.Center) {
                         CircularProgressIndicator(strokeWidth = 3.dp, modifier = Modifier.size(20.dp))
                     }
