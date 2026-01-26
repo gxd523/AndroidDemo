@@ -15,9 +15,9 @@ subprojects {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             // 1. 开启特性：显式备用字段
-            freeCompilerArgs.add("-Xexplicit-backing-fields")
+//            freeCompilerArgs.add("-Xexplicit-backing-fields")
             // 2. 开启语言引擎开关（报错信息要求的关键参数）
-            freeCompilerArgs.add("-XXLanguage:+ExplicitBackingFields")
+//            freeCompilerArgs.add("-XXLanguage:+ExplicitBackingFields")
         }
     }
 }

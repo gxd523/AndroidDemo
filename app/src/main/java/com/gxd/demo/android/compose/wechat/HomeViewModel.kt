@@ -18,8 +18,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
-    val chatList: StateFlow<List<Chat>>
-        field = MutableStateFlow(emptyList<Chat>())
+    private val _chatList = MutableStateFlow(emptyList<Chat>())
+    val chatList: StateFlow<List<Chat>> = _chatList
 
     val contactList by mutableStateOf(Mock.contactList)
     var selectedTab by mutableIntStateOf(0)
@@ -55,7 +55,7 @@ class HomeViewModel : ViewModel() {
     fun requestChatList() {
         viewModelScope.launch {
             delay(1_000)// TODO: 模拟请求耗时
-            chatList.value = Mock.chatList
+            _chatList.value = Mock.chatList
             isReady = true
         }
     }

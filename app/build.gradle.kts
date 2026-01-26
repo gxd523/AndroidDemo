@@ -112,6 +112,8 @@ dependencies {
     implementation(libs.hilt.core)
     ksp(libs.hilt.compiler)
 
+    implementation(libs.immutable)
+
     implementation(libs.bundles.androidx)
     implementation(libs.bundles.navigation)
     implementation(libs.bundles.coil)

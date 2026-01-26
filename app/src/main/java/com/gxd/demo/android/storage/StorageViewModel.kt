@@ -19,7 +19,9 @@ import com.gxd.demo.android.util.clearAndAddAll
 
 class StorageViewModel : ViewModel() {
     var uriStateList = mutableStateListOf<Uri>()
+        private set
     var readTxt = mutableStateOf<String?>(null)
+        private set
 
     fun updateUriList(uriList: List<Uri>) {
         uriStateList.clearAndAddAll(uriList)

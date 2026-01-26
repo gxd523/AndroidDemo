@@ -9,7 +9,8 @@ import com.gxd.demo.lib.dal.repository.GithubRepository
 import com.gxd.demo.lib.dal.repository.Repo
 import com.gxd.demo.lib.dal.source.network.model.GithubUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +18,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,131 +30,81 @@ import javax.inject.Inject
 @HiltViewModel
 class RepoListViewModel @Inject constructor(private val githubRepository: GithubRepository) : ViewModel() {
     companion object {
-        private const val INPUT_DEBOUNCE_TIMEOUT = 1_000L
+        private const val INPUT_DEBOUNCE_TIMEOUT = 1_500L
         private const val REPO_LIST_REQUEST_MIN_TIME = 300
     }
 
-    val uiState: StateFlow<RepoListUiState>
-        field = MutableStateFlow(RepoListUiState(onItemClick = ::addReadRepoCount))
+    private val _inputUsernameState = MutableStateFlow("gxd523")
+    private val _uiState = MutableStateFlow(
+        RepoListUiState(onItemClick = ::addReadRepoCount)
+    )
 
-    val inputUsernameState: StateFlow<String>
-        field = MutableStateFlow("")
-
-    @OptIn(FlowPreview::class)
-    private val debouncedInputUsernameFlow = inputUsernameState.debounce(
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    val inputUsernameState = _inputUsernameState.debounce(
         INPUT_DEBOUNCE_TIMEOUT
-    ).stateIn(viewModelScope, WhileUiSubscribed, "")
+    ).distinctUntilChanged(
+    ).filter {
+        it.isNotBlank()
+    }.transformLatest { username ->
+        updateRepoList(username)
+        emit(username)
+    }.stateIn(// 通过「stateIn」将「冷流」转换成「热流」即「StateFlow」，「StateFlow」也作为了「一级缓存(内存缓存)」
+        viewModelScope, WhileUiSubscribed, ""
+    )
 
-    val loadingUiState: StateFlow<Boolean>
-        field = MutableStateFlow(false)
+    val uiState: StateFlow<RepoListUiState> = combine(
+        githubRepository.getObservableGithubUser(),
+        githubRepository.getObservableRepoList(inputUsernameState.value)
+    ) { githubUser, repoList ->
+        combineToResult(githubUser, repoList)
+    }.catch {
+        emit(Result.Error(Exception("异常了")))
+    }.map { result ->
+        val currentRepoListUiState = _uiState.value
+        when (result) {
+            is Result.Error -> currentRepoListUiState.copy(
+                repoList = persistentListOf(),
+                readRepoList = persistentListOf(),
+                errorMsg = result.exception.message ?: "没有异常信息"
+            )
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            debouncedInputUsernameFlow.collect { debouncedNewUsername ->
-                if (debouncedNewUsername.isEmpty()) return@collect
-                loadingUiState.value = true
-                executeEnsureTime(REPO_LIST_REQUEST_MIN_TIME) {
-                    githubRepository.updateRepoList(debouncedNewUsername)
-                    loadingUiState.value = false
-                }
+            Result.Loading -> currentRepoListUiState
+            is Result.Success -> {
+                val (newGithubUser, newRepoList) = result.data
+                currentRepoListUiState.copy(
+                    repoList = newRepoList.toImmutableList(),
+                    githubUser = newGithubUser,
+                    errorMsg = ""
+                )
             }
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            @OptIn(ExperimentalCoroutinesApi::class)
-            val flatMapLatest = debouncedInputUsernameFlow.flatMapLatest { newUsername ->
-                githubRepository.getObservableRepoList(newUsername)
-            }
-            combine(githubRepository.getObservableGithubUser(), flatMapLatest) { githubUser, repoList ->
-                handleTask(githubUser, repoList)
-            }.catch {
-                emit(Result.Error(Exception("异常了")))
-            }.collect { result ->
-                uiState.update {
-                    when (result) {
-                        is Result.Error -> it.copy(
-                            repoList = emptyList(),
-                            readRepoList = emptyList(),
-                            errorMsg = result.exception.message ?: "没有异常信息"
-                        )
+    }.stateIn(viewModelScope, WhileUiSubscribed, _uiState.value)
 
-                        Result.Loading -> it
-                        is Result.Success -> it.copy(
-                            repoList = result.data.second,
-                            githubUser = result.data.first,
-                            readRepoList = readRepoList.value,
-                            errorMsg = ""
-                        )
-                    }
-                }
-            }
-        }
+
+    private fun addReadRepoCount(repo: Repo): Unit = _uiState.update { repoListUiState ->
+        repoListUiState.copy(readRepoList = repoListUiState.readRepoList.toMutableList().also { newReadRepoList ->
+            if (!newReadRepoList.any { repoItem -> repo.name == repoItem.name }) newReadRepoList.add(repo)
+        }.toImmutableList())
     }
-
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    private val observableRepoList = debouncedInputUsernameFlow.flatMapLatest { newUsername ->
-//        githubRepository.getObservableRepoList(newUsername).map { handleTask(it) }
-//    }.catch {
-//        emit(Result.Error(Exception("异常了")))
-//    }
-
-    private val readRepoList = MutableStateFlow(mutableListOf<Repo>())
-    private fun addReadRepoCount(repo: Repo) {
-        readRepoList.update {
-            it.toMutableList().also { newReadRepoList ->
-                if (!newReadRepoList.any { repo.name == it.name }) {
-                    newReadRepoList.add(repo)
-                    uiState.update { it.copy(readRepoList = newReadRepoList) }
-                }
-            }
-        }
-    }
-
-    /**
-     * 不相关、更新频率不同的数据项，也可以拆分成多个「uiState」
-     * 尤其是当其中某个状态的更新频率高于其他状态的更新频率时
-     */
-//    val uiStateX = combine(
-//        debouncedInputUsernameFlow, observableRepoList, readRepoList
-//    ) { username, repoListResult, readRepoList ->
-//        when (repoListResult) {
-//            is Result.Error -> RepoListUiState(
-//                username = username,
-//                errorMsg = repoListResult.exception.message ?: "没有异常信息",
-//                onItemClick = ::addReadRepoCount,
-//                readRepoList = readRepoList
-//            )
-//
-//            Result.Loading -> RepoListUiState(onItemClick = ::addReadRepoCount, readRepoList = readRepoList)
-//
-//            is Result.Success -> RepoListUiState(
-//                repoListResult.data,
-//                username,
-//                errorMsg = "",
-//                onItemClick = ::addReadRepoCount,
-//                readRepoList = readRepoList
-//            )
-//        }
-//    }.distinctUntilChanged { old, new ->
-//        old.repoList == new.repoList && old.errorMsg == new.errorMsg && old.readRepoList == new.readRepoList
-//    }.stateIn(
-//        viewModelScope, WhileUiSubscribed, RepoListUiState()
-//    )
 
     fun pullToRefresh() {
-        loadingUiState.value = true
-        viewModelScope.launch {
-            executeEnsureTime(REPO_LIST_REQUEST_MIN_TIME) {
-                githubRepository.updateRepoList(debouncedInputUsernameFlow.value)
-                loadingUiState.value = false
-            }
-        }
+        viewModelScope.launch { updateRepoList(inputUsernameState.value) }
     }
 
     fun updateUsername(newUsername: String) {
-        inputUsernameState.value = newUsername
+        _inputUsernameState.value = newUsername
     }
 
-    private fun handleTask(githubUser: GithubUser?, repoList: List<Repo>): Result<Pair<GithubUser?, List<Repo>>> {
+    private suspend fun updateRepoList(username: String) = try {
+        _uiState.update { it.copy(isLoading = true) }
+        executeEnsureTime(REPO_LIST_REQUEST_MIN_TIME) {// 保证「异步操作」的「最小」执行时间
+            githubRepository.updateRepoList(username)
+        }
+    } finally {
+        _uiState.update { it.copy(isLoading = false) }
+    }
+
+    private fun combineToResult(githubUser: GithubUser?, repoList: List<Repo>): Result<Pair<GithubUser?, List<Repo>>> {
         if (repoList.isEmpty()) return Result.Error(Exception("repo empty"))
         return Result.Success(githubUser to repoList)
     }
