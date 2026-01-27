@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemGesturesPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -19,6 +20,7 @@ import androidx.compose.material3.CardDefaults.elevatedCardElevation
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,9 +48,8 @@ import com.gxd.demo.lib.dal.repository.Repo
 @Composable
 fun RepoListScreen(modifier: Modifier = Modifier, viewModel: RepoListViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val isLoading by viewModel.loadingUiState.collectAsStateWithLifecycle()
     PullToRefreshBox(
-        isLoading,
+        uiState.isLoading,
         { viewModel.pullToRefresh() },
         modifier.systemGesturesPadding().fillMaxSize()
     ) {
@@ -77,15 +78,17 @@ fun RepoListScreen(modifier: Modifier = Modifier, viewModel: RepoListViewModel =
                     item { GithubUserItem(uiState) }
                     if (uiState.readRepoList.isNotEmpty()) {
                         item {
+                            val readRepoListString by remember {
+                                derivedStateOf { uiState.readRepoList.joinToString(", ") { it.name } }
+                            }
                             Text(
-                                uiState.readRepoList.joinToString(", ") { it.name },
+                                readRepoListString,
                                 Modifier.padding(10.dp).wrapContentHeight().background(Color.LightGray)
                             )
                         }
                     }
-                    items(uiState.repoList.size) { index ->
-                        uiState.repoList
-                        RepoItemComponent(uiState.repoList[index], uiState.onItemClick)
+                    items(uiState.repoList) { repoItem ->
+                        RepoItemComponent(repoItem, uiState.onItemClick)
                     }
                 }
             }
@@ -134,7 +137,6 @@ private fun RepoItemComponent(repo: Repo, onItemClick: (Repo) -> Unit) {
         shape = RoundedCornerShape(3.dp)
     ) {
         Column(Modifier.padding(10.dp)) {
-
             Text(buildAnnotatedString {
                 append("库名: ")
                 val spanStyle = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
