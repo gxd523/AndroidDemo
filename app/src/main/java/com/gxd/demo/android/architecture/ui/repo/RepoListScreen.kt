@@ -22,9 +22,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,14 +52,10 @@ fun RepoListScreen(modifier: Modifier = Modifier, viewModel: RepoListViewModel =
         modifier.systemGesturesPadding().fillMaxSize()
     ) {
         Column(Modifier.fillMaxSize()) {
-            val defaultText by viewModel.inputUsernameState.collectAsStateWithLifecycle()
-            var text by remember { mutableStateOf(defaultText) }
+            val text by viewModel.rawInputUsername.collectAsStateWithLifecycle()
+            val onValueChange: (String) -> Unit = remember { { viewModel.updateUsername(it) } }
             BasicTextField(
-                text,
-                {
-                    text = it
-                    viewModel.updateUsername(it)
-                },
+                text, onValueChange,
                 Modifier
                     .padding(5.dp)
                     .background(Color.LightGray, CircleShape)

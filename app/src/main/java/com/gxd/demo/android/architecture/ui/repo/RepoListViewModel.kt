@@ -12,13 +12,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,12 +30,13 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
     companion object {
         private const val INPUT_DEBOUNCE_TIMEOUT = 1_200L
         private const val REPO_LIST_REQUEST_MIN_TIME = 300
+        private const val DEFAULT_INPUT_USERNAME = "gxd523"
     }
 
-    private val _inputUsernameState = MutableStateFlow("gxd523")
-    private val _uiState = MutableStateFlow(
-        RepoListUiState(onItemClick = ::addReadRepoCount)
-    )
+    private val _inputUsernameState = MutableStateFlow(DEFAULT_INPUT_USERNAME)
+    private val _localState = MutableStateFlow(LocalState())
+
+    val rawInputUsername = _inputUsernameState.asStateFlow()
 
     // 通过「stateIn」将「冷流」转换成「热流」即「StateFlow」，「StateFlow」也作为了「一级缓存(内存缓存)」
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -41,31 +44,32 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
         .debounce(INPUT_DEBOUNCE_TIMEOUT)
         .distinctUntilChanged()
         .filter { it.isNotBlank() }
-        .transformLatest { username ->
-            performRefresh(username)
-            emit(username)
-        }.stateIn(viewModelScope, WhileUiSubscribed, "")
+        .onEach { username -> performRefresh(username) }
+        .stateIn(viewModelScope, WhileUiSubscribed, _inputUsernameState.value)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<RepoListUiState> = combine(
-        _uiState,
+        _localState,
         githubRepository.getObservableGithubUser(),
-        githubRepository.getObservableRepoList(inputUsernameState.value)
-    ) { currentRepoListUiState, newGithubUser, newRepoList ->
-        currentRepoListUiState.copy(
-            repoList = newRepoList.toImmutableList(),
-            githubUser = newGithubUser,
-            errorMsg = ""
+        inputUsernameState.flatMapLatest { githubRepository.getObservableRepoList(it) }
+    ) { localState, githubUser, repoList ->
+        RepoListUiState(
+            repoList = repoList.toImmutableList(),
+            githubUser = githubUser,
+            isLoading = localState.isLoading,
+            readRepoList = localState.readRepoList.toImmutableList(),
+            onItemClick = ::addReadRepoCount,
+            errorMsg = if (repoList.isEmpty() && !localState.isLoading) "未找到仓库" else ""
         )
-    }.catch {
-        emit(RepoListUiState(onItemClick = ::addReadRepoCount))
-    }.stateIn(viewModelScope, WhileUiSubscribed, _uiState.value)
+    }.catch { exception ->
+        emit(RepoListUiState(onItemClick = ::addReadRepoCount, errorMsg = exception.message ?: "未知异常"))
+    }.stateIn(viewModelScope, WhileUiSubscribed, RepoListUiState(onItemClick = ::addReadRepoCount))
 
-    private fun addReadRepoCount(repo: Repo) {
-        val repoListUiState = uiState.value
-        val readRepoList = repoListUiState.readRepoList
-        if (!readRepoList.any { repoItem -> repo.name == repoItem.name }) {
-            val newReadRepoList = readRepoList.toMutableList().also { it.add(repo) }
-            _uiState.value = repoListUiState.copy(readRepoList = newReadRepoList.toImmutableList())
+    private fun addReadRepoCount(newReadRepo: Repo) = _localState.update { current ->
+        if (current.readRepoList.any { it.name == newReadRepo.name }) {
+            current
+        } else {
+            current.copy(readRepoList = current.readRepoList + newReadRepo)
         }
     }
 
@@ -78,11 +82,13 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
     }
 
     private suspend fun performRefresh(username: String) = try {
-        _uiState.update { it.copy(isLoading = true) }
+        _localState.update { it.copy(isLoading = true) }
         executeEnsureTime(REPO_LIST_REQUEST_MIN_TIME) {// 保证「异步操作」的「最小」执行时间
             githubRepository.updateRepoList(username)
         }
     } finally {
-        _uiState.update { it.copy(isLoading = false) }
+        _localState.update { it.copy(isLoading = false) }
     }
+
+    private data class LocalState(val isLoading: Boolean = false, val readRepoList: List<Repo> = emptyList())
 }

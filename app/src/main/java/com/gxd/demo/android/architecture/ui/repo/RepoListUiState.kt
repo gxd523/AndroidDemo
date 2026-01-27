@@ -8,7 +8,7 @@ import kotlinx.collections.immutable.persistentListOf
 data class RepoListUiState(
     // 「ImmutableList」让「RepoListUiState」变为「稳定对象」
     val repoList: ImmutableList<Repo> = persistentListOf(),
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val errorMsg: String = "",
 
     val onItemClick: (Repo) -> Unit,
