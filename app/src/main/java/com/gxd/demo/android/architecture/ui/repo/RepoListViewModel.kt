@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,7 +35,7 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
     }
 
     private val _inputUsernameState = MutableStateFlow(DEFAULT_INPUT_USERNAME)
-    private val _localState = MutableStateFlow(LocalState())
+    private val _localState = MutableStateFlow(LocalState(isLoading = true))
 
     val rawInputUsername = _inputUsernameState.asStateFlow()
 
@@ -58,14 +59,13 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
             githubUser = githubUser,
             isLoading = localState.isLoading,
             readRepoList = localState.readRepoList.toImmutableList(),
-            onItemClick = ::addReadRepoCount,
             errorMsg = if (repoList.isEmpty() && !localState.isLoading) "未找到仓库" else ""
         )
     }.catch { exception ->
-        emit(RepoListUiState(onItemClick = ::addReadRepoCount, errorMsg = exception.message ?: "未知异常"))
-    }.stateIn(viewModelScope, WhileUiSubscribed, RepoListUiState(onItemClick = ::addReadRepoCount))
+        emit(RepoListUiState(errorMsg = exception.message ?: "未知异常"))
+    }.stateIn(viewModelScope, WhileUiSubscribed, RepoListUiState())
 
-    private fun addReadRepoCount(newReadRepo: Repo) = _localState.update { current ->
+    fun addReadRepoCount(newReadRepo: Repo) = _localState.update { current ->
         if (current.readRepoList.any { it.name == newReadRepo.name }) {
             current
         } else {
@@ -85,6 +85,7 @@ class RepoListViewModel @Inject constructor(private val githubRepository: Github
         _localState.update { it.copy(isLoading = true) }
         executeEnsureTime(REPO_LIST_REQUEST_MIN_TIME) {// 保证「异步操作」的「最小」执行时间
             githubRepository.updateRepoList(username)
+            yield()// 这里让出「主线程」，让订阅「数据库」的地方「combine代码块」优先执行
         }
     } finally {
         _localState.update { it.copy(isLoading = false) }

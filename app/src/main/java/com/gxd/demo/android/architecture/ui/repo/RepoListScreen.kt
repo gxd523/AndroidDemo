@@ -53,9 +53,8 @@ fun RepoListScreen(modifier: Modifier = Modifier, viewModel: RepoListViewModel =
     ) {
         Column(Modifier.fillMaxSize()) {
             val text by viewModel.rawInputUsername.collectAsStateWithLifecycle()
-            val onValueChange: (String) -> Unit = remember { { viewModel.updateUsername(it) } }
             BasicTextField(
-                text, onValueChange,
+                text, viewModel::updateUsername,
                 Modifier
                     .padding(5.dp)
                     .background(Color.LightGray, CircleShape)
@@ -82,7 +81,7 @@ fun RepoListScreen(modifier: Modifier = Modifier, viewModel: RepoListViewModel =
                         }
                     }
                     items(uiState.repoList) { repoItem ->
-                        RepoItemComponent(repoItem, uiState.onItemClick)
+                        RepoItemComponent(repoItem, viewModel::addReadRepoCount)
                     }
                 }
             }

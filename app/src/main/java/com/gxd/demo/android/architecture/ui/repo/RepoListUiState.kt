@@ -11,7 +11,6 @@ data class RepoListUiState(
     val isLoading: Boolean = false,
     val errorMsg: String = "",
 
-    val onItemClick: (Repo) -> Unit,
     val readRepoList: ImmutableList<Repo> = persistentListOf(),
     val githubUser: GithubUser? = null,
 )
