@@ -3,6 +3,7 @@ package com.gxd.demo.android.compose.wechat.theme
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -10,7 +11,10 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun WechatTheme(theme: WechatTheme.Theme = WechatTheme.Theme.Light, content: @Composable () -> Unit) {
+fun WechatTheme(
+    theme: WechatTheme.Theme = if (isSystemInDarkTheme()) WechatTheme.Theme.Dark else WechatTheme.Theme.Light,
+    content: @Composable () -> Unit,
+) {
     val colorScheme = when (theme) {
         WechatTheme.Theme.Light -> LightColorScheme
         WechatTheme.Theme.Dark -> DarkColorScheme
@@ -50,13 +54,15 @@ object WechatTheme {
 
 /**
  * 顶级变量首字母大写
- * 「CompositionLocal」变量以「local」开头
+ * 「CompositionLocal」变量以「Local」开头
  *
  */
-private val LocalColorScheme = staticCompositionLocalOf { LightColorScheme }
+private val LocalColorScheme = staticCompositionLocalOf<ColorScheme> { error("No Colors provided") }
 
 @Composable
-private fun animateColorAsStateValue(color: Color) = animateColorAsState(color, TweenSpec(600), label = "").value
+private fun animateColorAsStateValue(color: Color) = animateColorAsState(
+    color, TweenSpec(600), label = ""
+).value
 
 private val LightColorScheme = ColorScheme(
     bottomBar = white1,

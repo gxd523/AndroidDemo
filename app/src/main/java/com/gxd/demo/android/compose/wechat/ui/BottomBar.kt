@@ -1,5 +1,6 @@
 package com.gxd.demo.android.compose.wechat.ui
 
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,10 +57,13 @@ private fun TabItemPreview() {
     TabItem(iconId = R.drawable.ic_chat_outlined, title = "聊天", tint = WechatTheme.colorScheme.icon)
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
 private fun BottomBarPreview() {
-    WechatTheme(WechatTheme.Theme.Dark) {
+    WechatTheme {
         var selectedTab by remember { mutableIntStateOf(0) }
         BottomBar(selectedTab) { selectedTab = it }
     }

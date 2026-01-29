@@ -1,7 +1,9 @@
 package com.gxd.demo.android.compose.wechat.ui
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,9 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gxd.demo.android.R
-import com.gxd.demo.android.compose.wechat.HomeViewModel
+import com.gxd.demo.android.base.ComposeActivity
 import com.gxd.demo.android.compose.wechat.theme.WechatTheme
 
 @Composable
@@ -47,18 +48,23 @@ fun TopBar(title: String? = null, onBackClick: (() -> Unit)? = null) {
             )
             Spacer(Modifier.weight(1f))
         }
-        val viewModel: HomeViewModel = viewModel()
+        val activity = LocalActivity.current as? ComposeActivity
+        val systemInDark = isSystemInDarkTheme()
         Icon(
             painterResource(R.drawable.ic_palette), "切换主题",
             Modifier
                 .size(36.dp)
                 .align(Alignment.CenterVertically)
                 .clickable {
-                    viewModel.theme = when (viewModel.theme) {
+                    val composeActivity = activity ?: return@clickable
+                    val selectedScheme = composeActivity.selectedTheme
+                    val nextTheme = when (selectedScheme) {
                         WechatTheme.Theme.Light -> WechatTheme.Theme.Dark
                         WechatTheme.Theme.Dark -> WechatTheme.Theme.Red
                         WechatTheme.Theme.Red -> WechatTheme.Theme.Light
+                        null -> if (systemInDark) WechatTheme.Theme.Light else WechatTheme.Theme.Dark
                     }
+                    composeActivity.changeTheme(nextTheme)
                 }
                 .padding(8.dp),
             tint = WechatTheme.colorScheme.icon

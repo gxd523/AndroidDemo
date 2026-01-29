@@ -23,6 +23,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
@@ -44,6 +46,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -298,5 +302,23 @@ fun SwipeToDismissCase() {
         ) {
             Text("Swipe to dismiss", color = Color.Black)
         }
+    }
+}
+
+@Preview
+@Composable
+private fun SwitchCase() {
+    MaterialTheme(/*motionScheme*/) {
+        var checked by remember { mutableStateOf(false) }
+        Switch(
+            checked, { checked = it },
+            Modifier,
+            {
+                Icon(
+                    if (checked) Icons.Filled.Check else Icons.Filled.Clear,
+                    null,
+                    Modifier.size(SwitchDefaults.IconSize)
+                )
+            })
     }
 }

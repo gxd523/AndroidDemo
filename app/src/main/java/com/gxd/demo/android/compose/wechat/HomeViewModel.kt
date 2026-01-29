@@ -10,7 +10,6 @@ import com.gxd.demo.android.compose.wechat.data.Chat
 import com.gxd.demo.android.compose.wechat.data.ChatMessage
 import com.gxd.demo.android.compose.wechat.data.User
 import com.gxd.demo.android.compose.wechat.data.mock.Mock
-import com.gxd.demo.android.compose.wechat.theme.WechatTheme
 import com.gxd.demo.android.util.format
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +22,6 @@ class HomeViewModel : ViewModel() {
 
     val contactList by mutableStateOf(Mock.contactList)
     var selectedTab by mutableIntStateOf(0)
-    var theme by mutableStateOf(WechatTheme.Theme.Light)
     var currentChat by mutableStateOf<Chat?>(null)
     var inChatPage by mutableStateOf(false)
     var isReady by mutableStateOf(false)

@@ -13,12 +13,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OauthCallbackViewModel @Inject constructor(private val githubRepository: GithubRepository) : ViewModel() {
-    val uiState: StateFlow<GithubUser?>
-        field = MutableStateFlow<GithubUser?>(null)
+    private val _uiState = MutableStateFlow<GithubUser?>(null)
+    val uiState: StateFlow<GithubUser?> = _uiState
 
     fun getAccessToken(authorizationCode: String, redirectUrl: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            uiState.value = githubRepository.requestGithubUser(authorizationCode, redirectUrl)
+            _uiState.value = githubRepository.requestGithubUser(authorizationCode, redirectUrl)
         }
     }
 }
